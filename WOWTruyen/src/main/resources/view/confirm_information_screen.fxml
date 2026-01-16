@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #19345D;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ConfirmInformationController">
+   <children>
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="800.0" prefWidth="450.0" style="-fx-background: #19345D; -fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <VBox alignment="TOP_CENTER" prefHeight="789.0" prefWidth="448.0" spacing="20.0" style="-fx-padding: 20;">
+               <children>
+                  <ImageView fx:id="uploadImageButton" fitHeight="83.0" fitWidth="108.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/7758685565866.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="btnUploadAvatar" mnemonicParsing="false" text="Upload" />
+                  <Label prefHeight="21.0" prefWidth="226.0" text="Thông tin tài khoản" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <VBox alignment="CENTER_LEFT" maxWidth="400.0" prefHeight="530.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: #ECECE7; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 2);">
+                     <children>
+                        <VBox spacing="5.0">
+                           <children>
+                              <Label text="Họ tên:" textFill="BLACK">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="hoVaTenText" promptText="Nhập họ và tên" style="-fx-background-radius: 5;">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </TextField>
+                           </children>
+                        </VBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15.0">
+                           <children>
+                              <Label prefWidth="80.0" text="Năm sinh:" textFill="BLACK">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="yearComboBox" prefWidth="150.0" promptText="2000" style="-fx-background-color: white; -fx-background-radius: 5;" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0">
+                           <children>
+                              <Label prefWidth="80.0" text="Giới tính:" textFill="BLACK">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <RadioButton fx:id="namRadioButton" text="Nam" textFill="BLACK">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="genderGroup" />
+                                 </toggleGroup>
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </RadioButton>
+                              <RadioButton fx:id="nuRadioButton" text="Nữ" textFill="BLACK" toggleGroup="$genderGroup">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </RadioButton>
+                              <RadioButton fx:id="khacRadioButton" text="Khác" textFill="BLACK" toggleGroup="$genderGroup">
+                                 <font>
+                                    <Font size="13.0" />
+                                 </font>
+                              </RadioButton>
+                           </children>
+                        </HBox>
+                        <VBox spacing="5.0">
+                           <children>
+                              <Label text="Số điện thoại:" textFill="BLACK">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="sdtText" promptText="09xxxxxxxx" style="-fx-background-radius: 5;">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </TextField>
+                           </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                           <children>
+                              <Label text="Gmail:" textFill="BLACK">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="emailText" promptText="example@gmail.com" style="-fx-background-radius: 5;">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </TextField>
+                           </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                           <children>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Label text="Mã xác thực:" textFill="BLACK">
+                                       <font>
+                                          <Font name="System Bold" size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="codeSentSuccessfullyText" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="274.0" text="Verification code sent to your email" textFill="#020000" />
+                                 </children>
+                              </HBox>
+                              <HBox spacing="10.0">
+                                 <children>
+                                    <TextField fx:id="confirmEmailText" promptText="Nhập mã" style="-fx-background-radius: 5;" HBox.hgrow="ALWAYS">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </TextField>
+                                    <AnchorPane prefHeight="29.0" prefWidth="72.0">
+                                       <children>
+                                          <Button fx:id="emailConfirmButton" mnemonicParsing="false" prefHeight="28.0" prefWidth="75.0" style="-fx-background-color: #19345D; -fx-cursor: hand;" text="Lấy mã" textFill="WHITE">
+                                             <font>
+                                                <Font name="System Bold" size="13.0" />
+                                             </font>
+                                          </Button>
+                                          <Button fx:id="sendingCodeButton" mnemonicParsing="false" style="-fx-background-color: #19345D; -fx-cursor: hand;" text="Đang gửi" textFill="WHITE" visible="false">
+                                             <font>
+                                                <Font name="System Bold" size="13.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </AnchorPane>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                           <children>
+                              <CheckBox fx:id="agreeCheckBox" mnemonicParsing="false" text="Đồng ý điều khoản và chính sách bảo mật" textFill="BLACK" wrapText="true">
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font>
+                              </CheckBox>
+                              <Hyperlink fx:id="dieuKhoanVaChinhSachHyperlink" alignment="CENTER" prefHeight="23.0" prefWidth="157.0" text="Điều khoản và chính sách" textAlignment="CENTER" textFill="#19345d" underline="true" />
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Label fx:id="pleaseCompleteAllFieldsText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Please complete all fields!" textFill="RED" />
+                                    <Label fx:id="invalidCodeText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Invalid code. Please try again." textFill="RED" />
+                                    <Label fx:id="checkTheBoxText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Please check the box to agree to the terms and conditions" textFill="RED" />
+                                    <Label fx:id="failToSendEmailText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Unable to send email. Please verify your network connection" textFill="RED" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </VBox>
+                        <Button fx:id="confirmButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="20.0" prefWidth="347.0" style="-fx-background-color: #19345D; -fx-background-radius: 5; -fx-cursor: hand;" text="XÁC NHẬN" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>
