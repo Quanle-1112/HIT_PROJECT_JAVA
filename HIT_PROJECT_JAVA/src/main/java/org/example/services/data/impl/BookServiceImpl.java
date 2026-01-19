@@ -1,4 +1,4 @@
-package org.example.services.impl;
+package org.example.services.data.impl;
 
 import com.google.gson.Gson;
 import org.example.api.ApiGet;
@@ -6,7 +6,7 @@ import org.example.api.apiAll.ApiAllBookResponse;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiOneBookResponse;
 import org.example.api.apiAll.ApiSearchBookResponse;
-import org.example.services.BookService;
+import org.example.services.data.BookService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

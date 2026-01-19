@@ -6,13 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.example.exception.ErrorType;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.IRegisterService;
 import org.example.services.impl.IRegisterServiceImpl;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class RegisterController {
 
@@ -27,8 +27,14 @@ public class RegisterController {
     @FXML private Label emailAlreadyRegisteredText;
     @FXML private Label passwordConfirmationMismatchText;
     @FXML private Label usernameAlreadyExistsTextLabel;
+    @FXML private Label invalidEmailFormatText;
+    @FXML private Label usernameMustBeAtLeast5CharactersLongText;
+    @FXML private Label errorFormatPasswordText;
 
     private final IRegisterService registerService = new IRegisterServiceImpl();
+
+    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,10}$";
+    private static final String EMAIL_PATTERN = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
 
     @FXML
     public void initialize() {
@@ -36,7 +42,10 @@ public class RegisterController {
                 pleaseCompleteAllFieldsText,
                 emailAlreadyRegisteredText,
                 passwordConfirmationMismatchText,
-                usernameAlreadyExistsTextLabel
+                usernameAlreadyExistsTextLabel,
+                invalidEmailFormatText,
+                usernameMustBeAtLeast5CharactersLongText,
+                errorFormatPasswordText
         );
 
         registerButton.setOnAction(event -> handleRegister());
@@ -45,10 +54,9 @@ public class RegisterController {
 
     private void handleRegister() {
         UIExceptionHandler.hideError(
-                pleaseCompleteAllFieldsText,
-                emailAlreadyRegisteredText,
-                passwordConfirmationMismatchText,
-                usernameAlreadyExistsTextLabel
+                pleaseCompleteAllFieldsText, emailAlreadyRegisteredText, passwordConfirmationMismatchText,
+                usernameAlreadyExistsTextLabel, invalidEmailFormatText, usernameMustBeAtLeast5CharactersLongText,
+                errorFormatPasswordText
         );
 
         String email = emailTextField.getText().trim();
@@ -57,12 +65,27 @@ public class RegisterController {
         String confirmPass = confirmPasswordField.getText();
 
         if (email.isEmpty() || username.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            return;
+        }
+
+        if (!Pattern.matches(EMAIL_PATTERN, email)) {
+            UIExceptionHandler.showError(invalidEmailFormatText);
+            return;
+        }
+
+        if (username.length() < 5) {
+            UIExceptionHandler.showError(usernameMustBeAtLeast5CharactersLongText);
+            return;
+        }
+
+        if (!Pattern.matches(PASSWORD_PATTERN, pass)) {
+            UIExceptionHandler.showError(errorFormatPasswordText);
             return;
         }
 
         if (!pass.equals(confirmPass)) {
-            UIExceptionHandler.showError(passwordConfirmationMismatchText, ErrorType.PASSWORD_MISMATCH);
+            UIExceptionHandler.showError(passwordConfirmationMismatchText);
             return;
         }
 
@@ -78,17 +101,15 @@ public class RegisterController {
             case "SUCCESS":
                 openScreen("/view/login.fxml", "Login");
                 break;
-
             case "Email đã được đăng ký!":
-                UIExceptionHandler.showError(emailAlreadyRegisteredText, ErrorType.EMAIL_ALREADY_REGISTERED);
+                UIExceptionHandler.showError(emailAlreadyRegisteredText);
                 break;
-
             case "Tên đăng nhập đã tồn tại!":
-                UIExceptionHandler.showError(usernameAlreadyExistsTextLabel, ErrorType.USERNAME_ALREADY_EXISTS);
+                UIExceptionHandler.showError(usernameAlreadyExistsTextLabel);
                 break;
-
             default:
-                UIExceptionHandler.showCustomError(pleaseCompleteAllFieldsText, result);
+                pleaseCompleteAllFieldsText.setText(result);
+                UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
                 break;
         }
     }
@@ -106,15 +127,11 @@ public class RegisterController {
             stage.setScene(new Scene(root));
             stage.setResizable(false);
             stage.show();
-            closeStage();
+            if (registerButton.getScene() != null) {
+                ((Stage) registerButton.getScene().getWindow()).close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void closeStage() {
-        if (registerButton.getScene() != null) {
-            ((Stage) registerButton.getScene().getWindow()).close();
         }
     }
 }

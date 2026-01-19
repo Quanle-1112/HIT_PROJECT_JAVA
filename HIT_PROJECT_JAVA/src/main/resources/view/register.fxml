@@ -73,10 +73,21 @@
                 <Font size="13.0" />
             </font>
         </Label>
-      <Label fx:id="usernameAlreadyExistsTextLabel" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Username already exists!" textFill="RED" visible="false">
+      <Label fx:id="usernameAlreadyExistsTextLabel" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Username already exists!" textFill="RED">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
+      <Label fx:id="invalidEmailFormatText" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Invalid email format!" textFill="RED">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label fx:id="usernameMustBeAtLeast5CharactersLongText" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Username must be at least 5 characters long!" textFill="RED">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label fx:id="errorFormatPasswordText" alignment="CENTER" layoutX="95.0" layoutY="331.0" prefHeight="36.0" prefWidth="330.0" text="Password must be 6-10 characters long and include numbers, lowercase, uppercase letters, and special characters" textFill="RED" wrapText="true" />
     </children>
 </AnchorPane>

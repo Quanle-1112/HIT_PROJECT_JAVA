@@ -9,7 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.example.exception.ErrorType;
 import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
@@ -28,7 +27,6 @@ public class ForgotPasswordController {
     @FXML
     public void initialize() {
         UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
-
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         sendRecoveryCodeButton.setOnAction(event -> handleSendCode());
@@ -40,7 +38,7 @@ public class ForgotPasswordController {
         String email = emailToResetPasswordText.getText().trim();
 
         if (email.isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
             return;
         }
 
@@ -49,7 +47,6 @@ public class ForgotPasswordController {
 
         new Thread(() -> {
             String otp = forgotPasswordService.sendOtp(email);
-
             Platform.runLater(() -> {
                 if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
                 sendRecoveryCodeButton.setVisible(true);
@@ -57,7 +54,7 @@ public class ForgotPasswordController {
                 if (otp != null) {
                     navigateToConfirmCode(email, otp);
                 } else {
-                    UIExceptionHandler.showError(emailNotFoundText, ErrorType.EMAIL_NOT_FOUND);
+                    UIExceptionHandler.showError(emailNotFoundText);
                 }
             });
         }).start();
@@ -69,9 +66,7 @@ public class ForgotPasswordController {
             Stage stage = (Stage) backToLoginButton.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("WOWTruyen - Login");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void navigateToConfirmCode(String email, String otp) {

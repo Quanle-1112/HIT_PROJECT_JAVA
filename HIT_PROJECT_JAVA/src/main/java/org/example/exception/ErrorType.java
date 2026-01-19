@@ -1,26 +1,24 @@
 package org.example.exception;
 
 public enum ErrorType {
-    PLEASE_COMPLETE_ALL_FIELDS("Please complete all fields!"),
+    PLEASE_COMPLETE_ALL_FIELDS,
 
-    INVALID_LOGIN("Invalid login. Please try again!"),
+    INVALID_LOGIN,
 
-    EMAIL_ALREADY_REGISTERED("Email already registered!"),
-    USERNAME_ALREADY_EXISTS("Username already exists!"),
-    PASSWORD_MISMATCH("Password confirmation mismatch!"),
-    EMAIL_NOT_FOUND("This email address is not registered in our system!"),
-    INVALID_CODE("Invalid code. Please try again."),
-    CHECK_TERMS_BOX("Please check the box to agree to the terms and conditions"),
-    FAIL_TO_SEND_EMAIL("Unable to send email. Please verify your network connection"),
-    CODE_SENT_SUCCESS("Verification code sent to your email");
+    EMAIL_ALREADY_REGISTERED,
+    USERNAME_ALREADY_EXISTS,
+    PASSWORD_MISMATCH,
+    INVALID_EMAIL_FORMAT,
+    USERNAME_TOO_SHORT,
+    INVALID_PASSWORD_FORMAT,
 
-    private final String message;
+    EMAIL_NOT_FOUND,
 
-    ErrorType(String message) {
-        this.message = message;
-    }
+    INVALID_CODE,
+    OTP_EXPIRED,
+    CHECK_TERMS_BOX,
+    FAIL_TO_SEND_EMAIL,
+    INVALID_PHONE_NUMBER,
 
-    public String getMessage() {
-        return message;
-    }
+    CODE_SENT_SUCCESS
 }
