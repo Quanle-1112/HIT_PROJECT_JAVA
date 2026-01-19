@@ -14,8 +14,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.example.api.apiAll.ApiBookItem;
-import org.example.services.BookService;
-import org.example.services.impl.BookServiceImpl;
+import org.example.data.BookService;
+import org.example.data.impl.BookServiceImpl;
 
 import java.util.List;
 

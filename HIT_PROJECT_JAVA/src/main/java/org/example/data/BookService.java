@@ -1,4 +1,4 @@
-package org.example.services;
+package org.example.data;
 
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiOneBookResponse;
