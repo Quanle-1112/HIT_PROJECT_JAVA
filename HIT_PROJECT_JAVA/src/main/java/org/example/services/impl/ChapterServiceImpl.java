@@ -1,9 +1,9 @@
-package org.example.services.data.impl;
+package org.example.services.impl;
 
 import com.google.gson.Gson;
 import org.example.api.ApiGet;
 import org.example.api.apiAll.ApiChapterResponse;
-import org.example.services.data.ChapterService;
+import org.example.services.ChapterService;
 
 public class ChapterServiceImpl implements ChapterService {
     private final Gson gson = new Gson();

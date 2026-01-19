@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.exception.ErrorType;
 import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
@@ -25,50 +26,35 @@ public class ConfirmVerifyCodeController {
 
     @FXML private Label errorLabel;
     @FXML private Label pleaseCompleteAllFieldsText;
-    @FXML private Label expiredCodeText;
 
     private final IForgotPasswordService service = new IForgotPasswordServiceImpl();
     private String userEmail, serverOtp;
 
-    private long otpGeneratedTime;
-    private static final long OTP_TIMEOUT = 5 * 60 * 1000;
-
-    public void setInitData(String email, String otp) {
-        this.userEmail = email;
-        this.serverOtp = otp;
-        this.otpGeneratedTime = System.currentTimeMillis();
-    }
+    public void setInitData(String email, String otp) { this.userEmail = email; this.serverOtp = otp; }
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, expiredCodeText);
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
+
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         verifyButton.setOnAction(event -> handleVerify());
         resendCodeButton.setOnAction(event -> handleResend());
         returnButton.setOnAction(event -> navigateBack());
-
-        startTimer();
     }
 
     private void handleVerify() {
-        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, expiredCodeText);
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
 
         String inputCode = codeTextField.getText().trim();
         if (inputCode.isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
-
-        if (System.currentTimeMillis() - otpGeneratedTime > OTP_TIMEOUT) {
-            UIExceptionHandler.showError(expiredCodeText);
-            return;
-        }
-
         if (inputCode.equals(serverOtp)) {
             navigateToChangePassword();
         } else {
-            UIExceptionHandler.showError(errorLabel);
+            UIExceptionHandler.showError(errorLabel, ErrorType.INVALID_CODE);
         }
     }
 
@@ -78,13 +64,13 @@ public class ConfirmVerifyCodeController {
 
         new Thread(() -> {
             String newOtp = service.sendOtp(userEmail);
+
             Platform.runLater(() -> {
                 if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
                 resendCodeButton.setVisible(true);
 
                 if (newOtp != null) {
                     this.serverOtp = newOtp;
-                    this.otpGeneratedTime = System.currentTimeMillis();
                     startTimer();
                 }
             });

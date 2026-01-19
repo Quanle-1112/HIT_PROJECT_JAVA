@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.ILoginService;
@@ -21,7 +22,7 @@ public class LoginController {
     @FXML private TextField usernameTextField;
     @FXML private Button forgotPasswordButton;
 
-    // Các label lỗi khớp fx:id [cite: 162, 165]
+    // Các label lỗi khớp với fx:id trong login.fxml
     @FXML private Label invalidLoginText;
     @FXML private Label pleaseCompleteAllFieldsText;
 
@@ -43,7 +44,7 @@ public class LoginController {
         String password = enterPasswordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
@@ -56,7 +57,7 @@ public class LoginController {
                 openHomeScreen();
             }
         } else {
-            UIExceptionHandler.showError(invalidLoginText);
+            UIExceptionHandler.showError(invalidLoginText, ErrorType.INVALID_LOGIN);
         }
     }
 
@@ -70,6 +71,7 @@ public class LoginController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Lỗi: Không tìm thấy file forgot_password.fxml");
         }
     }
 

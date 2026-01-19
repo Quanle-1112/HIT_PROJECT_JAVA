@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #19345D;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ConfirmInformationController">
+<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #19345D;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.ConfirmInformationController">
    <children>
       <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="800.0" prefWidth="450.0" style="-fx-background: #19345D; -fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
@@ -166,8 +166,6 @@
                                     <Label fx:id="invalidCodeText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Invalid code. Please try again." textFill="RED" />
                                     <Label fx:id="checkTheBoxText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Please check the box to agree to the terms and conditions" textFill="RED" />
                                     <Label fx:id="failToSendEmailText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Unable to send email. Please verify your network connection" textFill="RED" />
-                                    <Label fx:id="errorPhoneNumberText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Phone number must be 10 digits and start with 0!" textFill="RED" />
-                                    <Label fx:id="expiredCodeText" alignment="CENTER" prefHeight="17.0" prefWidth="360.0" text="Verification code expired. Please resend!" textFill="RED" />
                                  </children>
                               </AnchorPane>
                            </children>

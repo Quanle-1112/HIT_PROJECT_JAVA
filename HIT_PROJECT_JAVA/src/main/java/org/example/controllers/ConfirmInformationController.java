@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Sex;
 import org.example.model.user.User;
@@ -22,24 +23,28 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 public class ConfirmInformationController {
 
     @FXML private ImageView uploadImageButton;
     @FXML private Button btnUploadAvatar;
+
     @FXML private TextField hoVaTenText;
     @FXML private TextField sdtText;
     @FXML private TextField emailText;
     @FXML private TextField confirmEmailText;
+
     @FXML private ComboBox<Integer> yearComboBox;
+
     @FXML private RadioButton namRadioButton;
     @FXML private RadioButton nuRadioButton;
     @FXML private RadioButton khacRadioButton;
     @FXML private ToggleGroup genderGroup;
+
     @FXML private Button emailConfirmButton;
     @FXML private Button sendingCodeButton;
     @FXML private Button confirmButton;
+
     @FXML private CheckBox agreeCheckBox;
     @FXML private Hyperlink dieuKhoanVaChinhSachHyperlink;
 
@@ -47,8 +52,6 @@ public class ConfirmInformationController {
     @FXML private Label invalidCodeText;
     @FXML private Label checkTheBoxText;
     @FXML private Label failToSendEmailText;
-    @FXML private Label errorPhoneNumberText;
-    @FXML private Label expiredCodeText;
     @FXML private Label codeSentSuccessfullyText;
 
     private final IEmailService emailService = new IEmailServiceImpl();
@@ -58,18 +61,21 @@ public class ConfirmInformationController {
     private String serverOtp = null;
     private String selectedAvatarPath = null;
 
-    private long otpGeneratedTime = 0;
-    private static final long OTP_TIMEOUT = 5 * 60 * 1000;
-
     public void setCurrentUser(User user) {
         this.currentUser = user;
         if (currentUser != null) {
-            if (currentUser.getEmail() != null) emailText.setText(currentUser.getEmail());
+            if (currentUser.getEmail() != null) {
+                emailText.setText(currentUser.getEmail());
+            }
             if (currentUser.getAvatarUrl() != null && !currentUser.getAvatarUrl().isEmpty()) {
                 try {
                     File file = new File(currentUser.getAvatarUrl());
-                    if (file.exists()) uploadImageButton.setImage(new Image(file.toURI().toString()));
-                } catch (Exception e) { }
+                    if (file.exists()) {
+                        uploadImageButton.setImage(new Image(file.toURI().toString()));
+                    }
+                } catch (Exception e) {
+                    System.err.println("Lỗi load ảnh cũ: " + e.getMessage());
+                }
             }
         }
     }
@@ -77,13 +83,19 @@ public class ConfirmInformationController {
     @FXML
     public void initialize() {
         UIExceptionHandler.hideError(
-                pleaseCompleteAllFieldsText, invalidCodeText, checkTheBoxText,
-                failToSendEmailText, errorPhoneNumberText, expiredCodeText, codeSentSuccessfullyText
+                pleaseCompleteAllFieldsText,
+                invalidCodeText,
+                checkTheBoxText,
+                failToSendEmailText,
+                codeSentSuccessfullyText
         );
+
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         int currentYear = LocalDate.now().getYear();
-        for (int i = currentYear; i >= 1950; i--) yearComboBox.getItems().add(i);
+        for (int i = currentYear; i >= 1950; i--) {
+            yearComboBox.getItems().add(i);
+        }
 
         genderGroup = new ToggleGroup();
         namRadioButton.setToggleGroup(genderGroup);
@@ -102,8 +114,10 @@ public class ConfirmInformationController {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
+
         Stage stage = (Stage) btnUploadAvatar.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
+
         if (selectedFile != null) {
             selectedAvatarPath = selectedFile.getAbsolutePath();
             uploadImageButton.setImage(new Image(selectedFile.toURI().toString()));
@@ -111,10 +125,11 @@ public class ConfirmInformationController {
     }
 
     private void handleSendCode() {
-        UIExceptionHandler.hideError(pleaseCompleteAllFieldsText, failToSendEmailText, codeSentSuccessfullyText, expiredCodeText);
+        UIExceptionHandler.hideError(pleaseCompleteAllFieldsText, failToSendEmailText, codeSentSuccessfullyText);
         String email = emailText.getText().trim();
+
         if (email.isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
@@ -125,7 +140,11 @@ public class ConfirmInformationController {
             try {
                 int otpValue = 100000 + new Random().nextInt(900000);
                 String tempOtp = String.valueOf(otpValue);
-                boolean isSent = emailService.sendEmail(email, "WOWTruyen - Mã xác thực", "Mã của bạn: " + tempOtp);
+
+                String subject = "WOWTruyen - Mã xác thực thông tin";
+                String body = "Mã xác thực của bạn là: " + tempOtp + "\nVui lòng nhập mã này vào phần mềm.";
+
+                boolean isSent = emailService.sendEmail(email, subject, body);
 
                 Platform.runLater(() -> {
                     if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
@@ -133,50 +152,44 @@ public class ConfirmInformationController {
 
                     if (isSent) {
                         serverOtp = tempOtp;
-                        otpGeneratedTime = System.currentTimeMillis();
-                        UIExceptionHandler.showSuccess(codeSentSuccessfullyText);
+                        UIExceptionHandler.showSuccess(codeSentSuccessfullyText, ErrorType.CODE_SENT_SUCCESS);
                     } else {
                         serverOtp = null;
-                        UIExceptionHandler.showError(failToSendEmailText);
+                        UIExceptionHandler.showError(failToSendEmailText, ErrorType.FAIL_TO_SEND_EMAIL);
                     }
                 });
+
             } catch (Exception e) {
                 e.printStackTrace();
+                Platform.runLater(() -> {
+                    if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
+                    emailConfirmButton.setVisible(true);
+                    UIExceptionHandler.showError(failToSendEmailText, ErrorType.FAIL_TO_SEND_EMAIL);
+                });
             }
         }).start();
     }
 
     private void handleConfirm() {
-        UIExceptionHandler.hideError(
-                checkTheBoxText, pleaseCompleteAllFieldsText, invalidCodeText,
-                errorPhoneNumberText, expiredCodeText
-        );
+        UIExceptionHandler.hideError(checkTheBoxText, pleaseCompleteAllFieldsText, invalidCodeText);
 
         if (!agreeCheckBox.isSelected()) {
-            UIExceptionHandler.showError(checkTheBoxText);
+            UIExceptionHandler.showError(checkTheBoxText, ErrorType.CHECK_TERMS_BOX);
             return;
         }
 
-        if (hoVaTenText.getText().trim().isEmpty() || sdtText.getText().trim().isEmpty() ||
-                emailText.getText().trim().isEmpty() || confirmEmailText.getText().trim().isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
-            return;
-        }
+        if (hoVaTenText.getText().trim().isEmpty() ||
+                sdtText.getText().trim().isEmpty() ||
+                emailText.getText().trim().isEmpty() ||
+                confirmEmailText.getText().trim().isEmpty()) {
 
-        String phone = sdtText.getText().trim();
-        if (!Pattern.matches("^0\\d{9}$", phone)) {
-            UIExceptionHandler.showError(errorPhoneNumberText);
-            return;
-        }
-
-        if (System.currentTimeMillis() - otpGeneratedTime > OTP_TIMEOUT) {
-            UIExceptionHandler.showError(expiredCodeText);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
         String inputCode = confirmEmailText.getText().trim();
         if (serverOtp == null || !serverOtp.equals(inputCode)) {
-            UIExceptionHandler.showError(invalidCodeText);
+            UIExceptionHandler.showError(invalidCodeText, ErrorType.INVALID_CODE);
             return;
         }
 
@@ -185,6 +198,7 @@ public class ConfirmInformationController {
 
     private void saveUserInformation() {
         if (currentUser == null) return;
+
         currentUser.setFullName(hoVaTenText.getText().trim());
         currentUser.setPhoneNumber(sdtText.getText().trim());
         currentUser.setEmail(emailText.getText().trim());
@@ -193,24 +207,36 @@ public class ConfirmInformationController {
         else if (nuRadioButton.isSelected()) currentUser.setGender(Sex.Female);
         else currentUser.setGender(Sex.Other);
 
-        if (selectedAvatarPath != null) currentUser.setAvatarUrl(selectedAvatarPath);
-        else if (currentUser.getAvatarUrl() == null) currentUser.setAvatarUrl("");
+        if (selectedAvatarPath != null) {
+            currentUser.setAvatarUrl(selectedAvatarPath);
+        } else {
+            if (currentUser.getAvatarUrl() == null) {
+                currentUser.setAvatarUrl("");
+            }
+        }
 
         boolean isUpdateSuccess = userService.updateUserProfile(currentUser);
         boolean isDisableFirstLoginSuccess = userService.disableFirstLogin(currentUser.getId());
 
         if (isUpdateSuccess && isDisableFirstLoginSuccess) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home_screen.fxml"));
-                Parent root = loader.load();
-                Stage stage = new Stage();
-                stage.setTitle("WOWTruyen - Trang chủ");
-                stage.setScene(new Scene(root));
-                stage.show();
-                ((Stage) confirmButton.getScene().getWindow()).close();
-            } catch (IOException e) { e.printStackTrace(); }
+            openHomeScreen();
         } else {
-            UIExceptionHandler.showError(failToSendEmailText);
+            System.err.println("Lỗi lưu dữ liệu xuống DB");
+            UIExceptionHandler.showCustomError(failToSendEmailText, "Lỗi lưu dữ liệu. Vui lòng thử lại!");
+        }
+    }
+
+    private void openHomeScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/home_screen.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("WOWTruyen - Trang chủ");
+            stage.setScene(new Scene(root));
+            stage.show();
+            ((Stage) confirmButton.getScene().getWindow()).close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

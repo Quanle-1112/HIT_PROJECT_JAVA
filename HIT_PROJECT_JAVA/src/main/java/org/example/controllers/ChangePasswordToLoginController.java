@@ -8,54 +8,43 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
 import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class ChangePasswordToLoginController {
     @FXML private PasswordField newPasswordField, confirmPasswordField;
-    @FXML private Label errorLabel;
-    @FXML private Label pleaseCompleteAllFieldsText;
-    @FXML private Label errorFormatPasswordText;
+    @FXML private Label errorLabel, pleaseCompleteAllFieldsText;
     @FXML private Button updateButton, cancelButton;
 
     private final IForgotPasswordService service = new IForgotPasswordServiceImpl();
     private String userEmail;
 
-    private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,10}$";
-
     public void setUserEmail(String email) { this.userEmail = email; }
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText);
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
         updateButton.setOnAction(event -> handleUpdate());
         cancelButton.setOnAction(event -> navigateTo("/view/forgot_password.fxml"));
     }
 
     private void handleUpdate() {
-        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText);
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
 
         String pass = newPasswordField.getText();
         String confirm = confirmPasswordField.getText();
 
         if (pass.isEmpty() || confirm.isEmpty()) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
-
-        if (!Pattern.matches(PASSWORD_PATTERN, pass)) {
-            UIExceptionHandler.showError(errorFormatPasswordText);
-            return;
-        }
-
         if (!pass.equals(confirm)) {
-            UIExceptionHandler.showError(errorLabel);
+            UIExceptionHandler.showError(errorLabel, ErrorType.PASSWORD_MISMATCH);
             return;
         }
-
         if (service.resetPassword(userEmail, pass)) {
             navigateTo("/view/login.fxml");
         }

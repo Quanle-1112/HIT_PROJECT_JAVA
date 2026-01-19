@@ -1,4 +1,4 @@
-package org.example.services.data;
+package org.example.services;
 
 import org.example.api.apiAll.ApiChapterResponse;
 
