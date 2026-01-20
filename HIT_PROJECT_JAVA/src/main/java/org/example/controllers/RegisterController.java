@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.IRegisterService;
 import org.example.services.impl.IRegisterServiceImpl;
@@ -24,20 +26,30 @@ public class RegisterController {
     @FXML private Label pleaseCompleteAllFieldsText;
     @FXML private Label emailAlreadyRegisteredText;
     @FXML private Label passwordConfirmationMismatchText;
-    @FXML private Label usernameAlreadyExistsText;
+    @FXML private Label usernameAlreadyExistsTextLabel;
 
     private final IRegisterService registerService = new IRegisterServiceImpl();
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(
+                pleaseCompleteAllFieldsText,
+                emailAlreadyRegisteredText,
+                passwordConfirmationMismatchText,
+                usernameAlreadyExistsTextLabel
+        );
 
         registerButton.setOnAction(event -> handleRegister());
         closeButton.setOnAction(event -> handleClose());
     }
 
     private void handleRegister() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(
+                pleaseCompleteAllFieldsText,
+                emailAlreadyRegisteredText,
+                passwordConfirmationMismatchText,
+                usernameAlreadyExistsTextLabel
+        );
 
         String email = emailTextField.getText().trim();
         String username = usernameTextField.getText().trim();
@@ -45,16 +57,12 @@ public class RegisterController {
         String confirmPass = confirmPasswordField.getText();
 
         if (email.isEmpty() || username.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
-            if (pleaseCompleteAllFieldsText != null) {
-                pleaseCompleteAllFieldsText.setVisible(true);
-            }
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
         if (!pass.equals(confirmPass)) {
-            if (passwordConfirmationMismatchText != null) {
-                passwordConfirmationMismatchText.setVisible(true);
-            }
+            UIExceptionHandler.showError(passwordConfirmationMismatchText, ErrorType.PASSWORD_MISMATCH);
             return;
         }
 
@@ -72,25 +80,15 @@ public class RegisterController {
                 break;
 
             case "Email đã được đăng ký!":
-                if (emailAlreadyRegisteredText != null) {
-                    emailAlreadyRegisteredText.setVisible(true);
-                }
+                UIExceptionHandler.showError(emailAlreadyRegisteredText, ErrorType.EMAIL_ALREADY_REGISTERED);
                 break;
 
             case "Tên đăng nhập đã tồn tại!":
-                if (usernameAlreadyExistsText != null) {
-                    usernameAlreadyExistsText.setVisible(true);
-                } else if (emailAlreadyRegisteredText != null) {
-                    emailAlreadyRegisteredText.setText("Username already exists!");
-                    emailAlreadyRegisteredText.setVisible(true);
-                }
+                UIExceptionHandler.showError(usernameAlreadyExistsTextLabel, ErrorType.USERNAME_ALREADY_EXISTS);
                 break;
 
             default:
-                if (pleaseCompleteAllFieldsText != null) {
-                    pleaseCompleteAllFieldsText.setText(result);
-                    pleaseCompleteAllFieldsText.setVisible(true);
-                }
+                UIExceptionHandler.showCustomError(pleaseCompleteAllFieldsText, result);
                 break;
         }
     }
@@ -117,26 +115,6 @@ public class RegisterController {
     private void closeStage() {
         if (registerButton.getScene() != null) {
             ((Stage) registerButton.getScene().getWindow()).close();
-        }
-    }
-
-    private void hideAllErrors() {
-        if (pleaseCompleteAllFieldsText != null) {
-            pleaseCompleteAllFieldsText.setVisible(false);
-            pleaseCompleteAllFieldsText.setText("Please complete all fields!");
-        }
-
-        if (emailAlreadyRegisteredText != null) {
-            emailAlreadyRegisteredText.setVisible(false);
-            emailAlreadyRegisteredText.setText("Email already registered!");
-        }
-
-        if (passwordConfirmationMismatchText != null) {
-            passwordConfirmationMismatchText.setVisible(false);
-        }
-
-        if (usernameAlreadyExistsText != null) {
-            usernameAlreadyExistsText.setVisible(false);
         }
     }
 }

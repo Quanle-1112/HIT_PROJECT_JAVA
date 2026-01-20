@@ -9,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
+import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
 import java.io.IOException;
@@ -25,7 +27,8 @@ public class ForgotPasswordController {
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
+
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         sendRecoveryCodeButton.setOnAction(event -> handleSendCode());
@@ -33,11 +36,11 @@ public class ForgotPasswordController {
     }
 
     private void handleSendCode() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
         String email = emailToResetPasswordText.getText().trim();
 
         if (email.isEmpty()) {
-            pleaseCompleteAllFieldsText.setVisible(true);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
@@ -54,7 +57,7 @@ public class ForgotPasswordController {
                 if (otp != null) {
                     navigateToConfirmCode(email, otp);
                 } else {
-                    emailNotFoundText.setVisible(true);
+                    UIExceptionHandler.showError(emailNotFoundText, ErrorType.EMAIL_NOT_FOUND);
                 }
             });
         }).start();
@@ -80,10 +83,5 @@ public class ForgotPasswordController {
             Stage stage = (Stage) sendRecoveryCodeButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void hideAllErrors() {
-        emailNotFoundText.setVisible(false);
-        pleaseCompleteAllFieldsText.setVisible(false);
     }
 }

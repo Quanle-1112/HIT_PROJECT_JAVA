@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
+import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
 import java.io.IOException;
@@ -24,22 +26,23 @@ public class ChangePasswordToLoginController {
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
         updateButton.setOnAction(event -> handleUpdate());
         cancelButton.setOnAction(event -> navigateTo("/view/forgot_password.fxml"));
     }
 
     private void handleUpdate() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
+
         String pass = newPasswordField.getText();
         String confirm = confirmPasswordField.getText();
 
         if (pass.isEmpty() || confirm.isEmpty()) {
-            pleaseCompleteAllFieldsText.setVisible(true);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
         if (!pass.equals(confirm)) {
-            errorLabel.setVisible(true);
+            UIExceptionHandler.showError(errorLabel, ErrorType.PASSWORD_MISMATCH);
             return;
         }
         if (service.resetPassword(userEmail, pass)) {
@@ -53,10 +56,5 @@ public class ChangePasswordToLoginController {
             Stage stage = (Stage) updateButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void hideAllErrors() {
-        errorLabel.setVisible(false);
-        pleaseCompleteAllFieldsText.setVisible(false);
     }
 }

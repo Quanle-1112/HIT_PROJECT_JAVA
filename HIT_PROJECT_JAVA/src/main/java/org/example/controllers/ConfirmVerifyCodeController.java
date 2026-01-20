@@ -12,17 +12,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.exception.ErrorType;
+import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
 import java.io.IOException;
 
 public class ConfirmVerifyCodeController {
-    // [cite: 1-19]
+
     @FXML private Button returnButton, verifyButton, resendCodeButton;
     @FXML private Button sendingCodeButton;
     @FXML private TextField codeTextField;
+
     @FXML private Label errorLabel;
-    @FXML private Label pleaseCompleteAllFieldsText; // [cite: 11]
+    @FXML private Label pleaseCompleteAllFieldsText;
 
     private final IForgotPasswordService service = new IForgotPasswordServiceImpl();
     private String userEmail, serverOtp;
@@ -31,7 +34,8 @@ public class ConfirmVerifyCodeController {
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
+
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         verifyButton.setOnAction(event -> handleVerify());
@@ -40,21 +44,21 @@ public class ConfirmVerifyCodeController {
     }
 
     private void handleVerify() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText);
+
         String inputCode = codeTextField.getText().trim();
         if (inputCode.isEmpty()) {
-            pleaseCompleteAllFieldsText.setVisible(true);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
         if (inputCode.equals(serverOtp)) {
             navigateToChangePassword();
         } else {
-            errorLabel.setVisible(true);
+            UIExceptionHandler.showError(errorLabel, ErrorType.INVALID_CODE);
         }
     }
 
     private void handleResend() {
-
         resendCodeButton.setVisible(false);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(true);
 
@@ -68,7 +72,6 @@ public class ConfirmVerifyCodeController {
                 if (newOtp != null) {
                     this.serverOtp = newOtp;
                     startTimer();
-                } else {
                 }
             });
         }).start();
@@ -106,10 +109,5 @@ public class ConfirmVerifyCodeController {
             Stage stage = (Stage) returnButton.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void hideAllErrors() {
-        if (errorLabel != null) errorLabel.setVisible(false);
-        if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(false);
     }
 }

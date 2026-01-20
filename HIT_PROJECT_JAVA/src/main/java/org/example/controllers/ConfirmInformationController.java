@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.exception.ErrorType;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Sex;
 import org.example.model.user.User;
 import org.example.services.IEmailService;
@@ -80,7 +82,14 @@ public class ConfirmInformationController {
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(
+                pleaseCompleteAllFieldsText,
+                invalidCodeText,
+                checkTheBoxText,
+                failToSendEmailText,
+                codeSentSuccessfullyText
+        );
+
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         int currentYear = LocalDate.now().getYear();
@@ -116,11 +125,11 @@ public class ConfirmInformationController {
     }
 
     private void handleSendCode() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(pleaseCompleteAllFieldsText, failToSendEmailText, codeSentSuccessfullyText);
         String email = emailText.getText().trim();
 
         if (email.isEmpty()) {
-            if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(true);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
@@ -143,10 +152,10 @@ public class ConfirmInformationController {
 
                     if (isSent) {
                         serverOtp = tempOtp;
-                        if (codeSentSuccessfullyText != null) codeSentSuccessfullyText.setVisible(true);
+                        UIExceptionHandler.showSuccess(codeSentSuccessfullyText, ErrorType.CODE_SENT_SUCCESS);
                     } else {
                         serverOtp = null;
-                        if (failToSendEmailText != null) failToSendEmailText.setVisible(true);
+                        UIExceptionHandler.showError(failToSendEmailText, ErrorType.FAIL_TO_SEND_EMAIL);
                     }
                 });
 
@@ -155,17 +164,17 @@ public class ConfirmInformationController {
                 Platform.runLater(() -> {
                     if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
                     emailConfirmButton.setVisible(true);
-                    if (failToSendEmailText != null) failToSendEmailText.setVisible(true);
+                    UIExceptionHandler.showError(failToSendEmailText, ErrorType.FAIL_TO_SEND_EMAIL);
                 });
             }
         }).start();
     }
 
     private void handleConfirm() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(checkTheBoxText, pleaseCompleteAllFieldsText, invalidCodeText);
 
         if (!agreeCheckBox.isSelected()) {
-            if (checkTheBoxText != null) checkTheBoxText.setVisible(true);
+            UIExceptionHandler.showError(checkTheBoxText, ErrorType.CHECK_TERMS_BOX);
             return;
         }
 
@@ -174,13 +183,13 @@ public class ConfirmInformationController {
                 emailText.getText().trim().isEmpty() ||
                 confirmEmailText.getText().trim().isEmpty()) {
 
-            if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(true);
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText, ErrorType.PLEASE_COMPLETE_ALL_FIELDS);
             return;
         }
 
         String inputCode = confirmEmailText.getText().trim();
         if (serverOtp == null || !serverOtp.equals(inputCode)) {
-            if (invalidCodeText != null) invalidCodeText.setVisible(true);
+            UIExceptionHandler.showError(invalidCodeText, ErrorType.INVALID_CODE);
             return;
         }
 
@@ -212,17 +221,9 @@ public class ConfirmInformationController {
         if (isUpdateSuccess && isDisableFirstLoginSuccess) {
             openHomeScreen();
         } else {
-             System.err.println("Lỗi lưu dữ liệu xuống DB");
-            if (failToSendEmailText != null) failToSendEmailText.setVisible(true);
+            System.err.println("Lỗi lưu dữ liệu xuống DB");
+            UIExceptionHandler.showCustomError(failToSendEmailText, "Lỗi lưu dữ liệu. Vui lòng thử lại!");
         }
-    }
-
-    private void hideAllErrors() {
-        if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(false);
-        if (invalidCodeText != null) invalidCodeText.setVisible(false);
-        if (checkTheBoxText != null) checkTheBoxText.setVisible(false);
-        if (failToSendEmailText != null) failToSendEmailText.setVisible(false);
-        if (codeSentSuccessfullyText != null) codeSentSuccessfullyText.setVisible(false);
     }
 
     private void openHomeScreen() {
