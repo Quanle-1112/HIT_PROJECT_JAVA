@@ -2,88 +2,57 @@ package org.example.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import javafx.scene.control.*;
+import org.example.exception.UIExceptionHandler;
+import org.example.model.user.OtpStatus;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
-import java.io.IOException;
+import org.example.utils.SceneUtils;
+import org.example.utils.ValidationUtils;
 
 public class ForgotPasswordController {
     @FXML private TextField emailToResetPasswordText;
-    @FXML private Label emailNotFoundText;
-    @FXML private Label pleaseCompleteAllFieldsText;
-    @FXML private Button sendRecoveryCodeButton;
-    @FXML private Button sendingCodeButton;
-    @FXML private Button backToLoginButton;
+    @FXML private Label emailNotFoundText, pleaseCompleteAllFieldsText;
+    @FXML private Button sendRecoveryCodeButton, sendingCodeButton, backToLoginButton;
 
     private final IForgotPasswordService forgotPasswordService = new IForgotPasswordServiceImpl();
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         sendRecoveryCodeButton.setOnAction(event -> handleSendCode());
-        backToLoginButton.setOnAction(event -> navigateToLogin());
+        backToLoginButton.setOnAction(event -> SceneUtils.switchScene(backToLoginButton, "/view/login.fxml", "Login"));
     }
 
     private void handleSendCode() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
         String email = emailToResetPasswordText.getText().trim();
 
-        if (email.isEmpty()) {
-            pleaseCompleteAllFieldsText.setVisible(true);
-            return;
+        if (ValidationUtils.areFieldsEmpty(emailToResetPasswordText)) {
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText); return;
         }
 
         sendRecoveryCodeButton.setVisible(false);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(true);
 
         new Thread(() -> {
-            String otp = forgotPasswordService.sendOtp(email);
+            OtpStatus status = forgotPasswordService.sendOtp(email);
 
             Platform.runLater(() -> {
                 if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
                 sendRecoveryCodeButton.setVisible(true);
 
-                if (otp != null) {
-                    navigateToConfirmCode(email, otp);
+                if (status == OtpStatus.SUCCESS) {
+                    ConfirmVerifyCodeController controller = SceneUtils.switchScene(sendRecoveryCodeButton, "/view/confirm_verify_code.fxml", "Xác nhận OTP");
+                    if (controller != null) controller.setInitData(email);
+                } else if (status == OtpStatus.EMAIL_NOT_EXIST) {
+                    UIExceptionHandler.showError(emailNotFoundText);
                 } else {
-                    emailNotFoundText.setVisible(true);
+                    System.err.println("Gửi mail thất bại: " + status);
                 }
             });
         }).start();
-    }
-
-    private void navigateToLogin() {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/login.fxml"));
-            Stage stage = (Stage) backToLoginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("WOWTruyen - Login");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void navigateToConfirmCode(String email, String otp) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/confirm_verify_code.fxml"));
-            Parent root = loader.load();
-            ConfirmVerifyCodeController controller = loader.getController();
-            controller.setInitData(email, otp);
-            Stage stage = (Stage) sendRecoveryCodeButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void hideAllErrors() {
-        emailNotFoundText.setVisible(false);
-        pleaseCompleteAllFieldsText.setVisible(false);
     }
 }

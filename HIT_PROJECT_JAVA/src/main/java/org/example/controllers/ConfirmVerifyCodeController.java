@@ -4,72 +4,65 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
+import javafx.scene.control.*;
 import javafx.util.Duration;
+import org.example.exception.UIExceptionHandler;
+import org.example.model.user.OtpStatus;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
-import java.io.IOException;
+import org.example.utils.SceneUtils;
+import org.example.utils.ValidationUtils;
 
 public class ConfirmVerifyCodeController {
-    // [cite: 1-19]
-    @FXML private Button returnButton, verifyButton, resendCodeButton;
-    @FXML private Button sendingCodeButton;
+    @FXML private Button returnButton, verifyButton, resendCodeButton, sendingCodeButton;
     @FXML private TextField codeTextField;
-    @FXML private Label errorLabel;
-    @FXML private Label pleaseCompleteAllFieldsText; // [cite: 11]
+    @FXML private Label errorLabel, pleaseCompleteAllFieldsText, expiredCodeText;
 
     private final IForgotPasswordService service = new IForgotPasswordServiceImpl();
-    private String userEmail, serverOtp;
+    private String userEmail;
 
-    public void setInitData(String email, String otp) { this.userEmail = email; this.serverOtp = otp; }
+    public void setInitData(String email) { this.userEmail = email; }
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, expiredCodeText);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         verifyButton.setOnAction(event -> handleVerify());
         resendCodeButton.setOnAction(event -> handleResend());
-        returnButton.setOnAction(event -> navigateBack());
+        returnButton.setOnAction(event -> SceneUtils.switchScene(returnButton, "/view/forgot_password.fxml", "Forgot Password"));
+
+        startTimer();
     }
 
     private void handleVerify() {
-        hideAllErrors();
-        String inputCode = codeTextField.getText().trim();
-        if (inputCode.isEmpty()) {
-            pleaseCompleteAllFieldsText.setVisible(true);
-            return;
+        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, expiredCodeText);
+        if (ValidationUtils.areFieldsEmpty(codeTextField)) {
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText); return;
         }
-        if (inputCode.equals(serverOtp)) {
-            navigateToChangePassword();
+
+        OtpStatus status = service.verifyOtp(userEmail, codeTextField.getText().trim());
+
+        if (status == OtpStatus.SUCCESS) {
+            ChangePasswordToLoginController controller = SceneUtils.switchScene(verifyButton, "/view/change_password_to_login.fxml", "Đổi mật khẩu");
+            if (controller != null) controller.setUserEmail(userEmail);
+        } else if (status == OtpStatus.EXPIRED_CODE) {
+            UIExceptionHandler.showError(expiredCodeText);
         } else {
-            errorLabel.setVisible(true);
+            UIExceptionHandler.showError(errorLabel);
         }
     }
 
     private void handleResend() {
-
         resendCodeButton.setVisible(false);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(true);
 
         new Thread(() -> {
-            String newOtp = service.sendOtp(userEmail);
-
+            OtpStatus status = service.sendOtp(userEmail);
             Platform.runLater(() -> {
                 if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
                 resendCodeButton.setVisible(true);
-
-                if (newOtp != null) {
-                    this.serverOtp = newOtp;
-                    startTimer();
-                } else {
-                }
+                if (status == OtpStatus.SUCCESS) startTimer();
             });
         }).start();
     }
@@ -87,29 +80,5 @@ public class ConfirmVerifyCodeController {
         }));
         timeline.setCycleCount(30);
         timeline.play();
-    }
-
-    private void navigateToChangePassword() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/change_password_to_login.fxml"));
-            Parent root = loader.load();
-            ChangePasswordToLoginController controller = loader.getController();
-            controller.setUserEmail(userEmail);
-            Stage stage = (Stage) verifyButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void navigateBack() {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/view/forgot_password.fxml"));
-            Stage stage = (Stage) returnButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) { e.printStackTrace(); }
-    }
-
-    private void hideAllErrors() {
-        if (errorLabel != null) errorLabel.setVisible(false);
-        if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(false);
     }
 }

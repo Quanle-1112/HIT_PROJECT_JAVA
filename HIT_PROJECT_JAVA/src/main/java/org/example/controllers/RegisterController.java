@@ -1,16 +1,13 @@
 package org.example.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.IRegisterService;
 import org.example.services.impl.IRegisterServiceImpl;
-
-import java.io.IOException;
+import org.example.utils.SceneUtils;
+import org.example.utils.ValidationUtils;
 
 public class RegisterController {
 
@@ -24,119 +21,88 @@ public class RegisterController {
     @FXML private Label pleaseCompleteAllFieldsText;
     @FXML private Label emailAlreadyRegisteredText;
     @FXML private Label passwordConfirmationMismatchText;
-    @FXML private Label usernameAlreadyExistsText;
+    @FXML private Label usernameAlreadyExistsTextLabel;
+    @FXML private Label invalidEmailFormatText;
+    @FXML private Label usernameMustBeAtLeast5CharactersLongText;
+    @FXML private Label errorFormatPasswordText;
 
     private final IRegisterService registerService = new IRegisterServiceImpl();
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(
+                pleaseCompleteAllFieldsText,
+                emailAlreadyRegisteredText,
+                passwordConfirmationMismatchText,
+                usernameAlreadyExistsTextLabel,
+                invalidEmailFormatText,
+                usernameMustBeAtLeast5CharactersLongText,
+                errorFormatPasswordText
+        );
 
         registerButton.setOnAction(event -> handleRegister());
-        closeButton.setOnAction(event -> handleClose());
+        closeButton.setOnAction(event -> SceneUtils.openNewWindow("/view/start_screen.fxml", "Welcome", closeButton));
     }
 
     private void handleRegister() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(
+                pleaseCompleteAllFieldsText, emailAlreadyRegisteredText, passwordConfirmationMismatchText,
+                usernameAlreadyExistsTextLabel, invalidEmailFormatText, usernameMustBeAtLeast5CharactersLongText,
+                errorFormatPasswordText
+        );
 
         String email = emailTextField.getText().trim();
         String username = usernameTextField.getText().trim();
-        String pass = setPasswordField.getText();
-        String confirmPass = confirmPasswordField.getText();
+        String password = setPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
 
-        if (email.isEmpty() || username.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
-            if (pleaseCompleteAllFieldsText != null) {
-                pleaseCompleteAllFieldsText.setVisible(true);
-            }
+        if (ValidationUtils.areFieldsEmpty(emailTextField, usernameTextField, setPasswordField, confirmPasswordField)) {
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
             return;
         }
 
-        if (!pass.equals(confirmPass)) {
-            if (passwordConfirmationMismatchText != null) {
-                passwordConfirmationMismatchText.setVisible(true);
-            }
+        if (!ValidationUtils.isValidEmail(email)) {
+            UIExceptionHandler.showError(invalidEmailFormatText);
+            return;
+        }
+
+        if (username.length() < 5) {
+            UIExceptionHandler.showError(usernameMustBeAtLeast5CharactersLongText);
+            return;
+        }
+
+        if (!ValidationUtils.isValidPassword(password)) {
+            UIExceptionHandler.showError(errorFormatPasswordText);
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            UIExceptionHandler.showError(passwordConfirmationMismatchText);
             return;
         }
 
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setEmail(email);
-        newUser.setPassword(pass);
+        newUser.setPassword(password);
         newUser.setFullName(username);
 
-        String result = registerService.register(newUser, confirmPass);
+        String result = registerService.register(newUser, confirmPassword);
 
         switch (result) {
             case "SUCCESS":
-                openScreen("/view/login.fxml", "Login");
+                SceneUtils.openNewWindow("/view/login.fxml", "Login", registerButton);
                 break;
-
             case "Email đã được đăng ký!":
-                if (emailAlreadyRegisteredText != null) {
-                    emailAlreadyRegisteredText.setVisible(true);
-                }
+                UIExceptionHandler.showError(emailAlreadyRegisteredText);
                 break;
-
             case "Tên đăng nhập đã tồn tại!":
-                if (usernameAlreadyExistsText != null) {
-                    usernameAlreadyExistsText.setVisible(true);
-                } else if (emailAlreadyRegisteredText != null) {
-                    emailAlreadyRegisteredText.setText("Username already exists!");
-                    emailAlreadyRegisteredText.setVisible(true);
-                }
+                UIExceptionHandler.showError(usernameAlreadyExistsTextLabel);
                 break;
-
             default:
-                if (pleaseCompleteAllFieldsText != null) {
-                    pleaseCompleteAllFieldsText.setText(result);
-                    pleaseCompleteAllFieldsText.setVisible(true);
-                }
+                pleaseCompleteAllFieldsText.setText(result);
+                UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
                 break;
-        }
-    }
-
-    private void handleClose() {
-        openScreen("/view/start_screen.fxml", "Welcome");
-    }
-
-    private void openScreen(String fxmlPath, String title) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("WOWTruyen - " + title);
-            stage.setScene(new Scene(root));
-            stage.setResizable(false);
-            stage.show();
-            closeStage();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void closeStage() {
-        if (registerButton.getScene() != null) {
-            ((Stage) registerButton.getScene().getWindow()).close();
-        }
-    }
-
-    private void hideAllErrors() {
-        if (pleaseCompleteAllFieldsText != null) {
-            pleaseCompleteAllFieldsText.setVisible(false);
-            pleaseCompleteAllFieldsText.setText("Please complete all fields!");
-        }
-
-        if (emailAlreadyRegisteredText != null) {
-            emailAlreadyRegisteredText.setVisible(false);
-            emailAlreadyRegisteredText.setText("Email already registered!");
-        }
-
-        if (passwordConfirmationMismatchText != null) {
-            passwordConfirmationMismatchText.setVisible(false);
-        }
-
-        if (usernameAlreadyExistsText != null) {
-            usernameAlreadyExistsText.setVisible(false);
         }
     }
 }

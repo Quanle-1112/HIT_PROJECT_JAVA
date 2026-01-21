@@ -1,115 +1,50 @@
 package org.example.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.ILoginService;
 import org.example.services.impl.ILoginServiceImpl;
-
-import java.io.IOException;
+import org.example.utils.SceneUtils;
+import org.example.utils.ValidationUtils;
 
 public class LoginController {
-
-    @FXML private Button cancelButton;
+    @FXML private Button cancelButton, loginButton, forgotPasswordButton;
     @FXML private PasswordField enterPasswordField;
-    @FXML private Button loginButton;
     @FXML private TextField usernameTextField;
-    @FXML private Button forgotPasswordButton;
-
-    @FXML private Label invalidLoginText;
-    @FXML private Label pleaseCompleteAllFieldsText;
+    @FXML private Label invalidLoginText, pleaseCompleteAllFieldsText;
 
     private final ILoginService loginService = new ILoginServiceImpl();
 
     @FXML
     public void initialize() {
-        hideAllErrors();
+        UIExceptionHandler.hideError(invalidLoginText, pleaseCompleteAllFieldsText);
 
         loginButton.setOnAction(event -> handleLogin());
-
-        forgotPasswordButton.setOnAction(event -> handleForgotPassword());
-
-        cancelButton.setOnAction(event -> openScreen("/view/start_screen.fxml", "Welcome"));
+        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/forgot_password.fxml", "Forgot Password"));
+        cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/start_screen.fxml", "Welcome", cancelButton));
     }
 
     private void handleLogin() {
-        hideAllErrors();
-        String username = usernameTextField.getText().trim();
-        String password = enterPasswordField.getText();
+        UIExceptionHandler.hideError(invalidLoginText, pleaseCompleteAllFieldsText);
 
-        if (username.isEmpty() || password.isEmpty()) {
-            if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(true);
+        if (ValidationUtils.areFieldsEmpty(usernameTextField, enterPasswordField)) {
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
             return;
         }
 
-        User user = loginService.authenticate(username, password);
+        User user = loginService.authenticate(usernameTextField.getText().trim(), enterPasswordField.getText());
 
         if (user != null) {
             if (user.isFirstLogin()) {
-                openConfirmInfoScreen(user);
+                ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/confirm_information_screen.fxml", "Xác nhận thông tin");
+                if (controller != null) controller.setCurrentUser(user);
             } else {
-                openHomeScreen();
+                SceneUtils.switchScene(loginButton, "/view/home_screen.fxml", "Trang chủ");
             }
         } else {
-            if (invalidLoginText != null) invalidLoginText.setVisible(true);
+            UIExceptionHandler.showError(invalidLoginText);
         }
-    }
-
-    private void handleForgotPassword() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/forgot_password.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = (Stage) forgotPasswordButton.getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.setTitle("WOWTruyen - Forgot Password");
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Lỗi: Không tìm thấy file forgot_password.fxml");
-        }
-    }
-
-    private void openConfirmInfoScreen(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/confirm_information_screen.fxml"));
-            Parent root = loader.load();
-
-            ConfirmInformationController controller = loader.getController();
-            controller.setCurrentUser(user);
-
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("WOWTruyen - Xác nhận thông tin");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openHomeScreen() {
-        openScreen("/view/home_screen.fxml", "Trang chủ");
-    }
-
-    private void openScreen(String fxmlPath, String title) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load();
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("WOWTruyen - " + title);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void hideAllErrors() {
-        if (invalidLoginText != null) invalidLoginText.setVisible(false);
-        if (pleaseCompleteAllFieldsText != null) pleaseCompleteAllFieldsText.setVisible(false);
     }
 }
