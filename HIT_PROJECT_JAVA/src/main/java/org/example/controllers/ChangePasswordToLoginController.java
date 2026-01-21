@@ -29,23 +29,16 @@ public class ChangePasswordToLoginController {
         UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText);
 
         if (ValidationUtils.areFieldsEmpty(newPasswordField, confirmPasswordField)) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
-            return;
+            UIExceptionHandler.showError(pleaseCompleteAllFieldsText); return;
+        }
+        if (!ValidationUtils.isValidPassword(newPasswordField.getText())) {
+            UIExceptionHandler.showError(errorFormatPasswordText); return;
+        }
+        if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
+            UIExceptionHandler.showError(errorLabel); return;
         }
 
-        String pass = newPasswordField.getText();
-
-        if (!ValidationUtils.isValidPassword(pass)) {
-            UIExceptionHandler.showError(errorFormatPasswordText);
-            return;
-        }
-
-        if (!pass.equals(confirmPasswordField.getText())) {
-            UIExceptionHandler.showError(errorLabel);
-            return;
-        }
-
-        if (service.resetPassword(userEmail, pass)) {
+        if (service.resetPassword(userEmail, newPasswordField.getText())) {
             SceneUtils.switchScene(updateButton, "/view/login.fxml", "Login");
         }
     }

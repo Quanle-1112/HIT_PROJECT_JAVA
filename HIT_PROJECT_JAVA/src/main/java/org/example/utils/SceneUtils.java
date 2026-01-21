@@ -5,11 +5,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class SceneUtils {
-
     public static <T> T switchScene(Node sourceNode, String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(SceneUtils.class.getResource(fxmlPath));
@@ -21,7 +19,7 @@ public class SceneUtils {
             return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Lỗi chuyển cảnh: " + fxmlPath);
+            System.err.println("Lỗi chuyển cảnh tới: " + fxmlPath);
             return null;
         }
     }
@@ -39,10 +37,10 @@ public class SceneUtils {
             if (nodeToClose != null) {
                 ((Stage) nodeToClose.getScene().getWindow()).close();
             }
-
             return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Lỗi mở cửa sổ mới: " + fxmlPath);
             return null;
         }
     }

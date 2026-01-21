@@ -31,8 +31,12 @@ public class RegisterController {
     @FXML
     public void initialize() {
         UIExceptionHandler.hideError(
-                pleaseCompleteAllFieldsText, emailAlreadyRegisteredText, passwordConfirmationMismatchText,
-                usernameAlreadyExistsTextLabel, invalidEmailFormatText, usernameMustBeAtLeast5CharactersLongText,
+                pleaseCompleteAllFieldsText,
+                emailAlreadyRegisteredText,
+                passwordConfirmationMismatchText,
+                usernameAlreadyExistsTextLabel,
+                invalidEmailFormatText,
+                usernameMustBeAtLeast5CharactersLongText,
                 errorFormatPasswordText
         );
 
@@ -47,18 +51,16 @@ public class RegisterController {
                 errorFormatPasswordText
         );
 
-        // 1. Check Empty dùng Utils
+        String email = emailTextField.getText().trim();
+        String username = usernameTextField.getText().trim();
+        String password = setPasswordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
         if (ValidationUtils.areFieldsEmpty(emailTextField, usernameTextField, setPasswordField, confirmPasswordField)) {
             UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
             return;
         }
 
-        String email = emailTextField.getText().trim();
-        String username = usernameTextField.getText().trim();
-        String pass = setPasswordField.getText();
-        String confirmPass = confirmPasswordField.getText();
-
-        // 2. Validate dùng Utils
         if (!ValidationUtils.isValidEmail(email)) {
             UIExceptionHandler.showError(invalidEmailFormatText);
             return;
@@ -69,12 +71,12 @@ public class RegisterController {
             return;
         }
 
-        if (!ValidationUtils.isValidPassword(pass)) {
+        if (!ValidationUtils.isValidPassword(password)) {
             UIExceptionHandler.showError(errorFormatPasswordText);
             return;
         }
 
-        if (!pass.equals(confirmPass)) {
+        if (!password.equals(confirmPassword)) {
             UIExceptionHandler.showError(passwordConfirmationMismatchText);
             return;
         }
@@ -82,10 +84,10 @@ public class RegisterController {
         User newUser = new User();
         newUser.setUsername(username);
         newUser.setEmail(email);
-        newUser.setPassword(pass);
+        newUser.setPassword(password);
         newUser.setFullName(username);
 
-        String result = registerService.register(newUser, confirmPass);
+        String result = registerService.register(newUser, confirmPassword);
 
         switch (result) {
             case "SUCCESS":

@@ -7,14 +7,12 @@ public class UIExceptionHandler {
     public static void showError(Label label) {
         if (label != null) {
             label.setVisible(true);
-            label.setStyle("-fx-text-fill: red;");
         }
     }
 
     public static void showSuccess(Label label) {
         if (label != null) {
             label.setVisible(true);
-            label.setStyle("-fx-text-fill: green;");
         }
     }
 

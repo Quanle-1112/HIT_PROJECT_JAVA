@@ -1,11 +1,62 @@
 package org.example.dao;
 
+import org.example.model.user.OtpStatus;
 import org.example.model.user.Role;
 import org.example.model.user.Sex;
 import org.example.model.user.User;
 import java.sql.*;
 
 public class UserDAO {
+
+    public boolean updateOtp(String email, String otp) {
+        String sql = "UPDATE users SET otp_code = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE email = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, otp);
+            stmt.setString(2, email);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public OtpStatus checkOtpStatus(String email, String inputOtp) {
+        String sql = "SELECT otp_expiry FROM users WHERE email = ? AND otp_code = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, inputOtp);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Timestamp expiry = rs.getTimestamp("otp_expiry");
+                if (expiry != null && expiry.after(new Timestamp(System.currentTimeMillis()))) {
+                    return OtpStatus.SUCCESS;
+                } else {
+                    return OtpStatus.EXPIRED_CODE;
+                }
+            } else {
+                return OtpStatus.INVALID_CODE;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return OtpStatus.INVALID_CODE;
+        }
+    }
+
+    public boolean clearOtp(String email) {
+        String sql = "UPDATE users SET otp_code = NULL, otp_expiry = NULL WHERE email = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     public User getUserByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
@@ -72,10 +123,7 @@ public class UserDAO {
             stmt.setString(1, newHashedPassword);
             stmt.setString(2, email);
             return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
     private boolean checkExist(String sql, String param) {

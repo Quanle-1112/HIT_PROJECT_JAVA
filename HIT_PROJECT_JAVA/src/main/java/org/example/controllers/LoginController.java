@@ -10,15 +10,10 @@ import org.example.utils.SceneUtils;
 import org.example.utils.ValidationUtils;
 
 public class LoginController {
-
-    @FXML private Button cancelButton;
+    @FXML private Button cancelButton, loginButton, forgotPasswordButton;
     @FXML private PasswordField enterPasswordField;
-    @FXML private Button loginButton;
     @FXML private TextField usernameTextField;
-    @FXML private Button forgotPasswordButton;
-
-    @FXML private Label invalidLoginText;
-    @FXML private Label pleaseCompleteAllFieldsText;
+    @FXML private Label invalidLoginText, pleaseCompleteAllFieldsText;
 
     private final ILoginService loginService = new ILoginServiceImpl();
 
