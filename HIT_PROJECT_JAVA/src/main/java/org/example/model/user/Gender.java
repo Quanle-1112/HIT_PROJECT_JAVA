@@ -1,6 +1,6 @@
 package org.example.model.user;
 
-public enum Sex {
+public enum Gender {
     Male,
     Female,
     Other;

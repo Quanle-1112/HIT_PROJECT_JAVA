@@ -8,7 +8,7 @@ public class User {
     private String email;
     private String password;
     private String fullName;
-    private Sex gender;
+    private Gender gender;
     private Role role;
     private String status;
     private Timestamp createdAt;
@@ -34,8 +34,8 @@ public class User {
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public Sex getGender() { return gender; }
-    public void setGender(Sex gender) { this.gender = gender; }
+    public Gender getGender() { return gender; }
+    public void setGender(Gender gender) { this.gender = gender; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }

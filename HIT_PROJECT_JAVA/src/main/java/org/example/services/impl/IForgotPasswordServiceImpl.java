@@ -3,15 +3,14 @@ package org.example.services.impl;
 import org.example.dao.UserDAO;
 import org.example.model.user.OtpStatus;
 import org.example.services.IEmailService;
-import org.example.services.IEncryptorService;
 import org.example.services.IForgotPasswordService;
+import org.example.utils.EncryptionUtils;
 import java.util.Random;
 
 public class IForgotPasswordServiceImpl implements IForgotPasswordService {
 
     private final UserDAO userDAO = new UserDAO();
     private final IEmailService emailService = new IEmailServiceImpl();
-    private final IEncryptorService encryptorService = new IEncryptorServiceImpl();
 
     @Override
     public OtpStatus sendOtp(String email) {
@@ -38,7 +37,8 @@ public class IForgotPasswordServiceImpl implements IForgotPasswordService {
 
     @Override
     public boolean resetPassword(String email, String newPassword) {
-        String hashedPassword = encryptorService.encrypt(newPassword);
+        // Sử dụng trực tiếp EncryptionUtils thay cho encryptorService
+        String hashedPassword = EncryptionUtils.hashPassword(newPassword);
         return userDAO.updatePasswordByEmail(email, hashedPassword);
     }
 }
