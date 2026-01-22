@@ -15,7 +15,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.data.BookService;
-import org.example.data.impl.BookServiceImpl;
 
 import java.util.List;
 
@@ -27,14 +26,13 @@ public class HomeScreenController {
     @FXML
     private FlowPane bookContainer;
 
-    private final BookService bookService = new BookServiceImpl();
+    private final BookService bookService = new BookService();
 
     private final String IMAGE_BASE_URL = "https://img.otruyenapi.com/uploads/comics/";
 
     @FXML
     public void initialize() {
         scrollPane.setFitToWidth(true);
-
         loadBooks();
     }
 
@@ -52,22 +50,20 @@ public class HomeScreenController {
 
         task.setOnSucceeded(event -> {
             bookContainer.getChildren().clear();
-
             List<ApiBookItem> books = task.getValue();
             if (books != null && !books.isEmpty()) {
                 for (ApiBookItem book : books) {
-                    bookContainer.getChildren().add(createBookCard(book));
+                    VBox bookCard = createBookCard(book);
+                    bookContainer.getChildren().add(bookCard);
                 }
             } else {
-                showError("Không kết nối được server hoặc không có truyện.");
+                bookContainer.getChildren().add(new Label("Không tải được dữ liệu!"));
             }
         });
 
         task.setOnFailed(event -> {
             bookContainer.getChildren().clear();
-            Throwable e = task.getException();
-            e.printStackTrace();
-            showError("Lỗi hệ thống: " + e.getMessage());
+            bookContainer.getChildren().add(new Label("Lỗi kết nối API!"));
         });
 
         new Thread(task).start();
@@ -75,23 +71,18 @@ public class HomeScreenController {
 
     private VBox createBookCard(ApiBookItem book) {
         VBox card = new VBox();
-        card.setPrefWidth(140);
+        card.setPrefWidth(130);
+        card.setSpacing(5);
         card.setAlignment(Pos.TOP_CENTER);
-        card.setSpacing(8);
+        card.setStyle("-fx-background-color: white; -fx-padding: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);");
         card.setCursor(Cursor.HAND);
 
-        String defaultStyle = "-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);";
-        String hoverStyle = "-fx-background-color: #f4f4f4; -fx-background-radius: 10; -fx-padding: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 0);";
-
-        card.setStyle(defaultStyle);
-        card.setOnMouseEntered(e -> card.setStyle(hoverStyle));
-        card.setOnMouseExited(e -> card.setStyle(defaultStyle));
-
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(124);
-        imageView.setFitHeight(170);
-
         String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(120);
+        imageView.setFitHeight(160);
+        imageView.setPreserveRatio(true);
+
         try {
             Image image = new Image(imgUrl, true);
             imageView.setImage(image);
@@ -122,12 +113,5 @@ public class HomeScreenController {
 
         card.getChildren().addAll(imageView, nameLabel, chapterLabel);
         return card;
-    }
-
-    private void showError(String message) {
-        Label errorLabel = new Label(message);
-        errorLabel.setTextFill(Color.RED);
-        errorLabel.setFont(Font.font(14));
-        bookContainer.getChildren().add(errorLabel);
     }
 }
