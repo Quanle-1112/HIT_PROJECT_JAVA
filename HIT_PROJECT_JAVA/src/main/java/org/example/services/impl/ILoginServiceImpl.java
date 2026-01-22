@@ -2,12 +2,11 @@ package org.example.services.impl;
 
 import org.example.dao.UserDAO;
 import org.example.model.user.User;
-import org.example.services.IEncryptorService;
 import org.example.services.ILoginService;
+import org.example.utils.EncryptionUtils;
 
 public class ILoginServiceImpl implements ILoginService {
     private final UserDAO userDAO = new UserDAO();
-    private final IEncryptorService encryptorService = new IEncryptorServiceImpl();
 
     @Override
     public User authenticate(String username, String password) {
@@ -17,7 +16,7 @@ public class ILoginServiceImpl implements ILoginService {
             return null;
         }
 
-        if (encryptorService.checkPassword(password, user.getPassword())) {
+        if (EncryptionUtils.verifyPassword(password, user.getPassword())) {
             return user;
         } else {
             return null;

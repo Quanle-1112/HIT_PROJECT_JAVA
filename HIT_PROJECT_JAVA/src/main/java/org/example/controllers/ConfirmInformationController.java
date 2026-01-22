@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.OtpStatus;
-import org.example.model.user.Sex;
+import org.example.model.user.Gender;
 import org.example.model.user.User;
 import org.example.services.IUserService;
 import org.example.services.impl.IUserServiceImpl;
@@ -105,7 +105,7 @@ public class ConfirmInformationController {
         if (currentUser != null) {
             currentUser.setFullName(hoVaTenText.getText().trim());
             currentUser.setPhoneNumber(sdtText.getText().trim());
-            currentUser.setGender(namRadioButton.isSelected() ? Sex.Male : (nuRadioButton.isSelected() ? Sex.Female : Sex.Other));
+            currentUser.setGender(namRadioButton.isSelected() ? Gender.Male : (nuRadioButton.isSelected() ? Gender.Female : Gender.Other));
             if (selectedAvatarPath != null) currentUser.setAvatarUrl(selectedAvatarPath);
             else if (currentUser.getAvatarUrl() == null) currentUser.setAvatarUrl("");
 

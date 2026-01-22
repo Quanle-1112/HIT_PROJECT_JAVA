@@ -2,14 +2,13 @@ package org.example.services.impl;
 
 import org.example.dao.UserDAO;
 import org.example.model.user.Role;
-import org.example.model.user.Sex;
+import org.example.model.user.Gender;
 import org.example.model.user.User;
-import org.example.services.IEncryptorService;
 import org.example.services.IRegisterService;
+import org.example.utils.EncryptionUtils;
 
 public class IRegisterServiceImpl implements IRegisterService {
     private final UserDAO userDAO = new UserDAO();
-    private final IEncryptorService encryptorService = new IEncryptorServiceImpl();
 
     @Override
     public String register(User user, String confirmPassword) {
@@ -21,11 +20,11 @@ public class IRegisterServiceImpl implements IRegisterService {
             return "Tên đăng nhập đã tồn tại!";
         }
 
-        String hashedPassword = encryptorService.encrypt(user.getPassword());
+        String hashedPassword = EncryptionUtils.hashPassword(user.getPassword());
         user.setPassword(hashedPassword);
 
         user.setRole(Role.USER);
-        user.setGender(Sex.Other);
+        user.setGender(Gender.Other);
         user.setStatus("ACTIVE");
 
         boolean isSuccess = userDAO.saveUser(user);
