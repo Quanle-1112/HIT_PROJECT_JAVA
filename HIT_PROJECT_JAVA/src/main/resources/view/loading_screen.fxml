@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="636.0" prefWidth="510.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LoadingScreenController">
+<AnchorPane prefHeight="636.0" prefWidth="510.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LoadingScreenController">
     <children>
         <Circle fill="#19345d" layoutX="40.0" layoutY="60.0" opacity="0.05" radius="120.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
         <Circle fill="#19345d" layoutX="360.0" layoutY="540.0" opacity="0.05" radius="150.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />

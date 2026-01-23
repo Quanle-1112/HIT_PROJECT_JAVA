@@ -2,116 +2,76 @@ package org.example.controllers;
 
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.data.BookService;
 
+import java.io.IOException;
 import java.util.List;
 
 public class HomeScreenController {
 
-    @FXML
-    private ScrollPane scrollPane;
-
-    @FXML
-    private FlowPane bookContainer;
+    @FXML private HBox newBooksContainer;
+    @FXML private HBox completedBooksContainer;
+    @FXML private HBox comingSoonContainer;
 
     private final BookService bookService = new BookService();
 
-    private final String IMAGE_BASE_URL = "https://img.otruyenapi.com/uploads/comics/";
-
     @FXML
     public void initialize() {
-        scrollPane.setFitToWidth(true);
-        loadBooks();
+        loadSection(newBooksContainer, "new");
+        loadSection(completedBooksContainer, "completed");
+        loadSection(comingSoonContainer, "coming_soon");
     }
 
-    private void loadBooks() {
-        bookContainer.getChildren().clear();
-        Label loadingLabel = new Label("Đang tải dữ liệu truyện...");
-        bookContainer.getChildren().add(loadingLabel);
+    private void loadSection(HBox container, String type) {
+        Label loading = new Label("Đang tải...");
+        loading.setTextFill(Color.GRAY);
+        container.getChildren().add(loading);
 
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
-            protected List<ApiBookItem> call() throws Exception {
-                return bookService.getNewBooks(1);
+            protected List<ApiBookItem> call() {
+                switch (type) {
+                    case "completed": return bookService.getCompletedBooks(1);
+                    case "coming_soon": return bookService.getComingSoonBooks(1);
+                    default: return bookService.getNewBooks(1);
+                }
             }
         };
 
         task.setOnSucceeded(event -> {
-            bookContainer.getChildren().clear();
+            container.getChildren().clear();
             List<ApiBookItem> books = task.getValue();
-            if (books != null && !books.isEmpty()) {
+            if (books == null || books.isEmpty()) {
+                container.getChildren().add(new Label("Không có dữ liệu"));
+                return;
+            }
+
+            try {
                 for (ApiBookItem book : books) {
-                    VBox bookCard = createBookCard(book);
-                    bookContainer.getChildren().add(bookCard);
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/book_item.fxml"));
+                    VBox card = loader.load();
+
+                    BookItemController itemController = loader.getController();
+                    itemController.setData(book);
+
+                    container.getChildren().add(card);
                 }
-            } else {
-                bookContainer.getChildren().add(new Label("Không tải được dữ liệu!"));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
 
         task.setOnFailed(event -> {
-            bookContainer.getChildren().clear();
-            bookContainer.getChildren().add(new Label("Lỗi kết nối API!"));
+            container.getChildren().clear();
+            container.getChildren().add(new Label("Lỗi kết nối!"));
         });
 
         new Thread(task).start();
-    }
-
-    private VBox createBookCard(ApiBookItem book) {
-        VBox card = new VBox();
-        card.setPrefWidth(130);
-        card.setSpacing(5);
-        card.setAlignment(Pos.TOP_CENTER);
-        card.setStyle("-fx-background-color: white; -fx-padding: 5; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);");
-        card.setCursor(Cursor.HAND);
-
-        String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();
-        ImageView imageView = new ImageView();
-        imageView.setFitWidth(120);
-        imageView.setFitHeight(160);
-        imageView.setPreserveRatio(true);
-
-        try {
-            Image image = new Image(imgUrl, true);
-            imageView.setImage(image);
-        } catch (Exception e) {
-            System.err.println("Lỗi load ảnh: " + book.getName());
-        }
-
-        Label nameLabel = new Label(book.getName());
-        nameLabel.setWrapText(true);
-        nameLabel.setMaxWidth(124);
-        nameLabel.setAlignment(Pos.CENTER);
-        nameLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 12));
-        nameLabel.setTextFill(Color.web("#333333"));
-        nameLabel.setMinHeight(35);
-
-        Label chapterLabel = new Label();
-        if (book.getChaptersLatest() != null && !book.getChaptersLatest().isEmpty()) {
-            chapterLabel.setText("Mới: " + book.getChaptersLatest().get(0).getChapter_name());
-        } else {
-            chapterLabel.setText("Đang cập nhật");
-        }
-        chapterLabel.setFont(Font.font("Segoe UI", 10));
-        chapterLabel.setTextFill(Color.web("#777777"));
-
-        card.setOnMouseClicked(event -> {
-            System.out.println("Bạn đã chọn truyện: " + book.getName() + " | Slug: " + book.getSlug());
-        });
-
-        card.getChildren().addAll(imageView, nameLabel, chapterLabel);
-        return card;
     }
 }

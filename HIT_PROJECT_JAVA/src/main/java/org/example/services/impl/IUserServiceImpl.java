@@ -3,24 +3,33 @@ package org.example.services.impl;
 import org.example.dao.UserDAO;
 import org.example.model.user.OtpStatus;
 import org.example.model.user.User;
-import org.example.services.IEmailService;
 import org.example.services.IUserService;
-import java.util.Random;
+import org.example.utils.EmailUtils;
+import org.example.utils.OtpUtils;
 
 public class IUserServiceImpl implements IUserService {
     private final UserDAO userDAO = new UserDAO();
-    private final IEmailService emailService = new IEmailServiceImpl();
 
-    @Override public boolean updateUserProfile(User user) { return userDAO.updateUser(user); }
-    @Override public boolean disableFirstLogin(int userId) { return userDAO.disableFirstLogin(userId); }
+    @Override
+    public boolean updateUserProfile(User user) {
+        return userDAO.updateUser(user);
+    }
+
+    @Override
+    public boolean disableFirstLogin(int userId) {
+        return userDAO.disableFirstLogin(userId);
+    }
 
     @Override
     public boolean sendOtp(String email) {
-        int otpValue = 100000 + new Random().nextInt(900000);
-        String otp = String.valueOf(otpValue);
+        String otp = OtpUtils.generateOtp();
 
         if (userDAO.updateOtp(email, otp)) {
-            return emailService.sendEmail(email, "WOWTruyen - Mã xác thực thông tin", "Mã xác thực: " + otp + "\nMã hết hạn sau 5 phút.");
+            return EmailUtils.sendEmail(
+                    email,
+                    "WOWTruyen - Mã xác thực thông tin",
+                    "Mã xác thực: " + otp + "\nMã hết hạn sau 5 phút."
+            );
         }
         return false;
     }
