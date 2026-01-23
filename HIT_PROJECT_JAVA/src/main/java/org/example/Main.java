@@ -18,7 +18,7 @@ public class Main extends Application {
 
             primaryStage.setTitle("WOWTruyen - Welcome");
             primaryStage.setScene(scene);
-            primaryStage.setResizable(false);
+            primaryStage.setResizable(true);
             primaryStage.show();
 
         } catch (Exception e) {

@@ -1,18 +1,16 @@
-package org.example.services.impl;
+package org.example.utils;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import org.example.services.IEmailService;
 import java.util.Properties;
 
-public class IEmailServiceImpl implements IEmailService {
+public class EmailUtils {
 
-    private final String senderEmail = "wowtruyena@gmail.com";
-    private final String appPassword = "iwcc mokp wahx norn";
+    private static final String SENDER_EMAIL = "wowtruyena@gmail.com";
+    private static final String APP_PASSWORD = "iwcc mokp wahx norn";
 
-    @Override
-    public boolean sendEmail(String toEmail, String subject, String body) {
+    public static boolean sendEmail(String toEmail, String subject, String body) {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -22,21 +20,23 @@ public class IEmailServiceImpl implements IEmailService {
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderEmail, appPassword);
+                return new PasswordAuthentication(SENDER_EMAIL, APP_PASSWORD);
             }
         });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(senderEmail));
+            message.setFrom(new InternetAddress(SENDER_EMAIL));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);
             message.setText(body);
 
             Transport.send(message);
+            System.out.println("Email sent successfully to: " + toEmail);
             return true;
 
         } catch (MessagingException e) {
+            System.err.println("Failed to send email to " + toEmail);
             e.printStackTrace();
             return false;
         }

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="fx:controller=&quot;org.example.controllers.RegisterController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="520.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.RegisterController">
+<AnchorPane id="fx:controller=&quot;org.example.controllers.RegisterController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="520.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.RegisterController">
    <children>
       <AnchorPane prefHeight="82.0" prefWidth="520.0" style="-fx-background-color: #19345D;">
          <children>
@@ -89,6 +89,6 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <Label fx:id="errorFormatPasswordText" alignment="CENTER" layoutX="95.0" layoutY="331.0" prefHeight="36.0" prefWidth="330.0" text="Password must be 6-10 characters long and include numbers, lowercase, uppercase letters, and special characters" textFill="RED" wrapText="true" />
+      <Label fx:id="errorFormatPasswordText" alignment="CENTER" layoutX="95.0" layoutY="331.0" prefHeight="36.0" prefWidth="330.0" text="Password must be 6-20 characters long and include numbers, lowercase, uppercase letters, and special characters" textFill="RED" wrapText="true" />
    </children>
 </AnchorPane>

@@ -17,8 +17,7 @@ public class BookService {
     private final Gson gson = new Gson();
     private final String BASE_URL = "https://otruyenapi.com/v1/api";
 
-    public List<ApiBookItem> getNewBooks(int page) {
-        String url = BASE_URL + "/danh-sach/truyen-moi?page=" + page;
+    private List<ApiBookItem> fetchBooksFromUrl(String url) {
         String jsonResponse = ApiGet.getApi(url);
 
         if (jsonResponse == null || jsonResponse.isEmpty()) {
@@ -34,6 +33,18 @@ public class BookService {
             e.printStackTrace();
         }
         return new ArrayList<>();
+    }
+
+    public List<ApiBookItem> getNewBooks(int page) {
+        return fetchBooksFromUrl(BASE_URL + "/danh-sach/truyen-moi?page=" + page);
+    }
+
+    public List<ApiBookItem> getCompletedBooks(int page) {
+        return fetchBooksFromUrl(BASE_URL + "/danh-sach/hoan-thanh?page=" + page);
+    }
+
+    public List<ApiBookItem> getComingSoonBooks(int page) {
+        return fetchBooksFromUrl(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page);
     }
 
     public List<ApiBookItem> searchBooks(String keyword, int page) {
