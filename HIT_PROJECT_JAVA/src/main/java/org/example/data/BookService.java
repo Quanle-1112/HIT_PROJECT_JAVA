@@ -10,6 +10,7 @@ import org.example.api.apiAll.ApiSearchBookResponse;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BookService {
@@ -19,11 +20,9 @@ public class BookService {
 
     private List<ApiBookItem> fetchBooksFromUrl(String url) {
         String jsonResponse = ApiGet.getApi(url);
-
         if (jsonResponse == null || jsonResponse.isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
-
         try {
             ApiAllBookResponse response = gson.fromJson(jsonResponse, ApiAllBookResponse.class);
             if (response != null && response.getData() != null) {
@@ -32,7 +31,7 @@ public class BookService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     public List<ApiBookItem> getNewBooks(int page) {
@@ -47,13 +46,17 @@ public class BookService {
         return fetchBooksFromUrl(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page);
     }
 
+    public List<ApiBookItem> getBooksByCategory(String categorySlug, int page) {
+        return fetchBooksFromUrl(BASE_URL + "/the-loai/" + categorySlug + "?page=" + page);
+    }
+
     public List<ApiBookItem> searchBooks(String keyword, int page) {
         try {
             String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
             String url = BASE_URL + "/tim-kiem?keyword=" + encodedKeyword + "&page=" + page;
 
             String jsonResponse = ApiGet.getApi(url);
-            if (jsonResponse == null) return new ArrayList<>();
+            if (jsonResponse == null) return Collections.emptyList();
 
             ApiSearchBookResponse response = gson.fromJson(jsonResponse, ApiSearchBookResponse.class);
             if (response != null && response.getData() != null) {
@@ -62,23 +65,17 @@ public class BookService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     public ApiOneBookResponse.ApiOneBookData getBookDetail(String slug) {
         String url = BASE_URL + "/truyen-tranh/" + slug;
         String jsonResponse = ApiGet.getApi(url);
-
         if (jsonResponse == null) return null;
-
         try {
             ApiOneBookResponse response = gson.fromJson(jsonResponse, ApiOneBookResponse.class);
-            if (response != null) {
-                return response.getData();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            if (response != null) return response.getData();
+        } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
 }
