@@ -1,5 +1,6 @@
 package org.example.controllers;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.data.BookService;
 import org.example.utils.SceneUtils;
@@ -21,6 +23,7 @@ public class SearchResultController {
     @FXML private FlowPane resultContainer;
 
     private final BookService bookService = new BookService();
+    private Stage loadingStage;
 
     @FXML
     public void initialize() {
@@ -31,13 +34,16 @@ public class SearchResultController {
 
     public void initData(String type, String query, String displayTitle) {
         titleLabel.setText(displayTitle);
+
+        Platform.runLater(() -> {
+            Stage owner = (Stage) backButton.getScene().getWindow();
+            loadingStage = SceneUtils.showLoading(owner);
+        });
+
         loadData(type, query);
     }
 
     private void loadData(String type, String query) {
-        resultContainer.getChildren().clear();
-        Label loading = new Label("Đang tải dữ liệu...");
-        resultContainer.getChildren().add(loading);
 
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
@@ -56,27 +62,24 @@ public class SearchResultController {
 
             if (books == null || books.isEmpty()) {
                 resultContainer.getChildren().add(new Label("Không tìm thấy truyện nào."));
-                return;
+            } else {
+                try {
+                    for (ApiBookItem book : books) {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/book_item.fxml"));
+                        VBox card = loader.load();
+                        BookItemController itemController = loader.getController();
+                        itemController.setData(book);
+                        resultContainer.getChildren().add(card);
+                    }
+                } catch (IOException e) { e.printStackTrace(); }
             }
-
-            try {
-                for (ApiBookItem book : books) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/book_item.fxml"));
-                    VBox card = loader.load();
-
-                    BookItemController itemController = loader.getController();
-                    itemController.setData(book);
-
-                    resultContainer.getChildren().add(card);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
         });
 
         task.setOnFailed(event -> {
             resultContainer.getChildren().clear();
             resultContainer.getChildren().add(new Label("Lỗi kết nối!"));
+            Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
         });
 
         new Thread(task).start();
