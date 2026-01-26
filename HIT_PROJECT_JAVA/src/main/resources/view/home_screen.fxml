@@ -5,14 +5,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.HomeScreenController">
+<BorderPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.HomeScreenController">
 
     <top>
         <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);" BorderPane.alignment="CENTER">
@@ -22,12 +25,18 @@
                         <Font name="System Bold" size="22.0" />
                     </font>
                 </Label>
-
                 <HBox alignment="CENTER_RIGHT" layoutX="200.0" layoutY="13.0" prefHeight="35.0" prefWidth="240.0" spacing="5.0" AnchorPane.rightAnchor="10.0">
                     <children>
                         <TextField fx:id="searchTextField" prefHeight="30.0" prefWidth="180.0" promptText="Tìm truyện..." style="-fx-background-radius: 15; -fx-padding: 0 10 0 10;" />
-                        <Button fx:id="searchButton" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" text="🔍" textFill="WHITE">
+                        <Button fx:id="searchButton" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" textFill="WHITE">
                             <font><Font size="16.0" /></font>
+                     <graphic>
+                        <ImageView fitHeight="20.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../image/kinhlup.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                         </Button>
                     </children>
                 </HBox>
@@ -36,7 +45,7 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color: transparent; -fx-background: transparent;">
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED">
             <content>
                 <VBox spacing="20.0" style="-fx-background-color: #ECECE7;">
                     <padding>
@@ -52,9 +61,17 @@
                         </VBox>
 
                         <VBox spacing="10.0">
-                            <Label text="Truyện Mới Cập Nhật" textFill="#19345d">
-                                <font><Font name="System Bold" size="18.0" /></font>
-                            </Label>
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <Label text="Truyện Mới Cập Nhật" textFill="#19345d">
+                                        <font><Font name="System Bold" size="18.0" /></font>
+                                    </Label>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnMoreNew" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Thêm &gt;" textFill="#666666">
+                                        <font><Font size="14.0" /></font>
+                                    </Button>
+                                </children>
+                            </HBox>
                             <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" minHeight="270.0" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="NEVER">
                                 <content>
                                     <HBox fx:id="newBooksContainer" spacing="15.0" style="-fx-background-color: transparent;">
@@ -65,9 +82,17 @@
                         </VBox>
 
                         <VBox spacing="10.0">
-                            <Label text="Truyện Đã Hoàn Thành" textFill="#19345d">
-                                <font><Font name="System Bold" size="18.0" /></font>
-                            </Label>
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <Label text="Truyện Đã Hoàn Thành" textFill="#19345d">
+                                        <font><Font name="System Bold" size="18.0" /></font>
+                                    </Label>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnMoreCompleted" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Thêm &gt;" textFill="#666666">
+                                        <font><Font size="14.0" /></font>
+                                    </Button>
+                                </children>
+                            </HBox>
                             <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" minHeight="270.0" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="NEVER">
                                 <content>
                                     <HBox fx:id="completedBooksContainer" spacing="15.0" style="-fx-background-color: transparent;">
@@ -78,9 +103,17 @@
                         </VBox>
 
                         <VBox spacing="10.0">
-                            <Label text="Sắp Ra Mắt" textFill="#19345d">
-                                <font><Font name="System Bold" size="18.0" /></font>
-                            </Label>
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <Label text="Sắp Ra Mắt" textFill="#19345d">
+                                        <font><Font name="System Bold" size="18.0" /></font>
+                                    </Label>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="btnMoreComing" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Thêm &gt;" textFill="#666666">
+                                        <font><Font size="14.0" /></font>
+                                    </Button>
+                                </children>
+                            </HBox>
                             <ScrollPane fitToHeight="true" hbarPolicy="AS_NEEDED" minHeight="270.0" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="NEVER">
                                 <content>
                                     <HBox fx:id="comingSoonContainer" spacing="15.0" style="-fx-background-color: transparent;">

@@ -31,6 +31,10 @@ public class HomeScreenController {
     @FXML private Button searchButton;
     @FXML private FlowPane categoryContainer;
 
+    @FXML private Button btnMoreNew;
+    @FXML private Button btnMoreCompleted;
+    @FXML private Button btnMoreComing;
+
     private final BookService bookService = new BookService();
 
     @FXML
@@ -43,6 +47,21 @@ public class HomeScreenController {
 
         if (searchButton != null) searchButton.setOnAction(event -> handleSearch());
         if (searchTextField != null) searchTextField.setOnAction(event -> handleSearch());
+
+        if (btnMoreNew != null) btnMoreNew.setOnAction(e -> openViewAll("new", "Truyện Mới Cập Nhật"));
+        if (btnMoreCompleted != null) btnMoreCompleted.setOnAction(e -> openViewAll("completed", "Truyện Đã Hoàn Thành"));
+        if (btnMoreComing != null) btnMoreComing.setOnAction(e -> openViewAll("coming_soon", "Sắp Ra Mắt"));
+    }
+
+    private void openViewAll(String type, String title) {
+        ViewAllBooksController controller = SceneUtils.switchScene(
+                newBooksContainer,
+                "/view/view_all_books.fxml",
+                title
+        );
+        if (controller != null) {
+            controller.initData(type, title);
+        }
     }
 
     private void initCategories() {

@@ -1,9 +1,7 @@
 package org.example.api.apiAll;
 
 import com.google.gson.annotations.SerializedName;
-import org.example.model.book.BookCategory;
 import org.example.model.book.BookChapterLastest;
-import org.example.model.chapter.AllChapter;
 
 import java.util.List;
 
@@ -20,9 +18,6 @@ public class ApiBookItem {
     @SerializedName("origin_name")
     private List<String> originName;
 
-    @SerializedName("content")
-    private String content;
-
     @SerializedName("status")
     private String status;
 
@@ -30,16 +25,7 @@ public class ApiBookItem {
     private String thumbUrl;
 
     @SerializedName("sub_docquyen")
-    private boolean subDocQuyen;
-
-    @SerializedName("author")
-    private List<String> author;
-
-    @SerializedName("category")
-    private List<BookCategory> category;
-
-    @SerializedName("chapters")
-    private List<AllChapter> chapters;
+    private boolean subDocquyen;
 
     @SerializedName("updatedAt")
     private String updatedAt;
@@ -47,9 +33,8 @@ public class ApiBookItem {
     @SerializedName("chaptersLatest")
     private List<BookChapterLastest> chaptersLatest;
 
-    public ApiBookItem() {
-    }
-
+    @SerializedName("category")
+    private List<ApiCategory> category;
 
     public String getId() {
         return id;
@@ -83,14 +68,6 @@ public class ApiBookItem {
         this.originName = originName;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -107,36 +84,12 @@ public class ApiBookItem {
         this.thumbUrl = thumbUrl;
     }
 
-    public boolean isSubDocQuyen() {
-        return subDocQuyen;
+    public boolean isSubDocquyen() {
+        return subDocquyen;
     }
 
-    public void setSubDocQuyen(boolean subDocQuyen) {
-        this.subDocQuyen = subDocQuyen;
-    }
-
-    public List<String> getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(List<String> author) {
-        this.author = author;
-    }
-
-    public List<BookCategory> getCategory() {
-        return category;
-    }
-
-    public void setCategory(List<BookCategory> category) {
-        this.category = category;
-    }
-
-    public List<AllChapter> getChapters() {
-        return chapters;
-    }
-
-    public void setChapters(List<AllChapter> chapters) {
-        this.chapters = chapters;
+    public void setSubDocquyen(boolean subDocquyen) {
+        this.subDocquyen = subDocquyen;
     }
 
     public String getUpdatedAt() {
@@ -155,11 +108,11 @@ public class ApiBookItem {
         this.chaptersLatest = chaptersLatest;
     }
 
-    @Override
-    public String toString() {
-        return "ApiBookItem{" +
-                "name='" + name + '\'' +
-                ", slug='" + slug + '\'' +
-                '}';
+    public List<ApiCategory> getCategory() {
+        return category;
+    }
+
+    public void setCategory(List<ApiCategory> category) {
+        this.category = category;
     }
 }
