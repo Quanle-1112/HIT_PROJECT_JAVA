@@ -47,10 +47,10 @@ public class ApiChapterResponse {
         private String chapterName;
 
         @SerializedName("chapter_path")
-        private String chapterPath; // Đường dẫn gốc (VD: uploads/manga/abc...)
+        private String chapterPath;
 
         @SerializedName("chapter_image")
-        private List<ChapterImage> chapterImages; // Danh sách các file ảnh
+        private List<ChapterImage> chapterImages;
 
         public String getId() {
             return id;
