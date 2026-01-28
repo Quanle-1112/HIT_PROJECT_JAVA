@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
-import org.example.controllers.BookDetailController;
 
 import java.io.IOException;
 
