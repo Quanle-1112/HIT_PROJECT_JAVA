@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.read;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ProgressBar;

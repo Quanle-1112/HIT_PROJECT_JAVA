@@ -53,7 +53,7 @@ public class SceneUtils {
 
     public static Stage showLoading(Window owner) {
         try {
-            FXMLLoader loader = new FXMLLoader(SceneUtils.class.getResource("/view/loading_screen.fxml"));
+            FXMLLoader loader = new FXMLLoader(SceneUtils.class.getResource("/view/read/loading_screen.fxml"));
             Parent root = loader.load();
 
             Stage loadingStage = new Stage();

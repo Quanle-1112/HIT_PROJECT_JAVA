@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="636.0" prefWidth="510.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LoadingScreenController">
+<AnchorPane prefHeight="636.0" prefWidth="510.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.read.LoadingScreenController">
     <children>
         <Circle fill="#19345d" layoutX="40.0" layoutY="60.0" opacity="0.05" radius="120.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
         <Circle fill="#19345d" layoutX="360.0" layoutY="540.0" opacity="0.05" radius="150.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
@@ -30,13 +30,13 @@
                             <children>
                                 <ImageView fitHeight="130.0" fitWidth="250.0" opacity="0.1" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../image/nen.jpg" />
+                                        <Image url="@../../image/nen.jpg" />
                                     </image>
                                 </ImageView>
 
                                 <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
-                                        <Image url="@../image/chu.jpg" />
+                                        <Image url="@../../image/chu.jpg" />
                                     </image>
                                     <effect>
                                         <DropShadow color="rgba(0,0,0,0.2)" offsetY="3.0" radius="5.0" />

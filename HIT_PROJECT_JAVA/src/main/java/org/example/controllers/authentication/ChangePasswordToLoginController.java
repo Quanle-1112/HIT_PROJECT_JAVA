@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.authentication;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -22,7 +22,7 @@ public class ChangePasswordToLoginController {
     public void initialize() {
         UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText);
         updateButton.setOnAction(event -> handleUpdate());
-        cancelButton.setOnAction(event -> SceneUtils.switchScene(cancelButton, "/view/forgot_password.fxml", "Forgot Password"));
+        cancelButton.setOnAction(event -> SceneUtils.switchScene(cancelButton, "/view/authentication/forgot_password.fxml", "Forgot Password"));
     }
 
     private void handleUpdate() {
@@ -39,7 +39,7 @@ public class ChangePasswordToLoginController {
         }
 
         if (service.resetPassword(userEmail, newPasswordField.getText())) {
-            SceneUtils.switchScene(updateButton, "/view/login.fxml", "Login");
+            SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", "Login");
         }
     }
 }

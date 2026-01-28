@@ -1,12 +1,19 @@
-package org.example.controllers;
+package org.example.controllers.read;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
+import org.example.controllers.BookDetailController;
+
+import java.io.IOException;
 
 public class BookItemController {
 
@@ -21,7 +28,7 @@ public class BookItemController {
         bookNameLabel.setText(book.getName());
 
         if (book.getChaptersLatest() != null && !book.getChaptersLatest().isEmpty()) {
-            chapterLabel.setText(book.getChaptersLatest().get(0).getChapter_name());
+            chapterLabel.setText("Chap " + book.getChaptersLatest().get(0).getChapter_name());
         } else {
             chapterLabel.setText("Đang cập nhật");
         }
@@ -41,13 +48,28 @@ public class BookItemController {
         }
 
         cardContainer.setOnMouseClicked(event -> {
-            System.out.println("Click vào truyện: " + book.getName());
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/book_detail.fxml"));
+                Parent root = loader.load();
+
+                BookDetailController detailController = loader.getController();
+                detailController.setBookSlug(book.getSlug());
+
+                Stage stage = (Stage) cardContainer.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("WOWTruyen - " + book.getName());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Không thể mở màn hình chi tiết truyện!");
+            }
         });
 
         cardContainer.setOnMouseEntered(e -> {
             cardContainer.setScaleX(1.05);
             cardContainer.setScaleY(1.05);
         });
+
         cardContainer.setOnMouseExited(e -> {
             cardContainer.setScaleX(1.0);
             cardContainer.setScaleY(1.0);

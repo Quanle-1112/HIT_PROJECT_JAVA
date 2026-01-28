@@ -71,11 +71,17 @@ public class BookService {
     public ApiOneBookResponse.ApiOneBookData getBookDetail(String slug) {
         String url = BASE_URL + "/truyen-tranh/" + slug;
         String jsonResponse = ApiGet.getApi(url);
-        if (jsonResponse == null) return null;
+
+        if (jsonResponse == null || jsonResponse.isEmpty()) return null;
+
         try {
             ApiOneBookResponse response = gson.fromJson(jsonResponse, ApiOneBookResponse.class);
-            if (response != null) return response.getData();
-        } catch (Exception e) { e.printStackTrace(); }
+            if (response != null && "success".equals(response.getStatus())) {
+                return response.getData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

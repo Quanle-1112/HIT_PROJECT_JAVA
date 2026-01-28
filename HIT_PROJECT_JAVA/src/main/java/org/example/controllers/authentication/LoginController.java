@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.authentication;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -34,9 +34,9 @@ public class LoginController {
 
         loginButton.setOnAction(event -> handleLogin());
 
-        cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/start_screen.fxml", "Welcome", cancelButton));
+        cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Welcome", cancelButton));
 
-        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/forgot_password.fxml", "Forgot Password"));
+        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", "Forgot Password"));
 
         if (togglePasswordButton != null) {
             togglePasswordButton.setOnAction(event -> handleTogglePassword());
@@ -71,10 +71,10 @@ public class LoginController {
 
         if (user != null) {
             if (user.isFirstLogin()) {
-                ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/confirm_information_screen.fxml", "Xác nhận thông tin");
+                ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/authentication/confirm_information_screen.fxml", "Xác nhận thông tin");
                 if (controller != null) controller.setCurrentUser(user);
             } else {
-                SceneUtils.switchScene(loginButton, "/view/home_screen.fxml", "Trang chủ");
+                SceneUtils.switchScene(loginButton, "/view/read/home_screen.fxml", "Trang chủ");
             }
         } else {
             UIExceptionHandler.showError(invalidLoginText);

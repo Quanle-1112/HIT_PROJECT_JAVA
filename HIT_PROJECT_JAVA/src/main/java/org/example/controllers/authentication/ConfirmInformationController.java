@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.authentication;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -110,7 +110,7 @@ public class ConfirmInformationController {
             else if (currentUser.getAvatarUrl() == null) currentUser.setAvatarUrl("");
 
             if (userService.updateUserProfile(currentUser) && userService.disableFirstLogin(currentUser.getId())) {
-                SceneUtils.openNewWindow("/view/home_screen.fxml", "Trang chủ", confirmButton);
+                SceneUtils.openNewWindow("/view/read/home_screen.fxml", "Trang chủ", confirmButton);
             } else {
                 UIExceptionHandler.showError(failToSendEmailText);
             }
