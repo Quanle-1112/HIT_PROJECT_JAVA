@@ -1,14 +1,19 @@
 package org.example.controllers.read;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
 
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 public class BookListItemController {
@@ -49,13 +54,11 @@ public class BookListItemController {
             categoryLabel.setText("Thể loại: N/A");
         }
 
-        // Load ảnh
         String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();
         try {
             Image image = new Image(imgUrl, true);
             bookImageView.setImage(image);
 
-            // Bo góc ảnh
             Rectangle clip = new Rectangle(100, 140);
             clip.setArcWidth(10);
             clip.setArcHeight(10);
@@ -65,7 +68,29 @@ public class BookListItemController {
         }
 
         itemContainer.setOnMouseClicked(event -> {
-            System.out.println("Click vào truyện chi tiết: " + book.getName());
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/book_detail.fxml"));
+                Parent root = loader.load();
+
+                BookDetailController detailController = loader.getController();
+                detailController.setBookSlug(book.getSlug());
+
+                Stage stage = (Stage) itemContainer.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("WOWTruyen - " + book.getName());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Lỗi: Không tìm thấy file view/read/book_detail.fxml");
+            }
+        });
+
+        itemContainer.setOnMouseEntered(e -> {
+            itemContainer.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-cursor: hand;");
+        });
+
+        itemContainer.setOnMouseExited(e -> {
+            itemContainer.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-cursor: hand;");
         });
     }
 }

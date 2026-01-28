@@ -45,7 +45,7 @@ public class BookDetailController {
     @FXML
     public void initialize() {
         backButton.setOnAction(event ->
-                SceneUtils.switchScene(backButton, "/view/home_screen.fxml", "Trang chủ")
+                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
         );
 
         readNowButton.setOnAction(event -> {
