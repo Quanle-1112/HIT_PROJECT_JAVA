@@ -2,6 +2,7 @@ package org.example.api.apiAll;
 
 import com.google.gson.annotations.SerializedName;
 import org.example.model.book.BookChapterLastest;
+import org.example.model.chapter.AllChapter;
 
 import java.util.List;
 
@@ -33,8 +34,12 @@ public class ApiBookItem {
     @SerializedName("chaptersLatest")
     private List<BookChapterLastest> chaptersLatest;
 
+    @SerializedName("chapters")
+    private List<AllChapter> chapters;
+
     @SerializedName("category")
     private List<ApiCategory> category;
+
 
     public String getId() {
         return id;
@@ -106,6 +111,14 @@ public class ApiBookItem {
 
     public void setChaptersLatest(List<BookChapterLastest> chaptersLatest) {
         this.chaptersLatest = chaptersLatest;
+    }
+
+    public List<AllChapter> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(List<AllChapter> chapters) {
+        this.chapters = chapters;
     }
 
     public List<ApiCategory> getCategory() {

@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.authentication;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -23,7 +23,7 @@ public class ForgotPasswordController {
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         sendRecoveryCodeButton.setOnAction(event -> handleSendCode());
-        backToLoginButton.setOnAction(event -> SceneUtils.switchScene(backToLoginButton, "/view/login.fxml", "Login"));
+        backToLoginButton.setOnAction(event -> SceneUtils.switchScene(backToLoginButton, "/view/authentication/login.fxml", "Login"));
     }
 
     private void handleSendCode() {
@@ -45,7 +45,7 @@ public class ForgotPasswordController {
                 sendRecoveryCodeButton.setVisible(true);
 
                 if (status == OtpStatus.SUCCESS) {
-                    ConfirmVerifyCodeController controller = SceneUtils.switchScene(sendRecoveryCodeButton, "/view/confirm_verify_code.fxml", "Xác nhận OTP");
+                    ConfirmVerifyCodeController controller = SceneUtils.switchScene(sendRecoveryCodeButton, "/view/authentication/confirm_verify_code.fxml", "Xác nhận OTP");
                     if (controller != null) controller.setInitData(email);
                 } else if (status == OtpStatus.EMAIL_NOT_EXIST) {
                     UIExceptionHandler.showError(emailNotFoundText);

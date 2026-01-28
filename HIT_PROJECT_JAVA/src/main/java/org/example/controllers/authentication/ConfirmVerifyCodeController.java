@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.authentication;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -30,7 +30,7 @@ public class ConfirmVerifyCodeController {
 
         verifyButton.setOnAction(event -> handleVerify());
         resendCodeButton.setOnAction(event -> handleResend());
-        returnButton.setOnAction(event -> SceneUtils.switchScene(returnButton, "/view/forgot_password.fxml", "Forgot Password"));
+        returnButton.setOnAction(event -> SceneUtils.switchScene(returnButton, "/view/authentication/forgot_password.fxml", "Forgot Password"));
 
         startTimer();
     }
@@ -44,7 +44,7 @@ public class ConfirmVerifyCodeController {
         OtpStatus status = service.verifyOtp(userEmail, codeTextField.getText().trim());
 
         if (status == OtpStatus.SUCCESS) {
-            ChangePasswordToLoginController controller = SceneUtils.switchScene(verifyButton, "/view/change_password_to_login.fxml", "Đổi mật khẩu");
+            ChangePasswordToLoginController controller = SceneUtils.switchScene(verifyButton, "/view/authentication/change_password_to_login.fxml", "Đổi mật khẩu");
             if (controller != null) controller.setUserEmail(userEmail);
         } else if (status == OtpStatus.EXPIRED_CODE) {
             UIExceptionHandler.showError(expiredCodeText);

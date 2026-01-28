@@ -9,13 +9,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="fx:controller=&quot;org.example.controllers.RegisterController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="520.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.RegisterController">
+<AnchorPane id="fx:controller=&quot;org.example.controllers.RegisterController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="520.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.RegisterController">
    <children>
       <AnchorPane prefHeight="82.0" prefWidth="520.0" style="-fx-background-color: #19345D;">
          <children>
             <ImageView fx:id="shieldImageView" fitHeight="42.0" fitWidth="69.0" layoutX="32.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../image/unnamed.jpg" />
+                  <Image url="@../../image/unnamed.jpg" />
                </image>
             </ImageView>
             <Label layoutX="108.0" layoutY="28.0" prefHeight="27.0" prefWidth="148.0" text="User Registration" textFill="WHITE">

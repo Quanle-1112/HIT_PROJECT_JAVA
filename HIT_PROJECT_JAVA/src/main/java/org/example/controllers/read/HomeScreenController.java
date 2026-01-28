@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.read;
 
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -56,7 +56,7 @@ public class HomeScreenController {
     private void openViewAll(String type, String title) {
         ViewAllBooksController controller = SceneUtils.switchScene(
                 newBooksContainer,
-                "/view/view_all_books.fxml",
+                "/view/read/view_all_books.fxml",
                 title
         );
         if (controller != null) {
@@ -99,7 +99,7 @@ public class HomeScreenController {
     private void openSearchResult(String type, String query, String title) {
         SearchResultController controller = SceneUtils.switchScene(
                 newBooksContainer,
-                "/view/search_result.fxml",
+                "/view/read/search_result.fxml",
                 title
         );
         if (controller != null) {
@@ -132,7 +132,7 @@ public class HomeScreenController {
             }
             try {
                 for (ApiBookItem book : books) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/book_item.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/book_item.fxml"));
                     VBox card = loader.load();
                     BookItemController itemController = loader.getController();
                     itemController.setData(book);

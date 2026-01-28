@@ -6,11 +6,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="435.0" prefWidth="604.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.StartScreenController">
+<AnchorPane prefHeight="435.0" prefWidth="604.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.read.StartScreenController">
    <children>
       <ImageView fitHeight="445.0" fitWidth="604.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../image/12.png" />
+            <Image url="@../../image/12.png" />
          </image>
       </ImageView>
       <Button fx:id="loginButton" layoutX="85.0" layoutY="217.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="446.0" style="-fx-background-color: #19345D;" text="Login" textFill="WHITE">
@@ -25,7 +25,7 @@
       </Button>
       <ImageView fitHeight="157.0" fitWidth="70.0" layoutX="544.0" layoutY="270.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../image/1111.png" />
+            <Image url="@../../image/1111.png" />
          </image>
       </ImageView>
    </children>

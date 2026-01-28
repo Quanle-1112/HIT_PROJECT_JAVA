@@ -10,13 +10,13 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane id="fx:controller=&quot;org.example.controllers.LoginController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.LoginController">
+<BorderPane id="fx:controller=&quot;org.example.controllers.LoginController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.LoginController">
     <left>
         <AnchorPane prefHeight="407.0" prefWidth="228.0" BorderPane.alignment="CENTER">
             <children>
                 <ImageView fitHeight="400.0" fitWidth="278.0" layoutX="-1.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../image/ảnh.png" />
+                        <Image url="@../../image/ảnh.png" />
                     </image>
                 </ImageView>
             </children>
@@ -27,7 +27,7 @@
             <children>
                 <ImageView fitHeight="60.0" fitWidth="70.0" layoutX="130.0" layoutY="38.0" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@../image/1111111111.png" />
+                        <Image url="@../../image/1111111111.png" />
                     </image>
                 </ImageView>
                 <Label layoutX="14.0" layoutY="123.0" text="Username">
@@ -53,7 +53,7 @@
                     <graphic>
                         <ImageView fx:id="eyeIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../image/iconmat.png" />
+                                <Image url="@../../image/iconmat.png" />
                             </image>
                         </ImageView>
                     </graphic>

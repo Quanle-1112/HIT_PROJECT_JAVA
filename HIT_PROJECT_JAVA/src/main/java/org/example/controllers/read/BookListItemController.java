@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.read;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -9,8 +9,6 @@ import javafx.scene.shape.Rectangle;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 public class BookListItemController {

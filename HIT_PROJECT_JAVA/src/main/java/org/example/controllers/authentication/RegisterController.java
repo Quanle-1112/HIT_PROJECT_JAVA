@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.authentication;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -41,7 +41,7 @@ public class RegisterController {
         );
 
         registerButton.setOnAction(event -> handleRegister());
-        closeButton.setOnAction(event -> SceneUtils.openNewWindow("/view/start_screen.fxml", "Welcome", closeButton));
+        closeButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Welcome", closeButton));
     }
 
     private void handleRegister() {
@@ -91,7 +91,7 @@ public class RegisterController {
 
         switch (result) {
             case "SUCCESS":
-                SceneUtils.openNewWindow("/view/login.fxml", "Login", registerButton);
+                SceneUtils.openNewWindow("/view/authentication/login.fxml", "Login", registerButton);
                 break;
             case "Email đã được đăng ký!":
                 UIExceptionHandler.showError(emailAlreadyRegisteredText);

@@ -1,4 +1,4 @@
-package org.example.controllers;
+package org.example.controllers.read;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -28,7 +28,7 @@ public class SearchResultController {
     @FXML
     public void initialize() {
         backButton.setOnAction(event ->
-                SceneUtils.switchScene(backButton, "/view/home_screen.fxml", "Trang chủ")
+                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
         );
     }
 
@@ -65,7 +65,7 @@ public class SearchResultController {
             } else {
                 try {
                     for (ApiBookItem book : books) {
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/book_item.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/book_item.fxml"));
                         VBox card = loader.load();
                         BookItemController itemController = loader.getController();
                         itemController.setData(book);
