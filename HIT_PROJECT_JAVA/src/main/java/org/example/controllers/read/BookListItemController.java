@@ -34,15 +34,15 @@ public class BookListItemController {
 
         try {
             String dateStr = book.getUpdatedAt().substring(0, 10);
-            updatedLabel.setText("Cập nhật lần cuối: " + dateStr);
+            updatedLabel.setText("Cập nhật: " + dateStr);
         } catch (Exception e) {
             updatedLabel.setText("Cập nhật: N/A");
         }
 
         if (book.getChaptersLatest() != null && !book.getChaptersLatest().isEmpty()) {
-            chapterLabel.setText("Chapter mới: " + book.getChaptersLatest().get(0).getChapter_name());
+            chapterLabel.setText("Chap mới: " + book.getChaptersLatest().get(0).getChapter_name());
         } else {
-            chapterLabel.setText("Chapter mới: Đang cập nhật");
+            chapterLabel.setText("Chap mới: --");
         }
 
         if (book.getCategory() != null) {
@@ -81,16 +81,7 @@ public class BookListItemController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Lỗi: Không tìm thấy file view/read/book_detail.fxml");
             }
-        });
-
-        itemContainer.setOnMouseEntered(e -> {
-            itemContainer.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-cursor: hand;");
-        });
-
-        itemContainer.setOnMouseExited(e -> {
-            itemContainer.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-cursor: hand;");
         });
     }
 }
