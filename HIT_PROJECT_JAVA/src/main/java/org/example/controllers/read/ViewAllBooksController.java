@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -26,7 +27,8 @@ public class ViewAllBooksController {
 
     @FXML private Button btnPrevious;
     @FXML private Button btnNext;
-    @FXML private Label pageLabel;
+
+    @FXML private TextField pageInput;
 
     private final BookService bookService = new BookService();
     private Stage loadingStage;
@@ -41,44 +43,72 @@ public class ViewAllBooksController {
         );
 
         btnPrevious.setOnAction(e -> changePage(-1));
+
         btnNext.setOnAction(e -> changePage(1));
+
+        if (pageInput != null) {
+            pageInput.setOnAction(event -> handlePageInput());
+
+            pageInput.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) {
+                    pageInput.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
+
+            pageInput.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal) {
+                    handlePageInput();
+                }
+            });
+        }
     }
 
     public void initData(String type, String displayTitle) {
         this.currentType = type;
-        this.currentPage = 1;
-
         titleLabel.setText(displayTitle);
-        updatePaginationUI();
-
-        Platform.runLater(() -> {
-            Stage owner = (Stage) backButton.getScene().getWindow();
-            loadingStage = SceneUtils.showLoading(owner);
-        });
-
         loadData();
     }
 
     private void changePage(int delta) {
-        currentPage += delta;
-        if (currentPage < 1) currentPage = 1;
+        if (currentPage + delta > 0) {
+            currentPage += delta;
+            loadData();
+        }
+    }
 
-        updatePaginationUI();
+    private void handlePageInput() {
+        String input = pageInput.getText();
+        if (input == null || input.trim().isEmpty()) {
+            pageInput.setText(String.valueOf(currentPage));
+            return;
+        }
+
+        try {
+            int newPage = Integer.parseInt(input);
+            if (newPage < 1) newPage = 1;
+
+            if (newPage != currentPage) {
+                currentPage = newPage;
+                loadData();
+            } else {
+                pageInput.setText(String.valueOf(currentPage));
+            }
+        } catch (NumberFormatException e) {
+            pageInput.setText(String.valueOf(currentPage));
+        }
+    }
+
+    private void loadData() {
+        btnPrevious.setDisable(currentPage == 1);
+        if (pageInput != null && !pageInput.isFocused()) {
+            pageInput.setText(String.valueOf(currentPage));
+        }
 
         Platform.runLater(() -> {
             Stage owner = (Stage) backButton.getScene().getWindow();
             loadingStage = SceneUtils.showLoading(owner);
         });
 
-        loadData();
-    }
-
-    private void updatePaginationUI() {
-        pageLabel.setText("Trang " + currentPage);
-        btnPrevious.setDisable(currentPage == 1);
-    }
-
-    private void loadData() {
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
             protected List<ApiBookItem> call() {
@@ -95,7 +125,7 @@ public class ViewAllBooksController {
             List<ApiBookItem> books = task.getValue();
 
             if (books == null || books.isEmpty()) {
-                listContainer.getChildren().add(new Label("Không còn dữ liệu."));
+                listContainer.getChildren().add(new Label("Không còn dữ liệu hoặc đã hết trang."));
                 btnNext.setDisable(true);
             } else {
                 btnNext.setDisable(false);
@@ -110,9 +140,15 @@ public class ViewAllBooksController {
 
                         listContainer.getChildren().add(item);
                     }
-                } catch (IOException e) { e.printStackTrace(); }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 scrollPane.setVvalue(0.0);
+
+                if (pageInput != null) {
+                    pageInput.setText(String.valueOf(currentPage));
+                }
             }
             Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
         });

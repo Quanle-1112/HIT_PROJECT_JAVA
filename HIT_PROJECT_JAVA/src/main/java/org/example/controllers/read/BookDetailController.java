@@ -4,19 +4,20 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
 import org.example.api.apiAll.ApiOneBookResponse;
+
 import org.example.data.BookService;
 import org.example.model.chapter.AllChapter;
 import org.example.model.chapter.ChapterInfo;
@@ -36,158 +37,238 @@ public class BookDetailController {
     @FXML private Label bookAuthor;
     @FXML private Label bookStatus;
     @FXML private Label bookCategory;
-    @FXML private Button readNowButton;
+    @FXML private TextArea descriptionArea;
+
+    @FXML private Button readFirstButton;
+    @FXML private Button readNewestButton;
     @FXML private Button favoriteButton;
-    @FXML private TextArea bookDescription;
 
     @FXML private VBox chapterListContainer;
-    @FXML private HBox paginationContainer;
 
     @FXML private Button btnPrev;
     @FXML private Button btnNext;
+    @FXML private TextField pageInput;
     @FXML private Label pageLabel;
 
     private final BookService bookService = new BookService();
-    private final String IMAGE_BASE_URL = "https://img.otruyenapi.com/uploads/comics/";
-    private ApiBookItem currentBook;
+    private ApiOneBookResponse.ApiOneBookData currentBookData;
 
     private List<ChapterInfo> fullChapterList = new ArrayList<>();
-    private int currentPage = 1;
+
     private final int ITEMS_PER_PAGE = 25;
-    private int totalPages = 0;
+    private int currentPage = 1;
+    private int totalPages = 1;
+
+    private Stage loadingStage;
+    private String bookSlug;
+
+    public void setBookSlug(String slug) {
+        this.bookSlug = slug;
+        loadBookData();
+    }
 
     @FXML
     public void initialize() {
-        if (backButton != null) {
-            backButton.setOnAction(event ->
-                    SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
-            );
-        }
+        backButton.setOnAction(event ->
+                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
+        );
 
-        if (readNowButton != null) {
-            readNowButton.setOnAction(event -> {
-                if (!fullChapterList.isEmpty()) {
-                    openChapterReading(fullChapterList.get(0), readNowButton);
+        if (btnPrev != null) {
+            btnPrev.setOnAction(e -> {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderChapterList();
                 }
             });
         }
 
-        if (btnPrev != null) btnPrev.setOnAction(e -> showPage(currentPage - 1));
-        if (btnNext != null) btnNext.setOnAction(e -> showPage(currentPage + 1));
+        if (btnNext != null) {
+            btnNext.setOnAction(e -> {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderChapterList();
+                }
+            });
+        }
 
-        paginationContainer.setVisible(false);
+        if (pageInput != null) {
+            pageInput.setOnAction(event -> handlePageInput());
+
+            pageInput.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) {
+                    pageInput.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
+
+            pageInput.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                if (!newVal) {
+                    handlePageInput();
+                }
+            });
+        }
     }
 
-    public void setBookSlug(String slug) {
+    private void loadBookData() {
+        Platform.runLater(() -> {
+            Stage owner = (Stage) backButton.getScene().getWindow();
+            loadingStage = SceneUtils.showLoading(owner);
+        });
+
         Task<ApiOneBookResponse.ApiOneBookData> task = new Task<>() {
             @Override
             protected ApiOneBookResponse.ApiOneBookData call() {
-                return bookService.getBookDetail(slug);
+                return bookService.getBookDetail(bookSlug);
             }
         };
 
         task.setOnSucceeded(event -> {
-            ApiOneBookResponse.ApiOneBookData data = task.getValue();
-            if (data != null && data.getItem() != null) {
-                this.currentBook = data.getItem();
-                updateUI(this.currentBook);
+            currentBookData = task.getValue();
+            if (currentBookData != null && currentBookData.getItem() != null) {
+                updateUI();
+            } else {
+                System.err.println("Dữ liệu sách null hoặc lỗi API.");
             }
+            Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
+        });
+
+        task.setOnFailed(event -> {
+            Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
+            System.err.println("Lỗi kết nối hoặc tải chi tiết truyện thất bại.");
+            task.getException().printStackTrace();
         });
 
         new Thread(task).start();
     }
 
-    private void updateUI(ApiBookItem book) {
-        Platform.runLater(() -> {
-            if (headerTitle != null) headerTitle.setText(book.getName());
-            if (bookName != null) bookName.setText(book.getName());
-            if (bookStatus != null) bookStatus.setText("Trạng thái: " + book.getStatus());
+    private void updateUI() {
+        ApiBookItem item = currentBookData.getItem();
 
-            if (bookAuthor != null) {
-                bookAuthor.setText("Tác giả: " + (book.getOriginName().isEmpty() ? "Đang cập nhật" : String.join(", ", book.getOriginName())));
-            }
+        bookName.setText(item.getName());
+        bookStatus.setText("Trạng thái: " + item.getStatus());
 
-            if (bookCategory != null && book.getCategory() != null) {
-                String categories = book.getCategory().stream()
-                        .map(ApiCategory::getName)
-                        .collect(Collectors.joining(", "));
-                bookCategory.setText("Thể loại: " + categories);
-            }
+        if (item.getCategory() != null) {
+            String cats = item.getCategory().stream()
+                    .map(ApiCategory::getName)
+                    .collect(Collectors.joining(", "));
+            bookCategory.setText("Thể loại: " + cats);
+        }
 
-            if (bookImageView != null) {
-                try {
-                    bookImageView.setImage(new Image(IMAGE_BASE_URL + book.getThumbUrl(), true));
-                } catch (Exception ignored) {}
-            }
+        if (item.getOriginName() != null && !item.getOriginName().isEmpty()) {
+            bookAuthor.setText("Tên khác: " + item.getOriginName().get(0));
+        }
 
-            if (bookDescription != null) bookDescription.setText("Mô tả truyện đang được cập nhật...");
+        String content = item.getContent();
+        if (content != null) {
+            content = content.replaceAll("<br\\s*/?>", "\n").replaceAll("<[^>]*>", "");
+        }
+        descriptionArea.setText(content != null ? content : "Đang cập nhật...");
 
-            processChapters(book.getChapters());
-        });
+        String imgUrl = "https://img.otruyenapi.com/uploads/comics/" + item.getThumbUrl();
+        try {
+            Image image = new Image(imgUrl, true);
+            bookImageView.setImage(image);
+
+            Rectangle clip = new Rectangle(140, 190);
+            clip.setArcWidth(15);
+            clip.setArcHeight(15);
+            bookImageView.setClip(clip);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        processChapters();
     }
 
-    private void processChapters(List<AllChapter> apiChapters) {
+    private void processChapters() {
         fullChapterList.clear();
-        if (apiChapters != null) {
-            for (AllChapter server : apiChapters) {
+        if (currentBookData.getItem().getChapters() != null) {
+            for (AllChapter server : currentBookData.getItem().getChapters()) {
                 if (server.getServerData() != null) {
                     fullChapterList.addAll(server.getServerData());
                 }
             }
         }
 
-        if (fullChapterList.isEmpty()) {
-            chapterListContainer.getChildren().clear();
-            chapterListContainer.getChildren().add(new Label("Chưa có chương nào."));
-            paginationContainer.setVisible(false);
-        } else {
+        if (!fullChapterList.isEmpty()) {
             totalPages = (int) Math.ceil((double) fullChapterList.size() / ITEMS_PER_PAGE);
             currentPage = 1;
-            paginationContainer.setVisible(true);
-            showPage(1);
+            renderChapterList();
+        } else {
+            chapterListContainer.getChildren().clear();
+            chapterListContainer.getChildren().add(new Label("Chưa có chương nào."));
+            updatePaginationControls();
         }
     }
 
-    private void showPage(int page) {
-        this.currentPage = page;
+    private void renderChapterList() {
         chapterListContainer.getChildren().clear();
 
-        int startIndex = (page - 1) * ITEMS_PER_PAGE;
-        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, fullChapterList.size());
+        int start = (currentPage - 1) * ITEMS_PER_PAGE;
+        int end = Math.min(start + ITEMS_PER_PAGE, fullChapterList.size());
 
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = start; i < end; i++) {
             ChapterInfo chap = fullChapterList.get(i);
-
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/chapter_button.fxml"));
                 Button chapBtn = loader.load();
+
                 chapBtn.setText("Chapter " + chap.getChapterName());
-                chapBtn.setOnAction(e -> openChapterReading(chap, chapBtn));
+                chapBtn.setOnAction(e -> openChapterReading(chap));
 
                 chapterListContainer.getChildren().add(chapBtn);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
         updatePaginationControls();
     }
 
     private void updatePaginationControls() {
-        if (btnPrev != null) btnPrev.setDisable(currentPage == 1);
-        if (btnNext != null) btnNext.setDisable(currentPage == totalPages);
-        if (pageLabel != null) pageLabel.setText("Trang " + currentPage + " / " + totalPages);
+        if (btnPrev != null) btnPrev.setDisable(currentPage <= 1);
+        if (btnNext != null) btnNext.setDisable(currentPage >= totalPages);
+
+        if (pageInput != null) {
+            if (!pageInput.isFocused()) {
+                pageInput.setText(String.valueOf(currentPage));
+            }
+        }
+
+        if (pageLabel != null) {
+            pageLabel.setText("/ " + totalPages);
+        }
     }
 
-    private void openChapterReading(ChapterInfo chap, Button sourceButton) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/chapter_read.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) sourceButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setTitle("WOWTruyen - " + currentBook.getName() + " - Chap " + chap.getChapterName());
-        } catch (IOException e) {
-            System.err.println("Chưa có file chapter_read.fxml");
+    private void handlePageInput() {
+        if (pageInput == null) return;
+
+        String input = pageInput.getText();
+
+        if (input == null || input.trim().isEmpty()) {
+            pageInput.setText(String.valueOf(currentPage));
+            return;
         }
+
+        try {
+            int newPage = Integer.parseInt(input);
+
+            if (newPage < 1) newPage = 1;
+            if (newPage > totalPages) newPage = totalPages;
+
+            if (newPage != currentPage) {
+                currentPage = newPage;
+                renderChapterList();
+                pageInput.setText(String.valueOf(currentPage));
+                chapterListContainer.requestFocus();
+            } else {
+                pageInput.setText(String.valueOf(currentPage));
+            }
+        } catch (NumberFormatException e) {
+            pageInput.setText(String.valueOf(currentPage));
+        }
+    }
+
+    private void openChapterReading(ChapterInfo chap) {
+        System.out.println("Mở Chapter: " + chap.getChapterName());
+        // TODO: Viết code chuyển sang màn hình đọc truyện tại đây
     }
 }

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -27,62 +28,62 @@
 
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
             <content>
-                <VBox spacing="20.0">
+                <VBox spacing="15.0">
                     <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="15.0" right="15.0" top="20.0" />
                     </padding>
                     <children>
-                        <HBox spacing="20.0">
+                        <HBox spacing="15.0">
                             <children>
-                                <ImageView fx:id="bookImageView" fitHeight="200.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                                <ImageView fx:id="bookImageView" fitHeight="190.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
                                     <effect>
                                         <DropShadow color="#0000004d" height="10.0" radius="4.5" width="10.0" />
                                     </effect>
                                 </ImageView>
-
-                                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                                <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Label fx:id="bookName" text="Đang tải..." textFill="#19345d" wrapText="true">
-                                            <font><Font name="System Bold" size="14.0" /></font>
+                                        <Label fx:id="bookName" text="Tên Truyện" textFill="#19345d" wrapText="true">
+                                            <font><Font name="System Bold" size="18.0" /></font>
                                         </Label>
-
-                                        <Label fx:id="bookAuthor" text="Tác giả: ..." textFill="#555555">
-                                            <font><Font size="14.0" /></font>
+                                        <Label fx:id="bookAuthor" text="Tác giả: Đang cập nhật" textFill="#555555" wrapText="true">
+                                            <font><Font size="13.0" /></font>
                                         </Label>
-
-                                        <Label fx:id="bookStatus" text="Trạng thái: ..." textFill="#555555">
-                                            <font><Font size="14.0" /></font>
+                                        <Label fx:id="bookStatus" text="Trạng thái: Đang tiến hành" textFill="#555555">
+                                            <font><Font size="13.0" /></font>
                                         </Label>
-
-                                        <Label fx:id="bookCategory" text="Thể loại: ..." textFill="#555555" wrapText="true">
-                                            <font><Font size="14.0" /></font>
+                                        <Label fx:id="bookCategory" text="Thể loại: Action, Adventure" textFill="#555555" wrapText="true">
+                                            <font><Font size="13.0" /></font>
                                         </Label>
-
-                                        <HBox spacing="10.0">
-                                            <Button fx:id="readNowButton" style="-fx-background-color: #19345D; -fx-cursor: hand;" text="Đọc Ngay" textFill="WHITE">
-                                                <font><Font name="System Bold" size="11.0" /></font>
-                                                <padding>
-                                                    <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
-                                                </padding>
-                                            </Button>
-
-                                            <Button fx:id="favoriteButton" style="-fx-background-color: #cccccc; -fx-cursor: hand;" text="Yêu thích" textFill="WHITE">
-                                                <font><Font name="System Bold" size="11.0" /></font>
-                                                <padding>
-                                                    <Insets bottom="8.0" left="15.0" right="15.0" top="8.0" />
-                                                </padding>
-                                            </Button>
-                                        </HBox>
                                     </children>
                                 </VBox>
                             </children>
                         </HBox>
 
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button fx:id="readFirstButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: #19345D; -fx-cursor: hand;" text="Đọc từ đầu" textFill="WHITE" HBox.hgrow="ALWAYS">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                    <padding><Insets bottom="10.0" top="10.0" /></padding>
+                                </Button>
+                                <Button fx:id="readNewestButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: #FFFFFF; -fx-border-color: #19345D; -fx-border-radius: 4; -fx-cursor: hand;" text="Chap mới nhất" textFill="#19345d" HBox.hgrow="ALWAYS">
+                                    <font><Font name="System Bold" size="14.0" /></font>
+                                    <padding><Insets bottom="10.0" top="10.0" /></padding>
+                                </Button>
+                            </children>
+                        </HBox>
+
+                        <Button fx:id="favoriteButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: #FF6B6B; -fx-cursor: hand;" text="Thêm vào yêu thích" textFill="WHITE">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                            <padding><Insets bottom="10.0" top="10.0" /></padding>
+                        </Button>
+
                         <VBox spacing="5.0">
-                            <Label text="Nội dung" textFill="#19345d">
-                                <font><Font name="System Bold" size="16.0" /></font>
-                            </Label>
-                            <TextArea fx:id="bookDescription" editable="false" prefHeight="120.0" style="-fx-background-color: transparent; -fx-control-inner-background: #ECECE7; -fx-border-color: transparent;" wrapText="true" />
+                            <children>
+                                <Label text="Nội dung" textFill="#19345d">
+                                    <font><Font name="System Bold" size="16.0" /></font>
+                                </Label>
+                                <TextArea fx:id="descriptionArea" editable="false" prefHeight="120.0" style="-fx-background-color: transparent; -fx-control-inner-background: #ECECE7;" wrapText="true" />
+                            </children>
                         </VBox>
 
                         <VBox spacing="10.0">
@@ -98,9 +99,19 @@
                                         <font><Font name="System Bold" size="12.0" /></font>
                                     </Button>
 
-                                    <Label fx:id="pageLabel" text="Trang 1 / 1" textFill="#19345d">
-                                        <font><Font name="System Bold" size="14.0" /></font>
-                                    </Label>
+                                    <HBox alignment="CENTER" spacing="5.0">
+                                        <children>
+                                            <Label text="Trang" textFill="#19345d">
+                                                <font><Font name="System Bold" size="14.0" /></font>
+                                            </Label>
+                                            <TextField fx:id="pageInput" alignment="CENTER" prefHeight="30.0" prefWidth="50.0" style="-fx-background-radius: 5; -fx-border-color: #19345d; -fx-border-radius: 5;" text="1">
+                                                <font><Font name="System Bold" size="12.0" /></font>
+                                            </TextField>
+                                            <Label fx:id="pageLabel" text="/ 1" textFill="#19345d">
+                                                <font><Font name="System Bold" size="14.0" /></font>
+                                            </Label>
+                                        </children>
+                                    </HBox>
 
                                     <Button fx:id="btnNext" mnemonicParsing="false" prefHeight="30.0" style="-fx-background-color: #19345D; -fx-cursor: hand; -fx-background-radius: 5;" text="Sau &gt;" textFill="WHITE">
                                         <font><Font name="System Bold" size="12.0" /></font>

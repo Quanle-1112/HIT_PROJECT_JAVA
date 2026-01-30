@@ -19,6 +19,9 @@ public class ApiBookItem {
     @SerializedName("origin_name")
     private List<String> originName;
 
+    @SerializedName("content")
+    private String content;
+
     @SerializedName("status")
     private String status;
 
@@ -71,6 +74,14 @@ public class ApiBookItem {
 
     public void setOriginName(List<String> originName) {
         this.originName = originName;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getStatus() {
