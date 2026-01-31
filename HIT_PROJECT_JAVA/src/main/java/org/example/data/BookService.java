@@ -9,7 +9,6 @@ import org.example.api.apiAll.ApiSearchBookResponse;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,19 +17,18 @@ public class BookService {
     private final Gson gson = new Gson();
     private final String BASE_URL = "https://otruyenapi.com/v1/api";
 
+    private final int ITEM_LIMIT = 25;
+
+
     private List<ApiBookItem> fetchBooksFromUrl(String url) {
         String jsonResponse = ApiGet.getApi(url);
-        if (jsonResponse == null || jsonResponse.isEmpty()) {
-            return Collections.emptyList();
-        }
+        if (jsonResponse == null || jsonResponse.isEmpty()) return Collections.emptyList();
         try {
             ApiAllBookResponse response = gson.fromJson(jsonResponse, ApiAllBookResponse.class);
             if (response != null && response.getData() != null) {
                 return response.getData().getItems();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return Collections.emptyList();
     }
 
@@ -54,34 +52,46 @@ public class BookService {
         try {
             String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
             String url = BASE_URL + "/tim-kiem?keyword=" + encodedKeyword + "&page=" + page;
-
             String jsonResponse = ApiGet.getApi(url);
             if (jsonResponse == null) return Collections.emptyList();
-
             ApiSearchBookResponse response = gson.fromJson(jsonResponse, ApiSearchBookResponse.class);
-            if (response != null && response.getData() != null) {
-                return response.getData().getItems();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            if (response != null && response.getData() != null) return response.getData().getItems();
+        } catch (Exception e) { e.printStackTrace(); }
         return Collections.emptyList();
     }
 
     public ApiOneBookResponse.ApiOneBookData getBookDetail(String slug) {
         String url = BASE_URL + "/truyen-tranh/" + slug;
         String jsonResponse = ApiGet.getApi(url);
-
         if (jsonResponse == null || jsonResponse.isEmpty()) return null;
-
         try {
             ApiOneBookResponse response = gson.fromJson(jsonResponse, ApiOneBookResponse.class);
-            if (response != null && "success".equals(response.getStatus())) {
-                return response.getData();
-            }
+            if (response != null && "success".equals(response.getStatus())) return response.getData();
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
+
+    private ApiAllBookResponse fetchFullResponse(String url) {
+        String jsonResponse = ApiGet.getApi(url);
+        if (jsonResponse == null || jsonResponse.isEmpty()) return null;
+        try {
+            return gson.fromJson(jsonResponse, ApiAllBookResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
+    }
+
+    public ApiAllBookResponse getNewBooksResponse(int page) {
+        return fetchFullResponse(BASE_URL + "/danh-sach/truyen-moi?page=" + page + "&limit=" + ITEM_LIMIT);
+    }
+
+    public ApiAllBookResponse getCompletedBooksResponse(int page) {
+        return fetchFullResponse(BASE_URL + "/danh-sach/hoan-thanh?page=" + page + "&limit=" + ITEM_LIMIT);
+    }
+
+    public ApiAllBookResponse getComingSoonBooksResponse(int page) {
+        return fetchFullResponse(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page + "&limit=" + ITEM_LIMIT);
     }
 }

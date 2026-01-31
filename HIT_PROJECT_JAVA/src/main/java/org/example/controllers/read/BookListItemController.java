@@ -5,13 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
+import org.example.utils.ImageLoaderGlobal;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -34,15 +34,15 @@ public class BookListItemController {
 
         try {
             String dateStr = book.getUpdatedAt().substring(0, 10);
-            updatedLabel.setText("Cập nhật lần cuối: " + dateStr);
+            updatedLabel.setText("Cập nhật: " + dateStr);
         } catch (Exception e) {
             updatedLabel.setText("Cập nhật: N/A");
         }
 
         if (book.getChaptersLatest() != null && !book.getChaptersLatest().isEmpty()) {
-            chapterLabel.setText("Chapter mới: " + book.getChaptersLatest().get(0).getChapter_name());
+            chapterLabel.setText("Chap mới: " + book.getChaptersLatest().get(0).getChapter_name());
         } else {
-            chapterLabel.setText("Chapter mới: Đang cập nhật");
+            chapterLabel.setText("Chap mới: --");
         }
 
         if (book.getCategory() != null) {
@@ -55,17 +55,13 @@ public class BookListItemController {
         }
 
         String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();
-        try {
-            Image image = new Image(imgUrl, true);
-            bookImageView.setImage(image);
 
-            Rectangle clip = new Rectangle(100, 140);
-            clip.setArcWidth(10);
-            clip.setArcHeight(10);
-            bookImageView.setClip(clip);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ImageLoaderGlobal.setImage(imgUrl, bookImageView);
+
+        Rectangle clip = new Rectangle(100, 140);
+        clip.setArcWidth(10);
+        clip.setArcHeight(10);
+        bookImageView.setClip(clip);
 
         itemContainer.setOnMouseClicked(event -> {
             try {
@@ -81,16 +77,7 @@ public class BookListItemController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Lỗi: Không tìm thấy file view/read/book_detail.fxml");
             }
-        });
-
-        itemContainer.setOnMouseEntered(e -> {
-            itemContainer.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-cursor: hand;");
-        });
-
-        itemContainer.setOnMouseExited(e -> {
-            itemContainer.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-cursor: hand;");
         });
     }
 }
