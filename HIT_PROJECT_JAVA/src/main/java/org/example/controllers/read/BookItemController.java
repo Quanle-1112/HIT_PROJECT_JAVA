@@ -5,12 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
+import org.example.utils.ImageLoaderGlobal;
 
 import java.io.IOException;
 
@@ -33,18 +33,13 @@ public class BookItemController {
         }
 
         String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();
-        try {
-            Image image = new Image(imgUrl, true);
-            bookImageView.setImage(image);
 
-            Rectangle clip = new Rectangle(140, 190);
-            clip.setArcWidth(15);
-            clip.setArcHeight(15);
-            bookImageView.setClip(clip);
+        ImageLoaderGlobal.setImage(imgUrl, bookImageView);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Rectangle clip = new Rectangle(140, 190);
+        clip.setArcWidth(15);
+        clip.setArcHeight(15);
+        bookImageView.setClip(clip);
 
         cardContainer.setOnMouseClicked(event -> {
             try {
@@ -60,7 +55,6 @@ public class BookItemController {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Không thể mở màn hình chi tiết truyện!");
             }
         });
 

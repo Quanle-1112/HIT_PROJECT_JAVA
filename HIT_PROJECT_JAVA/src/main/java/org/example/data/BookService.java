@@ -37,7 +37,7 @@ public class BookService {
     }
 
     public List<ApiBookItem> getCompletedBooks(int page) {
-        return fetchBooksFromUrl(BASE_URL + "/danh-sach/truyen-full?page=" + page);
+        return fetchBooksFromUrl(BASE_URL + "/danh-sach/hoan-thanh?page=" + page);
     }
 
     public List<ApiBookItem> getComingSoonBooks(int page) {
@@ -88,7 +88,7 @@ public class BookService {
     }
 
     public ApiAllBookResponse getCompletedBooksResponse(int page) {
-        return fetchFullResponse(BASE_URL + "/danh-sach/truyen-full?page=" + page + "&limit=" + ITEM_LIMIT);
+        return fetchFullResponse(BASE_URL + "/danh-sach/hoan-thanh?page=" + page + "&limit=" + ITEM_LIMIT);
     }
 
     public ApiAllBookResponse getComingSoonBooksResponse(int page) {

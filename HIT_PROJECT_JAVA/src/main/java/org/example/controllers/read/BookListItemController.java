@@ -5,13 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
+import org.example.utils.ImageLoaderGlobal;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -55,17 +55,13 @@ public class BookListItemController {
         }
 
         String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();
-        try {
-            Image image = new Image(imgUrl, true);
-            bookImageView.setImage(image);
 
-            Rectangle clip = new Rectangle(100, 140);
-            clip.setArcWidth(10);
-            clip.setArcHeight(10);
-            bookImageView.setClip(clip);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ImageLoaderGlobal.setImage(imgUrl, bookImageView);
+
+        Rectangle clip = new Rectangle(100, 140);
+        clip.setArcWidth(10);
+        clip.setArcHeight(10);
+        bookImageView.setClip(clip);
 
         itemContainer.setOnMouseClicked(event -> {
             try {
