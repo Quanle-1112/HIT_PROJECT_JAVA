@@ -134,12 +134,23 @@
             <children>
                 <HBox alignment="CENTER" prefHeight="60.0" prefWidth="450.0" spacing="10.0">
                     <children>
-                        <Button mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: #E0E0E0; -fx-background-radius: 15;" text="Home" textFill="#19345d">
-                            <font><Font name="System Bold" size="12.0" /></font>
+                        <Button fx:id="btnHome" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="Home" textFill="#19345d">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
                         </Button>
-                        <Button mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="History" textFill="#555555" />
-                        <Button mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="Favorite" textFill="#555555" />
-                        <Button mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="Account" textFill="#555555" />
+                        <Button fx:id="btnHistory" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="History" textFill="#19345d">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Button>
+                        <Button fx:id="btnFavorite" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="Favorite" textFill="#19345d">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Button>
+                        <Button fx:id="btnAccount" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="Account" textFill="#19345d">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Button>
                     </children>
                 </HBox>
             </children>

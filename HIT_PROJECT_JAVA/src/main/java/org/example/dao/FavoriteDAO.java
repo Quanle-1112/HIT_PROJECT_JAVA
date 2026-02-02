@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FavoriteDAO {
 
@@ -23,7 +25,7 @@ public class FavoriteDAO {
     }
 
     public boolean addFavorite(UserFavorite fav) {
-        String sql = "INSERT INTO user_favorites (user_id, book_slug, book_name, thumbnail_url) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT IGNORE INTO user_favorites (user_id, book_slug, book_name, thumbnail_url, added_at) VALUES (?, ?, ?, ?, NOW())";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, fav.getUserId());
@@ -48,5 +50,29 @@ public class FavoriteDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<UserFavorite> getFavoritesByUserId(int userId) {
+        List<UserFavorite> list = new ArrayList<>();
+        String sql = "SELECT * FROM user_favorites WHERE user_id = ? ORDER BY added_at DESC";
+
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                UserFavorite fav = new UserFavorite();
+                fav.setFavoriteId(rs.getInt("favorite_id"));
+                fav.setUserId(rs.getInt("user_id"));
+                fav.setBookSlug(rs.getString("book_slug"));
+                fav.setBookName(rs.getString("book_name"));
+                fav.setThumbnailUrl(rs.getString("thumbnail_url"));
+                fav.setAddedAt(rs.getTimestamp("added_at"));
+                list.add(fav);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

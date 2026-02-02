@@ -30,6 +30,7 @@ public class ChapterReadingController {
 
     @FXML private Button btnPrevChapter;
     @FXML private Button btnNextChapter;
+    @FXML private Button btnHome;
     @FXML private TextField chapterInput;
     @FXML private Label totalChaptersLabel;
 
@@ -61,8 +62,13 @@ public class ChapterReadingController {
             }
         });
 
-        chapterInput.setOnAction(e -> handleManualChapterInput());
+        if (btnHome != null) {
+            btnHome.setOnAction(e ->
+                    SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ")
+            );
+        }
 
+        chapterInput.setOnAction(e -> handleManualChapterInput());
         chapterInput.setOnMouseClicked(e -> chapterInput.selectAll());
     }
 
@@ -153,7 +159,6 @@ public class ChapterReadingController {
 
     private void handleManualChapterInput() {
         try {
-
             String input = chapterInput.getText().trim();
             int targetChapNum = Integer.parseInt(input);
 

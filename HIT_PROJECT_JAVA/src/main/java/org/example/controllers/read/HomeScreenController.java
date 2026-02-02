@@ -27,17 +27,23 @@ public class HomeScreenController {
     @FXML private TextField searchTextField;
     @FXML private Button searchButton;
     @FXML private FlowPane categoryContainer;
+
     @FXML private Button btnMoreNew;
     @FXML private Button btnMoreCompleted;
     @FXML private Button btnMoreComing;
+
+    @FXML private Button btnHome;
+    @FXML private Button btnHistory;
+    @FXML private Button btnFavorite;
+    @FXML private Button btnAccount;
 
     private final BookService bookService = new BookService();
 
     @FXML
     public void initialize() {
-        CompletableFuture<Void> task1 = CompletableFuture.runAsync(() -> loadSection(newBooksContainer, "new"));
-        CompletableFuture<Void> task2 = CompletableFuture.runAsync(() -> loadSection(completedBooksContainer, "completed"));
-        CompletableFuture<Void> task3 = CompletableFuture.runAsync(() -> loadSection(comingSoonContainer, "coming_soon"));
+        CompletableFuture.runAsync(() -> loadSection(newBooksContainer, "new"));
+        CompletableFuture.runAsync(() -> loadSection(completedBooksContainer, "completed"));
+        CompletableFuture.runAsync(() -> loadSection(comingSoonContainer, "coming_soon"));
 
         loadCategories();
 
@@ -47,7 +53,28 @@ public class HomeScreenController {
         btnMoreNew.setOnAction(e -> openViewAll("NEW_BOOKS", "Truyện Mới Nhất"));
         btnMoreCompleted.setOnAction(e -> openViewAll("COMPLETED_BOOKS", "Truyện Đã Hoàn Thành"));
         btnMoreComing.setOnAction(e -> openViewAll("COMING_SOON_BOOKS", "Truyện Sắp Ra Mắt"));
+
+        setupBottomNavigation();
     }
+
+    private void setupBottomNavigation() {
+        if (btnHome != null) {
+            btnHome.setStyle("-fx-background-color: #E0E0E0; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+        }
+
+        if (btnHistory != null) {
+            btnHistory.setOnAction(e -> SceneUtils.switchSceneAsync(btnHistory, "/view/history/history_screen.fxml", "Lịch sử đọc"));
+        }
+
+        if (btnFavorite != null) {
+            btnFavorite.setOnAction(e -> SceneUtils.switchSceneAsync(btnFavorite, "/view/favorite/favorite_screen.fxml", "Truyện yêu thích"));
+        }
+
+        if (btnAccount != null) {
+            btnAccount.setOnAction(e -> SceneUtils.switchSceneAsync(btnAccount, "/view/read/account_screen.fxml", "Tài khoản"));
+        }
+    }
+
 
     private void loadSection(HBox container, String type) {
         Platform.runLater(() -> {
