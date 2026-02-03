@@ -147,6 +147,11 @@
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font></Button>
+                  <Button fx:id="btnAI" layoutX="60.0" layoutY="28.0" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="ChatBox" textFill="#19345d">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
                         <Button fx:id="btnAccount" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="Account" textFill="#19345d">
                      <font>
                         <Font name="System Bold" size="12.0" />

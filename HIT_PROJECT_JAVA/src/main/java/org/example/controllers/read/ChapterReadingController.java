@@ -1,14 +1,18 @@
 package org.example.controllers.read;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
 import org.example.api.apiAll.ApiChapterResponse;
 import org.example.dao.HistoryDAO;
 import org.example.data.ChapterService;
@@ -18,7 +22,9 @@ import org.example.utils.ImageLoaderGlobal;
 import org.example.utils.MouseDragScrollHandler;
 import org.example.utils.SceneUtils;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class ChapterReadingController {
 
@@ -30,151 +36,111 @@ public class ChapterReadingController {
 
     @FXML private Button btnPrevChapter;
     @FXML private Button btnNextChapter;
-    @FXML private Button btnHome;
     @FXML private TextField chapterInput;
     @FXML private Label totalChaptersLabel;
+
 
     private final ChapterService chapterService = new ChapterService();
     private final HistoryDAO historyDAO = new HistoryDAO();
 
     private List<ChapterInfo> allChapters;
     private int currentChapterIndex;
-    private int totalChapters;
+    private String currentBookName;
+    private String currentBookSlug;
+    private String currentThumbnailUrl;
+    private int currentUserId;
 
-    private String bookTitle;
-    private String bookSlug;
-    private String bookThumb;
-    private int userId = 0;
-
-    private final String IMAGE_DOMAIN = "https://sv1.otruyencdn.com/";
-
-    private final String STYLE_ACTIVE = "-fx-background-color: #19345D; -fx-text-fill: WHITE; -fx-cursor: hand; -fx-background-radius: 5; -fx-font-weight: bold;";
-    private final String STYLE_DISABLED = "-fx-background-color: #E0E0E0; -fx-text-fill: #AAAAAA; -fx-background-radius: 5;";
+    private final String STYLE_ACTIVE = "-fx-background-color: #19345D; -fx-cursor: hand; -fx-background-radius: 5; -fx-text-fill: WHITE; -fx-font-weight: bold;";
+    private final String STYLE_DISABLED = "-fx-background-color: #BDC3C7; -fx-cursor: default; -fx-background-radius: 5; -fx-text-fill: #7F8C8D;";
 
     @FXML
     public void initialize() {
-        new MouseDragScrollHandler(scrollPane, imageContainer);
+        btnBack.setOnAction(event -> handleBack());
 
-        btnBack.setOnAction(e -> {
-            BookDetailController controller = SceneUtils.switchScene(btnBack, "/view/read/book_detail.fxml", "Chi tiết truyện");
-            if (controller != null) {
-                controller.setBookSlug(bookSlug);
-            }
-        });
-
-        if (btnHome != null) {
-            btnHome.setOnAction(e ->
-                    SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ")
-            );
-        }
-
-        chapterInput.setOnAction(e -> handleManualChapterInput());
-        chapterInput.setOnMouseClicked(e -> chapterInput.selectAll());
+        chapterInput.setOnAction(event -> handleChapterJump());
     }
 
-    public void setInitData(String bookName, String slug, String thumb, List<ChapterInfo> chapters, int startIndex, int userId) {
-        this.bookTitle = bookName;
-        this.bookSlug = slug;
-        this.bookThumb = thumb;
+    public void setInitData(String bookName, String bookSlug, String thumbnailUrl, List<ChapterInfo> chapters, int currentIndex, int userId) {
+        this.currentBookName = bookName;
+        this.currentBookSlug = bookSlug;
+        this.currentThumbnailUrl = thumbnailUrl;
         this.allChapters = chapters;
-        this.currentChapterIndex = startIndex;
-        this.userId = userId;
-
-        if (chapters != null) {
-            this.totalChapters = chapters.size();
-            totalChaptersLabel.setText("/ " + totalChapters);
-        }
+        this.currentChapterIndex = currentIndex;
+        this.currentUserId = userId;
 
         lblBookName.setText(bookName);
-        loadChapter(allChapters.get(currentChapterIndex));
+        if (totalChaptersLabel != null) {
+            totalChaptersLabel.setText("/ " + allChapters.size());
+        }
+
+        loadChapter(allChapters.get(currentIndex));
     }
 
     private void loadChapter(ChapterInfo chapter) {
-        lblChapterName.setText("Đang tải...");
-        imageContainer.getChildren().clear();
-        scrollPane.setVvalue(0);
-
-        updatePaginationUI();
-
-        btnPrevChapter.setDisable(true);
-        btnNextChapter.setDisable(true);
-        chapterInput.setDisable(true);
-
-        if (userId > 0) {
-            UserHistory history = new UserHistory();
-            history.setUserId(userId);
-            history.setBookSlug(bookSlug);
-            history.setBookName(bookTitle);
-            history.setThumbnailUrl(bookThumb);
-            history.setLastChapterName(chapter.getChapterName());
-            history.setLastChapterApiData(chapter.getChapterApiData());
-            new Thread(() -> historyDAO.saveHistory(history)).start();
-        }
-
-        Task<ApiChapterResponse.ChapterItem> task = new Task<>() {
-            @Override
-            protected ApiChapterResponse.ChapterItem call() {
-                return chapterService.getChapterContent(chapter.getChapterApiData());
-            }
-        };
-
-        task.setOnSucceeded(e -> {
-            ApiChapterResponse.ChapterItem item = task.getValue();
-            chapterInput.setDisable(false);
-
-            if (item != null) {
-                lblChapterName.setText("Chapter " + chapter.getChapterName());
-                renderImages(item);
-                updatePaginationUI();
-            } else {
-                lblChapterName.setText("Lỗi chương");
-                Label errorLbl = new Label("Không tải được dữ liệu ảnh.");
-                errorLbl.setStyle("-fx-text-fill: #333333; -fx-font-size: 14px;");
-                imageContainer.getChildren().add(errorLbl);
-                updatePaginationUI();
-            }
-        });
-
-        task.setOnFailed(e -> {
-            chapterInput.setDisable(false);
+        Platform.runLater(() -> {
+            lblChapterName.setText("Chap " + chapter.getChapterName());
+            imageContainer.getChildren().clear();
+            imageContainer.getChildren().add(new Label("Đang tải nội dung chương..."));
+            scrollPane.setVvalue(0.0);
             updatePaginationUI();
         });
 
-        new Thread(task).start();
+        saveReadingHistory(chapter);
+
+        CompletableFuture.supplyAsync(() -> chapterService.getChapterContent(chapter.getChapterApiData()))
+                .thenAccept(chapterData -> Platform.runLater(() -> {
+                    imageContainer.getChildren().clear();
+
+                    if (chapterData == null || chapterData.getChapterImages().isEmpty()) {
+                        imageContainer.getChildren().add(new Label("Lỗi tải chương hoặc chương này chưa có ảnh."));
+                        return;
+                    }
+
+                    for (ApiChapterResponse.ChapterImage img : chapterData.getChapterImages()) {
+                        String imgUrl = "https://sv1.otruyencdn.com/" + chapterData.getChapterPath() + "/" + img.getImageFile();
+
+                        ImageView imageView = new ImageView();
+                        imageView.setFitWidth(430);
+                        imageView.setPreserveRatio(true);
+
+                        ImageLoaderGlobal.setImage(imgUrl, imageView);
+
+                        imageContainer.getChildren().add(imageView);
+                    }
+
+                    new MouseDragScrollHandler(scrollPane, imageContainer);
+                }));
     }
 
-    private void renderImages(ApiChapterResponse.ChapterItem item) {
-        String path = item.getChapterPath();
-        List<ApiChapterResponse.ChapterImage> images = item.getChapterImages();
+    private void saveReadingHistory(ChapterInfo chapter) {
+        if (currentUserId <= 0) return;
 
-        for (ApiChapterResponse.ChapterImage img : images) {
-            String fullUrl = IMAGE_DOMAIN + path + "/" + img.getImageFile();
-            ImageView imageView = new ImageView();
-            imageView.setPreserveRatio(true);
-            imageView.fitWidthProperty().bind(scrollPane.widthProperty());
-            ImageLoaderGlobal.setImage(fullUrl, imageView);
-            imageContainer.getChildren().add(imageView);
-        }
+        CompletableFuture.runAsync(() -> {
+            UserHistory history = new UserHistory();
+            history.setUserId(currentUserId);
+            history.setBookSlug(currentBookSlug);
+            history.setBookName(currentBookName);
+            history.setThumbnailUrl(currentThumbnailUrl);
+            history.setLastChapterName(chapter.getChapterName());
+            history.setLastChapterApiData(chapter.getChapterApiData());
+
+            historyDAO.saveHistory(history);
+            System.out.println("Đã lưu lịch sử: " + currentBookName + " - Chap " + chapter.getChapterName());
+        });
     }
 
-    private void handleManualChapterInput() {
+    private void handleBack() {
         try {
-            String input = chapterInput.getText().trim();
-            int targetChapNum = Integer.parseInt(input);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/book_detail.fxml"));
+            Parent root = loader.load();
 
-            if (targetChapNum >= 1 && targetChapNum <= totalChapters) {
-                int targetIndex = targetChapNum - 1;
+            BookDetailController controller = loader.getController();
+            controller.setBookSlug(currentBookSlug);
 
-                if (targetIndex != currentChapterIndex) {
-                    currentChapterIndex = targetIndex;
-                    loadChapter(allChapters.get(currentChapterIndex));
-                    imageContainer.requestFocus();
-                }
-            } else {
-                chapterInput.setText(String.valueOf(currentChapterIndex + 1));
-            }
-        } catch (NumberFormatException e) {
-            chapterInput.setText(String.valueOf(currentChapterIndex + 1));
+            Stage stage = (Stage) btnBack.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -206,5 +172,23 @@ public class ChapterReadingController {
                 loadChapter(allChapters.get(currentChapterIndex));
             }
         });
+    }
+
+    private void handleChapterJump() {
+        try {
+            int targetPage = Integer.parseInt(chapterInput.getText());
+            int targetIndex = targetPage - 1;
+            if (targetIndex >= 0 && targetIndex < allChapters.size()) {
+                if (targetIndex != currentChapterIndex) {
+                    currentChapterIndex = targetIndex;
+                    loadChapter(allChapters.get(currentChapterIndex));
+                    imageContainer.requestFocus();
+                }
+            } else {
+                chapterInput.setText(String.valueOf(currentChapterIndex + 1));
+            }
+        } catch (NumberFormatException e) {
+            chapterInput.setText(String.valueOf(currentChapterIndex + 1));
+        }
     }
 }

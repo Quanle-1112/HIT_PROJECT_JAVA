@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.example.controllers.history.HistoryItemController;
 import org.example.dao.HistoryDAO;
 import org.example.model.user.UserHistory;
 import org.example.utils.SceneUtils;
@@ -28,6 +27,7 @@ public class HistoryScreenController {
     @FXML private Button btnAccount;
 
     private final HistoryDAO historyDAO = new HistoryDAO();
+
     private int currentUserId = 1;
 
     @FXML
@@ -63,8 +63,8 @@ public class HistoryScreenController {
 
     private void loadHistoryData() {
         listContainer.getChildren().clear();
-        Label loadingLabel = new Label("Đang tải lịch sử đọc...");
-        loadingLabel.setStyle("-fx-text-fill: #666; -fx-font-style: italic; -fx-padding: 10;");
+        Label loadingLabel = new Label("Đang tải dữ liệu...");
+        loadingLabel.setStyle("-fx-text-fill: #666; -fx-padding: 20;");
         listContainer.getChildren().add(loadingLabel);
 
         CompletableFuture.supplyAsync(() -> historyDAO.getHistoryByUserId(currentUserId))
@@ -72,7 +72,7 @@ public class HistoryScreenController {
                     listContainer.getChildren().clear();
 
                     if (historyList == null || historyList.isEmpty()) {
-                        Label emptyLabel = new Label("Bạn chưa đọc truyện nào gần đây.");
+                        Label emptyLabel = new Label("Bạn chưa đọc truyện nào.");
                         emptyLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20;");
                         listContainer.getChildren().add(emptyLabel);
                     } else {
@@ -95,9 +95,16 @@ public class HistoryScreenController {
     }
 
     private void handleClearAll() {
-        listContainer.getChildren().clear();
-        Label clearedLabel = new Label("Đã xóa toàn bộ lịch sử.");
-        clearedLabel.setStyle("-fx-text-fill: #27AE60; -fx-font-weight: bold; -fx-padding: 20;");
-        listContainer.getChildren().add(clearedLabel);
+        CompletableFuture.runAsync(() -> {
+            boolean success = historyDAO.deleteAllByUserId(currentUserId);
+            Platform.runLater(() -> {
+                if (success) {
+                    listContainer.getChildren().clear();
+                    Label clearedLabel = new Label("Đã xóa toàn bộ lịch sử.");
+                    clearedLabel.setStyle("-fx-text-fill: #27AE60; -fx-font-weight: bold; -fx-padding: 20;");
+                    listContainer.getChildren().add(clearedLabel);
+                }
+            });
+        });
     }
 }
