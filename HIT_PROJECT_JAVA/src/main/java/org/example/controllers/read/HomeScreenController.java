@@ -155,10 +155,10 @@ public class HomeScreenController {
 
 
     private void setupBottomNavigation() {
-            if (btnHome != null) {
-                btnHome.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
-                btnHome.setDisable(true);
-            }
+        if (btnHome != null) {
+            btnHome.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+            btnHome.setDisable(true);
+        }
 
         if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Home"));
         if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "History"));
