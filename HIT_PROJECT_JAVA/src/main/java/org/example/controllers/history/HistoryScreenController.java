@@ -12,69 +12,50 @@ import org.example.model.user.UserHistory;
 import org.example.utils.SceneUtils;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class HistoryScreenController {
 
     @FXML private VBox listContainer;
     @FXML private Button btnClearAll;
-    @FXML private Button btnBack;
-
-    @FXML private Button btnHome;
-    @FXML private Button btnHistory;
-    @FXML private Button btnFavorite;
-    @FXML private Button btnAccount;
+    @FXML private Button btnHome, btnHistory, btnFavorite, btnAccount;
 
     private final HistoryDAO historyDAO = new HistoryDAO();
+    private int currentUserId = -1;
 
-    private int currentUserId = 1;
+    public void setUserId(int userId) {
+        this.currentUserId = userId;
+        loadHistoryData();
+    }
 
     @FXML
     public void initialize() {
-        setupBottomNavigation();
-
-        loadHistoryData();
-
-        if (btnClearAll != null) {
-            btnClearAll.setOnAction(e -> handleClearAll());
-        }
-
-        if (btnBack != null) {
-            btnBack.setOnAction(e -> SceneUtils.switchScene(btnBack, "/view/read/home_screen.fxml", "Trang chủ"));
-        }
-    }
-
-    private void setupBottomNavigation() {
+        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Home"));
+        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "History"));
+        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Favorite"));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Account"));
+        if (btnClearAll != null) btnClearAll.setOnAction(e -> handleClearAll());
         if (btnHistory != null) {
             btnHistory.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
             btnHistory.setDisable(true);
         }
-
-        if (btnHome != null)
-            btnHome.setOnAction(e -> SceneUtils.switchSceneAsync(btnHome, "/view/read/home_screen.fxml", "Trang chủ"));
-
-        if (btnFavorite != null)
-            btnFavorite.setOnAction(e -> SceneUtils.switchSceneAsync(btnFavorite, "/view/read/favorite_screen.fxml", "Truyện yêu thích"));
-
-        if (btnAccount != null)
-            btnAccount.setOnAction(e -> SceneUtils.switchSceneAsync(btnAccount, "/view/read/account_screen.fxml", "Tài khoản"));
     }
 
     private void loadHistoryData() {
+        if (currentUserId == -1) {
+            listContainer.getChildren().add(new Label("Vui lòng đăng nhập để xem lịch sử"));
+            return;
+        }
+
         listContainer.getChildren().clear();
-        Label loadingLabel = new Label("Đang tải dữ liệu...");
-        loadingLabel.setStyle("-fx-text-fill: #666; -fx-padding: 20;");
-        listContainer.getChildren().add(loadingLabel);
+        listContainer.getChildren().add(new Label("Đang tải..."));
 
         CompletableFuture.supplyAsync(() -> historyDAO.getHistoryByUserId(currentUserId))
                 .thenAccept(historyList -> Platform.runLater(() -> {
                     listContainer.getChildren().clear();
 
                     if (historyList == null || historyList.isEmpty()) {
-                        Label emptyLabel = new Label("Bạn chưa đọc truyện nào.");
-                        emptyLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20;");
-                        listContainer.getChildren().add(emptyLabel);
+                        listContainer.getChildren().add(new Label("Chưa có lịch sử đọc truyện."));
                     } else {
                         try {
                             for (UserHistory item : historyList) {
@@ -82,27 +63,25 @@ public class HistoryScreenController {
                                 HBox node = loader.load();
 
                                 HistoryItemController controller = loader.getController();
-                                controller.setData(item);
+                                controller.setData(item); // Item controller tự xử lý nút xóa
 
                                 listContainer.getChildren().add(node);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
-                            listContainer.getChildren().add(new Label("Lỗi hiển thị dữ liệu!"));
                         }
                     }
                 }));
     }
 
     private void handleClearAll() {
+        if (currentUserId == -1) return;
         CompletableFuture.runAsync(() -> {
             boolean success = historyDAO.deleteAllByUserId(currentUserId);
             Platform.runLater(() -> {
                 if (success) {
                     listContainer.getChildren().clear();
-                    Label clearedLabel = new Label("Đã xóa toàn bộ lịch sử.");
-                    clearedLabel.setStyle("-fx-text-fill: #27AE60; -fx-font-weight: bold; -fx-padding: 20;");
-                    listContainer.getChildren().add(clearedLabel);
+                    listContainer.getChildren().add(new Label("Đã xóa toàn bộ lịch sử."));
                 }
             });
         });

@@ -66,7 +66,7 @@ public class BookDetailController {
     private List<ChapterInfo> allChapters = new ArrayList<>();
     private int currentPage = 1;
     private int totalPages = 1;
-    private final int ITEMS_PER_PAGE = 50;
+    private final int ITEMS_PER_PAGE = 25;
     private final String IMAGE_BASE_URL = "https://img.otruyenapi.com/uploads/comics/";
 
     private boolean isFavorite = false;
@@ -111,7 +111,6 @@ public class BookDetailController {
             ApiOneBookResponse.ApiOneBookData data = task.getValue();
             if (data != null && data.getItem() != null) {
                 updateUI(data);
-
                 checkUserStatus();
             } else {
                 headerTitle.setText("Không tải được dữ liệu");

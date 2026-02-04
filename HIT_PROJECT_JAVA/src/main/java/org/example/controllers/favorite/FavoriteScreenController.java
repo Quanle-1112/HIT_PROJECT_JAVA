@@ -31,7 +31,10 @@ public class FavoriteScreenController {
     @FXML
     public void initialize() {
         setupBottomNavigation();
-
+        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Home"));
+        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "History"));
+        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Favorite"));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Account"));
         loadFavoriteData();
     }
 
@@ -39,17 +42,6 @@ public class FavoriteScreenController {
         if (btnFavorite != null) {
             btnFavorite.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
             btnFavorite.setDisable(true);
-        }
-
-        // Gán sự kiện chuyển trang Async cho các nút còn lại
-        if (btnHome != null) {
-            btnHome.setOnAction(e -> SceneUtils.switchSceneAsync(btnHome, "/view/read/home_screen.fxml", "Trang chủ"));
-        }
-        if (btnHistory != null) {
-            btnHistory.setOnAction(e -> SceneUtils.switchSceneAsync(btnHistory, "/view/read/history_screen.fxml", "Lịch sử đọc"));
-        }
-        if (btnAccount != null) {
-            btnAccount.setOnAction(e -> SceneUtils.switchSceneAsync(btnAccount, "/view/read/account_screen.fxml", "Tài khoản"));
         }
     }
 
@@ -70,7 +62,7 @@ public class FavoriteScreenController {
                     } else {
                         try {
                             for (UserFavorite fav : favList) {
-                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/favorite_item.fxml"));
+                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/favorite/favorite_item.fxml"));
                                 HBox node = loader.load();
 
                                 FavoriteItemController controller = loader.getController();
