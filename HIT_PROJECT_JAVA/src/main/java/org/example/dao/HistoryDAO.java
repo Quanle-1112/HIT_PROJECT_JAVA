@@ -62,4 +62,29 @@ public class HistoryDAO {
         }
         return list;
     }
+
+    public boolean deleteHistory(int userId, String bookSlug) {
+        String sql = "DELETE FROM user_history WHERE user_id = ? AND book_slug = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, bookSlug);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteAllByUserId(int userId) {
+        String sql = "DELETE FROM user_history WHERE user_id = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -22,16 +22,27 @@ import java.util.List;
 
 public class ChapterReadingController {
 
-    @FXML private Button btnBack;
-    @FXML private Label lblChapterName;
-    @FXML private Label lblBookName;
-    @FXML private ScrollPane scrollPane;
-    @FXML private VBox imageContainer;
+    @FXML
+    private Button btnBack;
+    @FXML
+    private Label lblChapterName;
+    @FXML
+    private Label lblBookName;
+    @FXML
+    private ScrollPane scrollPane;
+    @FXML
+    private VBox imageContainer;
 
-    @FXML private Button btnPrevChapter;
-    @FXML private Button btnNextChapter;
-    @FXML private TextField chapterInput;
-    @FXML private Label totalChaptersLabel;
+    @FXML
+    private Button btnPrevChapter;
+    @FXML
+    private Button btnNextChapter;
+    @FXML
+    private Button btnHome;
+    @FXML
+    private TextField chapterInput;
+    @FXML
+    private Label totalChaptersLabel;
 
     private final ChapterService chapterService = new ChapterService();
     private final HistoryDAO historyDAO = new HistoryDAO();
@@ -61,8 +72,13 @@ public class ChapterReadingController {
             }
         });
 
-        chapterInput.setOnAction(e -> handleManualChapterInput());
+        if (btnHome != null) {
+            btnHome.setOnAction(e ->
+                    SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ")
+            );
+        }
 
+        chapterInput.setOnAction(e -> handleManualChapterInput());
         chapterInput.setOnMouseClicked(e -> chapterInput.selectAll());
     }
 

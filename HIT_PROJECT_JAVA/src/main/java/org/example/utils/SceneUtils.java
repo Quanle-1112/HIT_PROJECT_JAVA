@@ -1,5 +1,6 @@
 package org.example.utils;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -11,6 +12,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public class SceneUtils {
 
@@ -57,14 +59,22 @@ public class SceneUtils {
             Parent root = loader.load();
 
             Stage loadingStage = new Stage();
-            loadingStage.initStyle(StageStyle.UNDECORATED);
+            loadingStage.initStyle(StageStyle.TRANSPARENT);
             loadingStage.initModality(Modality.APPLICATION_MODAL);
-            loadingStage.initOwner(owner);
+            if (owner != null) {
+                loadingStage.initOwner(owner);
+            }
 
             Scene scene = new Scene(root);
             scene.setFill(Color.TRANSPARENT);
             loadingStage.setScene(scene);
-            loadingStage.initStyle(StageStyle.TRANSPARENT);
+
+            if (owner != null) {
+                double centerX = owner.getX() + (owner.getWidth() / 2);
+                double centerY = owner.getY() + (owner.getHeight() / 2);
+                loadingStage.setX(centerX - 255);
+                loadingStage.setY(centerY - 318);
+            }
 
             loadingStage.show();
             return loadingStage;
@@ -78,5 +88,24 @@ public class SceneUtils {
         if (loadingStage != null && loadingStage.isShowing()) {
             loadingStage.close();
         }
+    }
+
+    public static void switchSceneAsync(Node sourceNode, String fxmlPath, String title) {
+        Stage owner = (Stage) sourceNode.getScene().getWindow();
+
+        Stage loadingStage = showLoading(owner);
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).thenAccept(v -> {
+            Platform.runLater(() -> {
+                closeLoading(loadingStage);
+                switchScene(sourceNode, fxmlPath, title);
+            });
+        });
     }
 }
