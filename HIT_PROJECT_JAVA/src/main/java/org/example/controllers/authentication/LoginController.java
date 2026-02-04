@@ -8,6 +8,7 @@ import org.example.model.user.User;
 import org.example.services.ILoginService;
 import org.example.services.impl.ILoginServiceImpl;
 import org.example.utils.SceneUtils;
+import org.example.utils.SessionManager;
 import org.example.utils.ValidationUtils;
 
 public class LoginController {
@@ -49,12 +50,10 @@ public class LoginController {
         if (isPasswordVisible) {
             enterPasswordField.setVisible(false);
             showPasswordTextField.setVisible(true);
-
             if (eyeIcon != null) eyeIcon.setOpacity(1.0);
         } else {
             enterPasswordField.setVisible(true);
             showPasswordTextField.setVisible(false);
-
             if (eyeIcon != null) eyeIcon.setOpacity(0.5);
         }
     }
@@ -70,6 +69,8 @@ public class LoginController {
         User user = loginService.authenticate(usernameTextField.getText().trim(), enterPasswordField.getText());
 
         if (user != null) {
+            SessionManager.getInstance().setCurrentUser(user);
+
             if (user.isFirstLogin()) {
                 ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/authentication/confirm_information_screen.fxml", "Xác nhận thông tin");
                 if (controller != null) controller.setCurrentUser(user);
