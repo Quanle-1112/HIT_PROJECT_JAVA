@@ -7,13 +7,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.example.controllers.favorite.FavoriteItemController;
 import org.example.dao.FavoriteDAO;
 import org.example.model.user.UserFavorite;
 import org.example.utils.SceneUtils;
+import org.example.utils.SessionManager; // Import SessionManager
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class FavoriteScreenController {
@@ -26,29 +25,25 @@ public class FavoriteScreenController {
     @FXML private Button btnAccount;
 
     private final FavoriteDAO favoriteDAO = new FavoriteDAO();
-    private int currentUserId = 1;
+    private int currentUserId;
 
     @FXML
     public void initialize() {
-        setupBottomNavigation();
-        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Home"));
-        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "History"));
-        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Favorite"));
-        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Account"));
-        loadFavoriteData();
-    }
+        currentUserId = SessionManager.getInstance().getCurrentUserId();
 
-    private void setupBottomNavigation() {
-        if (btnFavorite != null) {
-            btnFavorite.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
-            btnFavorite.setDisable(true);
+        setupBottomNavigation();
+
+        if (currentUserId != -1) {
+            loadFavoriteData();
+        } else {
+            showEmptyMessage("Vui lòng đăng nhập để xem danh sách yêu thích.");
         }
     }
 
     private void loadFavoriteData() {
         listContainer.getChildren().clear();
-        Label loadingLabel = new Label("Đang tải danh sách yêu thích...");
-        loadingLabel.setStyle("-fx-text-fill: #666; -fx-font-style: italic; -fx-padding: 20;");
+        Label loadingLabel = new Label("Đang tải dữ liệu...");
+        loadingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #19345d; -fx-padding: 20;");
         listContainer.getChildren().add(loadingLabel);
 
         CompletableFuture.supplyAsync(() -> favoriteDAO.getFavoritesByUserId(currentUserId))
@@ -56,9 +51,7 @@ public class FavoriteScreenController {
                     listContainer.getChildren().clear();
 
                     if (favList == null || favList.isEmpty()) {
-                        Label emptyLabel = new Label("Bạn chưa yêu thích bộ truyện nào.");
-                        emptyLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20;");
-                        listContainer.getChildren().add(emptyLabel);
+                        showEmptyMessage("Bạn chưa yêu thích bộ truyện nào.");
                     } else {
                         try {
                             for (UserFavorite fav : favList) {
@@ -66,15 +59,34 @@ public class FavoriteScreenController {
                                 HBox node = loader.load();
 
                                 FavoriteItemController controller = loader.getController();
-                                controller.setData(fav);
+                                controller.setData(fav, this::checkListEmptyAfterDelete);
 
                                 listContainer.getChildren().add(node);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
-                            listContainer.getChildren().add(new Label("Lỗi hiển thị dữ liệu!"));
+                            showEmptyMessage("Lỗi hiển thị dữ liệu (Kiểm tra đường dẫn FXML)!");
                         }
                     }
                 }));
+    }
+
+    private void checkListEmptyAfterDelete() {
+        if (listContainer.getChildren().isEmpty()) {
+            showEmptyMessage("Bạn chưa yêu thích bộ truyện nào.");
+        }
+    }
+
+    private void showEmptyMessage(String message) {
+        Label label = new Label(message);
+        label.setStyle("-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20; -fx-font-style: italic;");
+        listContainer.getChildren().add(label);
+    }
+
+    private void setupBottomNavigation() {
+        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ"));
+        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "Lịch sử"));
+        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Yêu thích"));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/read/account_screen.fxml", "Tài khoản"));
     }
 }
