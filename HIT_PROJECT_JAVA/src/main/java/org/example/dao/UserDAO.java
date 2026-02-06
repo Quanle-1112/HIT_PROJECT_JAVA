@@ -151,4 +151,24 @@ public class UserDAO {
         try { user.setGender(Gender.valueOf(rs.getString("gender"))); } catch (Exception e) { user.setGender(Gender.Other); }
         return user;
     }
+
+    public boolean updateUserProfile(User user) {
+        String sql = "UPDATE users SET full_name = ?, avatar_url = ? WHERE user_id = ?";
+
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getFullName());
+            stmt.setString(2, user.getAvatarUrl());
+            stmt.setInt(3, user.getId());
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi update user profile: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
