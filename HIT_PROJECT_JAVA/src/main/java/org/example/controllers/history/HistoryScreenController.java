@@ -21,7 +21,7 @@ public class HistoryScreenController {
     @FXML private VBox listContainer;
     @FXML private Button btnClearAll;
 
-    @FXML private Button btnHome, btnHistory, btnFavorite, btnAccount;
+    @FXML private Button btnHome, btnHistory, btnFavorite,btnAI, btnAccount;
 
     private final HistoryDAO historyDAO = new HistoryDAO();
     private int currentUserId;
@@ -110,9 +110,15 @@ public class HistoryScreenController {
     }
 
     private void setupNavigation() {
+
+        if (btnHistory != null) {
+            btnHistory.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+            btnHistory.setDisable(true);
+        }
         if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ"));
         if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "Lịch sử"));
         if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Yêu thích"));
-        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/read/account_screen.fxml", "Tài khoản"));
+        if (btnAI != null) btnAI.setOnAction(e -> System.out.println("Tính năng AI đang phát triển"));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Tài khoản"));
     }
 }
