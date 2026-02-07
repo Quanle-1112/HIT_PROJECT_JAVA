@@ -106,20 +106,7 @@ public class AccountScreenController {
     }
 
     private void handleUpdateName() {
-        TextInputDialog dialog = new TextInputDialog(currentUser.getFullName());
-        dialog.setTitle("Đổi tên hiển thị");
-        dialog.setHeaderText("Nhập tên hiển thị mới:");
-        dialog.setContentText("Tên mới:");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(name -> {
-            String newName = name.trim();
-            if (newName.isEmpty()) return;
-
-            fullNameLabel.setText(newName);
-            currentUser.setFullName(newName);
-            saveUserChanges("Đã đổi tên thành công.");
-        });
+        SceneUtils.switchScene(btnChangeName, "/view/account/change_name.fxml", "Đổi tên hiển thị");
     }
 
     private void saveUserChanges(String msg) {
