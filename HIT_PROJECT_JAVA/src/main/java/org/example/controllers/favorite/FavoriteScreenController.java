@@ -7,11 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.constant.MessageConstant;
 import org.example.dao.FavoriteDAO;
 import org.example.model.user.UserFavorite;
 import org.example.utils.SceneUtils;
-import org.example.utils.SessionManager; // Import SessionManager
-
+import org.example.utils.SessionManager;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
@@ -20,6 +20,7 @@ public class FavoriteScreenController {
     @FXML private VBox listContainer;
 
     @FXML private Button btnHome;
+    @FXML private Button btnAI;
     @FXML private Button btnHistory;
     @FXML private Button btnFavorite;
     @FXML private Button btnAccount;
@@ -36,7 +37,7 @@ public class FavoriteScreenController {
         if (currentUserId != -1) {
             loadFavoriteData();
         } else {
-            showEmptyMessage("Vui lòng đăng nhập để xem danh sách yêu thích.");
+            showEmptyMessage(MessageConstant.FAVORITE_LOGIN_REQ);
         }
     }
 
@@ -51,7 +52,7 @@ public class FavoriteScreenController {
                     listContainer.getChildren().clear();
 
                     if (favList == null || favList.isEmpty()) {
-                        showEmptyMessage("Bạn chưa yêu thích bộ truyện nào.");
+                        showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
                     } else {
                         try {
                             for (UserFavorite fav : favList) {
@@ -73,7 +74,7 @@ public class FavoriteScreenController {
 
     private void checkListEmptyAfterDelete() {
         if (listContainer.getChildren().isEmpty()) {
-            showEmptyMessage("Bạn chưa yêu thích bộ truyện nào.");
+            showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
         }
     }
 
@@ -84,9 +85,15 @@ public class FavoriteScreenController {
     }
 
     private void setupBottomNavigation() {
+
+        if (btnFavorite != null) {
+            btnFavorite.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+            btnFavorite.setDisable(true);
+        }
         if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ"));
         if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "Lịch sử"));
         if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Yêu thích"));
-        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/read/account_screen.fxml", "Tài khoản"));
+        if (btnAI != null) btnAI.setOnAction(e -> System.out.println("Tính năng AI đang phát triển"));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Tài khoản"));
     }
 }

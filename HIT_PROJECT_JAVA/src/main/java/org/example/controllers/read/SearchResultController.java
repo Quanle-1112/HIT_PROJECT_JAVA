@@ -10,6 +10,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
+import org.example.constant.MessageConstant;
 import org.example.data.BookService;
 import org.example.utils.SceneUtils;
 
@@ -61,7 +62,7 @@ public class SearchResultController {
             List<ApiBookItem> books = task.getValue();
 
             if (books == null || books.isEmpty()) {
-                resultContainer.getChildren().add(new Label("Không tìm thấy truyện nào."));
+                resultContainer.getChildren().add(new Label(MessageConstant.SEARCH_NO_RESULT));
             } else {
                 try {
                     for (ApiBookItem book : books) {
@@ -78,7 +79,7 @@ public class SearchResultController {
 
         task.setOnFailed(event -> {
             resultContainer.getChildren().clear();
-            resultContainer.getChildren().add(new Label("Lỗi kết nối!"));
+            resultContainer.getChildren().add(new Label(MessageConstant.ERR_NETWORK));
             Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
         });
 

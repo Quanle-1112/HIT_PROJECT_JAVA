@@ -22,27 +22,17 @@ import java.util.List;
 
 public class ChapterReadingController {
 
-    @FXML
-    private Button btnBack;
-    @FXML
-    private Label lblChapterName;
-    @FXML
-    private Label lblBookName;
-    @FXML
-    private ScrollPane scrollPane;
-    @FXML
-    private VBox imageContainer;
+    @FXML private Button btnBack;
+    @FXML private Label lblChapterName;
+    @FXML private Label lblBookName;
+    @FXML private ScrollPane scrollPane;
+    @FXML private VBox imageContainer;
 
-    @FXML
-    private Button btnPrevChapter;
-    @FXML
-    private Button btnNextChapter;
-    @FXML
-    private Button btnHome;
-    @FXML
-    private TextField chapterInput;
-    @FXML
-    private Label totalChaptersLabel;
+    @FXML private Button btnPrevChapter;
+    @FXML private Button btnNextChapter;
+    @FXML private Button btnHome;
+    @FXML private TextField chapterInput;
+    @FXML private Label totalChaptersLabel;
 
     private final ChapterService chapterService = new ChapterService();
     private final HistoryDAO historyDAO = new HistoryDAO();

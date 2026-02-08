@@ -1,5 +1,6 @@
 package org.example.services.impl;
 
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
 import org.example.model.user.Role;
 import org.example.model.user.Gender;
@@ -13,11 +14,11 @@ public class IRegisterServiceImpl implements IRegisterService {
     @Override
     public String register(User user, String confirmPassword) {
         if (userDAO.isEmailExist(user.getEmail())) {
-            return "Email đã được đăng ký!";
+            return MessageConstant.REGISTER_EMAIL_EXIST;
         }
 
         if (userDAO.isUsernameExist(user.getUsername())) {
-            return "Tên đăng nhập đã tồn tại!";
+            return MessageConstant.REGISTER_USERNAME_EXIST;
         }
 
         String hashedPassword = EncryptionUtils.hashPassword(user.getPassword());
@@ -28,6 +29,6 @@ public class IRegisterServiceImpl implements IRegisterService {
         user.setStatus("ACTIVE");
 
         boolean isSuccess = userDAO.saveUser(user);
-        return isSuccess ? "SUCCESS" : "Lỗi hệ thống";
+        return isSuccess ? MessageConstant.REGISTER_SUCCESS : MessageConstant.REGISTER_FAIL;
     }
 }

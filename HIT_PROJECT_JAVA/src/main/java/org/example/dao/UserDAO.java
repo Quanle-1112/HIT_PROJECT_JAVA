@@ -151,4 +151,81 @@ public class UserDAO {
         try { user.setGender(Gender.valueOf(rs.getString("gender"))); } catch (Exception e) { user.setGender(Gender.Other); }
         return user;
     }
+
+    public boolean updateUserProfile(User user) {
+        String sql = "UPDATE users SET full_name = ?, avatar_url = ? WHERE user_id = ?";
+
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, user.getFullName());
+            stmt.setString(2, user.getAvatarUrl());
+            stmt.setInt(3, user.getId());
+
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Lỗi update user profile: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateUserPassword(int userId, String newPasswordHash) {
+        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, newPasswordHash);
+            stmt.setInt(2, userId);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteUser(int userId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DBConnect.getConnection();
+
+            conn.setAutoCommit(false);
+
+            String sqlHistory = "DELETE FROM user_history WHERE user_id = ?";
+            stmt = conn.prepareStatement(sqlHistory);
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+            stmt.close();
+
+            String sqlFavorite = "DELETE FROM user_favorites WHERE user_id = ?";
+            stmt = conn.prepareStatement(sqlFavorite);
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+            stmt.close();
+
+            String sqlUser = "DELETE FROM users WHERE user_id = ?";
+            stmt = conn.prepareStatement(sqlUser);
+            stmt.setInt(1, userId);
+            int rowsAffected = stmt.executeUpdate();
+
+            conn.commit();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            DBConnect.closeConnection(conn);
+        }
+    }
+
 }

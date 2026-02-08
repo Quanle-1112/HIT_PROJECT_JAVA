@@ -3,6 +3,7 @@ package org.example.controllers.authentication;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.constant.MessageConstant;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.OtpStatus;
 import org.example.services.IForgotPasswordService;
@@ -12,14 +13,14 @@ import org.example.utils.ValidationUtils;
 
 public class ForgotPasswordController {
     @FXML private TextField emailToResetPasswordText;
-    @FXML private Label emailNotFoundText, pleaseCompleteAllFieldsText;
+    @FXML private Label errorLabel;
     @FXML private Button sendRecoveryCodeButton, sendingCodeButton, backToLoginButton;
 
     private final IForgotPasswordService forgotPasswordService = new IForgotPasswordServiceImpl();
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
+        UIExceptionHandler.hideError(errorLabel);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
         sendRecoveryCodeButton.setOnAction(event -> handleSendCode());
@@ -27,11 +28,12 @@ public class ForgotPasswordController {
     }
 
     private void handleSendCode() {
-        UIExceptionHandler.hideError(emailNotFoundText, pleaseCompleteAllFieldsText);
+        UIExceptionHandler.hideError(errorLabel);
         String email = emailToResetPasswordText.getText().trim();
 
         if (ValidationUtils.areFieldsEmpty(emailToResetPasswordText)) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText); return;
+            showError(MessageConstant.FORGOT_PASS_EMAIL_EMPTY);
+            return;
         }
 
         sendRecoveryCodeButton.setVisible(false);
@@ -48,11 +50,16 @@ public class ForgotPasswordController {
                     ConfirmVerifyCodeController controller = SceneUtils.switchScene(sendRecoveryCodeButton, "/view/authentication/confirm_verify_code.fxml", "Xác nhận OTP");
                     if (controller != null) controller.setInitData(email);
                 } else if (status == OtpStatus.EMAIL_NOT_EXIST) {
-                    UIExceptionHandler.showError(emailNotFoundText);
+                    showError(MessageConstant.FORGOT_PASS_EMAIL_NOT_EXIST);
                 } else {
-                    System.err.println("Gửi mail thất bại: " + status);
+                    showError(MessageConstant.FORGOT_PASS_SEND_FAIL);
                 }
             });
         }).start();
+    }
+
+    private void showError(String message) {
+        errorLabel.setText(message);
+        UIExceptionHandler.showError(errorLabel);
     }
 }

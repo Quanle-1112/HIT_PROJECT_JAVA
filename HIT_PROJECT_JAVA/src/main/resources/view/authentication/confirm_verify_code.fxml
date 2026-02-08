@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefWidth="350.0" style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.ConfirmVerifyCodeController">
+<VBox prefWidth="350.0" style="-fx-background-color: transparent; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.ConfirmVerifyCodeController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="377.0" style="-fx-background-color: #19345D; -fx-padding: 0 15 0 15;">
          <children>
@@ -30,7 +30,7 @@
                <children>
                   <ImageView fitHeight="41.0" fitWidth="51.0" layoutX="22.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../image/4314134.jpg" />
+                        <Image url="@../../image/4314134.png" />
                      </image>
                   </ImageView>
                </children></Pane>
@@ -53,17 +53,7 @@
             </TextField>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label fx:id="errorLabel" alignment="CENTER" layoutX="71.0" text="Invalid code. Please try again." textAlignment="CENTER" textFill="RED">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="pleaseCompleteAllFieldsText" alignment="CENTER" layoutX="71.0" text="Please complete all fields!" textAlignment="CENTER" textFill="RED">
-                     <font>
-                        <Font size="13.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="expiredCodeText" alignment="CENTER" prefHeight="17.0" prefWidth="310.0" text="Verification code expired. Please resend!" textFill="RED" />
+                  <Label fx:id="errorLabel" alignment="CENTER" prefHeight="17.0" prefWidth="310.0" text="Error" textFill="RED" />
                </children>
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">

@@ -26,7 +26,6 @@ public class BookService {
 
     public List<ApiCategory> getAllCategories() {
         String url = "https://otruyenapi.com/v1/api/the-loai";
-        System.out.println("Đang gọi API: " + url);
 
         String jsonResponse = ApiGet.getApi(url);
 
@@ -47,7 +46,6 @@ public class BookService {
                         ApiCategory cat = gson.fromJson(elem, ApiCategory.class);
                         categories.add(cat);
                     }
-                    System.out.println("Đã tìm thấy " + categories.size() + " thể loại.");
                     return categories;
                 }
             }

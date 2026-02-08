@@ -3,6 +3,7 @@ package org.example.controllers.authentication;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import org.example.constant.MessageConstant;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.ILoginService;
@@ -16,8 +17,7 @@ public class LoginController {
     @FXML private Button cancelButton, loginButton, forgotPasswordButton;
     @FXML private PasswordField enterPasswordField;
     @FXML private TextField usernameTextField;
-    @FXML private Label invalidLoginText, pleaseCompleteAllFieldsText;
-
+    @FXML private Label errorLabel;
     @FXML private TextField showPasswordTextField;
     @FXML private Button togglePasswordButton;
     @FXML private ImageView eyeIcon;
@@ -27,26 +27,26 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(invalidLoginText, pleaseCompleteAllFieldsText);
+        UIExceptionHandler.hideError(errorLabel);
 
         if (showPasswordTextField != null && enterPasswordField != null) {
             showPasswordTextField.textProperty().bindBidirectional(enterPasswordField.textProperty());
         }
 
         loginButton.setOnAction(event -> handleLogin());
+        enterPasswordField.setOnAction(event -> handleLogin());
+        usernameTextField.setOnAction(event -> handleLogin());
 
-        cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Welcome", cancelButton));
-
-        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", "Forgot Password"));
+        cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Start Screen", cancelButton));
+        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", MessageConstant.TITLE_FORGOT_PASS));
 
         if (togglePasswordButton != null) {
-            togglePasswordButton.setOnAction(event -> handleTogglePassword());
+            togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
         }
     }
 
-    private void handleTogglePassword() {
+    private void togglePasswordVisibility() {
         isPasswordVisible = !isPasswordVisible;
-
         if (isPasswordVisible) {
             enterPasswordField.setVisible(false);
             showPasswordTextField.setVisible(true);
@@ -59,10 +59,10 @@ public class LoginController {
     }
 
     private void handleLogin() {
-        UIExceptionHandler.hideError(invalidLoginText, pleaseCompleteAllFieldsText);
+        UIExceptionHandler.hideError(errorLabel);
 
         if (ValidationUtils.areFieldsEmpty(usernameTextField, enterPasswordField)) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
 
@@ -70,15 +70,19 @@ public class LoginController {
 
         if (user != null) {
             SessionManager.getInstance().setCurrentUser(user);
-
             if (user.isFirstLogin()) {
-                ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/authentication/confirm_information_screen.fxml", "Xác nhận thông tin");
+                ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/authentication/confirm_information_screen.fxml", MessageConstant.TITLE_CONFIRM_INFO);
                 if (controller != null) controller.setCurrentUser(user);
             } else {
-                SceneUtils.switchScene(loginButton, "/view/read/home_screen.fxml", "Trang chủ");
+                SceneUtils.switchScene(loginButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME);
             }
         } else {
-            UIExceptionHandler.showError(invalidLoginText);
+            showError(MessageConstant.LOGIN_FAIL);
         }
+    }
+
+    private void showError(String message) {
+        errorLabel.setText(message);
+        UIExceptionHandler.showError(errorLabel);
     }
 }

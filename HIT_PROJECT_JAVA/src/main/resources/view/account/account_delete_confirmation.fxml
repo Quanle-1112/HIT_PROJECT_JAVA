@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefWidth="400.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-width: 2; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.account.AccountDeleteController">
+    <children>
+        <AnchorPane prefHeight="50.0" style="-fx-background-color: #19345D;">
+            <children>
+                <Label layoutX="14.0" layoutY="13.0" text="Xóa Tài Khoản Vĩnh Viễn" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+                <Button fx:id="btnClose" layoutX="360.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold;" text="X">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                </Button>
+            </children>
+        </AnchorPane>
+
+        <VBox spacing="15.0" style="-fx-background-color: #ECECE7;">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <Label text="CẢNH BÁO: Hành động này không thể hoàn tác!" textFill="#ff1500" wrapText="true">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <Label text="Toàn bộ lịch sử đọc, truyện yêu thích và thông tin cá nhân của bạn sẽ bị xóa khỏi hệ thống!" textFill="#555555" wrapText="true">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+
+                <Separator prefWidth="200.0" />
+
+                <Label fx:id="lblStatus" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Đang gửi mã xác thực tới email..." textFill="#666666" wrapText="true">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Nhập mã OTP để xác nhận xóa:" textFill="#19345d">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <HBox spacing="10.0">
+                            <children>
+                                <TextField fx:id="txtOtp" promptText="Nhập OTP..." style="-fx-background-radius: 5; -fx-border-color: #ccc; -fx-border-radius: 5;" HBox.hgrow="ALWAYS">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </TextField>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Button fx:id="btnResendOtp" disable="true" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: #19345D; -fx-underline: true;" text="Gửi lại mã (30s)">
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <Separator prefWidth="200.0" />
+
+                <Button fx:id="btnConfirmDelete" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="40.0" style="-fx-background-color: #19345D; -fx-text-fill: white; -fx-background-radius: 5;" text="XÁC NHẬN XÓA TÀI KHOẢN">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+                </Button>
+
+                <Button fx:id="btnCancel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-text-fill: #555;" text="Hủy bỏ" underline="true">
+                    <cursor>
+                        <Cursor fx:constant="HAND" />
+                    </cursor>
+               <font>
+                  <Font size="13.0" />
+               </font>
+                </Button>
+            </children>
+        </VBox>
+    </children>
+</VBox>

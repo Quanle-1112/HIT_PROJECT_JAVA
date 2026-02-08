@@ -34,7 +34,7 @@ public class HomeScreenController {
     @FXML private Button searchButton;
 
     @FXML private FlowPane categoryContainer;
-    @FXML private Button btnLoadCategories;
+    @FXML private Button btnMoreCategory;
 
     @FXML private Button btnMoreNew;
     @FXML private Button btnMoreCompleted;
@@ -63,8 +63,10 @@ public class HomeScreenController {
             System.err.println("LỖI: Không tìm thấy 'categoryContainer' trong FXML. Hãy kiểm tra fx:id.");
         }
 
-        if (btnLoadCategories != null) {
-            btnLoadCategories.setOnAction(e -> loadAllCategoriesFromApi());
+        if (btnMoreCategory != null) {
+            btnMoreCategory.setOnAction(e ->
+                    SceneUtils.switchScene(btnMoreCategory, "/view/read/view_all_categories.fxml", "Tất cả thể loại")
+            );
         }
     }
 
@@ -91,7 +93,7 @@ public class HomeScreenController {
                         categoryContainer.getChildren().add(btn);
                     }
 
-                    if (btnLoadCategories != null) btnLoadCategories.setVisible(false);
+                    if (btnMoreCategory != null) btnMoreCategory.setVisible(false);
                 }));
     }
 

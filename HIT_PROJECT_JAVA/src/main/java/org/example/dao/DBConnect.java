@@ -1,6 +1,6 @@
 package org.example.dao;
 
-import org.example.constant.Common;
+import org.example.constant.MessageConstant;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,10 +20,10 @@ public class DBConnect {
 
 
         } catch (ClassNotFoundException e) {
-            System.err.println(Common.DB_DRIVER_NOT_FOUND + e.getMessage());
+            System.err.println(MessageConstant.ERR_DB_CONNECT + e.getMessage());
             e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println(Common.DB_CONNECT_ERROR + e.getMessage());
+            System.err.println(MessageConstant.ERR_DB_CONNECT + e.getMessage());
             e.printStackTrace();
         }
         return conn;
