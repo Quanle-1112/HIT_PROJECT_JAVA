@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane id="fx:controller=&quot;org.example.controllers.LoginController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.LoginController">
+<BorderPane id="fx:controller=&quot;org.example.controllers.LoginController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.LoginController">
     <left>
         <AnchorPane prefHeight="407.0" prefWidth="228.0" BorderPane.alignment="CENTER">
             <children>
@@ -63,17 +63,12 @@
                         <Font size="14.0" />
                     </font>
                 </Button>
-                <Label fx:id="invalidLoginText" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="208.0" prefHeight="20.0" prefWidth="301.0" text="Invalid login. Please try again!" textFill="RED">
-                    <font>
-                        <Font size="14.0" />
-                    </font>
-                </Label>
                 <Button fx:id="forgotPasswordButton" layoutX="187.0" layoutY="237.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="99.0" text="Forgot password">
                     <font>
                         <Font size="11.0" />
                     </font>
                 </Button>
-                <Label fx:id="pleaseCompleteAllFieldsText" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="208.0" prefHeight="20.0" prefWidth="301.0" text="Please complete all fields!" textFill="RED">
+                <Label fx:id="errorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="208.0" prefHeight="20.0" prefWidth="301.0" text="Error" textFill="RED">
                     <font>
                         <Font size="14.0" />
                     </font>

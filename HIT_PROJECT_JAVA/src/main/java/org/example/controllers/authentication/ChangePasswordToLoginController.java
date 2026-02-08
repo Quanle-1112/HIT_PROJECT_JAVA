@@ -10,7 +10,7 @@ import org.example.utils.ValidationUtils;
 
 public class ChangePasswordToLoginController {
     @FXML private PasswordField newPasswordField, confirmPasswordField;
-    @FXML private Label errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText;
+    @FXML private Label errorLabel;
     @FXML private Button updateButton, cancelButton;
 
     private final IForgotPasswordService service = new IForgotPasswordServiceImpl();
@@ -20,26 +20,36 @@ public class ChangePasswordToLoginController {
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText);
+        UIExceptionHandler.hideError(errorLabel);
         updateButton.setOnAction(event -> handleUpdate());
-        cancelButton.setOnAction(event -> SceneUtils.switchScene(cancelButton, "/view/authentication/forgot_password.fxml", "Forgot Password"));
+        cancelButton.setOnAction(event -> SceneUtils.switchScene(cancelButton, "/view/authentication/forgot_password.fxml", "Quên mật khẩu"));
     }
 
     private void handleUpdate() {
-        UIExceptionHandler.hideError(errorLabel, pleaseCompleteAllFieldsText, errorFormatPasswordText);
+        UIExceptionHandler.hideError(errorLabel);
 
         if (ValidationUtils.areFieldsEmpty(newPasswordField, confirmPasswordField)) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText); return;
+            showError("Vui lòng điền đầy đủ thông tin!");
+            return;
         }
         if (!ValidationUtils.isValidPassword(newPasswordField.getText())) {
-            UIExceptionHandler.showError(errorFormatPasswordText); return;
+            showError("Mật khẩu mới phải từ 6-20 ký tự (Hoa, thường, số, ký tự đặc biệt)!");
+            return;
         }
         if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
-            UIExceptionHandler.showError(errorLabel); return;
+            showError("Mật khẩu xác nhận không khớp!");
+            return;
         }
 
         if (service.resetPassword(userEmail, newPasswordField.getText())) {
             SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", "Login");
+        } else {
+            showError("Lỗi hệ thống: Không thể đổi mật khẩu.");
         }
+    }
+
+    private void showError(String message) {
+        errorLabel.setText(message);
+        UIExceptionHandler.showError(errorLabel);
     }
 }

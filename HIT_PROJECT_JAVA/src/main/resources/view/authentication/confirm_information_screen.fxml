@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #19345D;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.ConfirmInformationController">
+<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #19345D;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.ConfirmInformationController">
    <children>
       <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="800.0" prefWidth="450.0" style="-fx-background: #19345D; -fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
@@ -162,12 +162,7 @@
                               <Hyperlink fx:id="dieuKhoanVaChinhSachHyperlink" alignment="CENTER" prefHeight="23.0" prefWidth="157.0" text="Điều khoản và chính sách" textAlignment="CENTER" textFill="#19345d" underline="true" />
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <Label fx:id="pleaseCompleteAllFieldsText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Please complete all fields!" textFill="RED" />
-                                    <Label fx:id="invalidCodeText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Invalid code. Please try again." textFill="RED" />
-                                    <Label fx:id="checkTheBoxText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Please check the box to agree to the terms and conditions" textFill="RED" />
-                                    <Label fx:id="failToSendEmailText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Unable to send email. Please verify your network connection" textFill="RED" />
-                                    <Label fx:id="errorPhoneNumberText" alignment="CENTER" prefHeight="17.0" prefWidth="361.0" text="Phone number must be 10 digits and start with 0!" textFill="RED" />
-                                    <Label fx:id="expiredCodeText" alignment="CENTER" prefHeight="17.0" prefWidth="360.0" text="Verification code expired. Please resend!" textFill="RED" />
+                                    <Label fx:id="errorLabel" alignment="CENTER" prefHeight="17.0" prefWidth="360.0" text="Error" textFill="RED" />
                                  </children>
                               </AnchorPane>
                            </children>

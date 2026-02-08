@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="fx:controller=&quot;org.example.controllers.RegisterController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="520.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.RegisterController">
+<AnchorPane id="fx:controller=&quot;org.example.controllers.RegisterController&quot;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="520.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.authentication.RegisterController">
    <children>
       <AnchorPane prefHeight="82.0" prefWidth="520.0" style="-fx-background-color: #19345D;">
          <children>
@@ -59,36 +59,6 @@
          </font>
       </Label>
       <TextField fx:id="emailTextField" layoutX="92.0" layoutY="121.0" prefHeight="25.0" prefWidth="336.0" promptText="Your email" />
-      <Label fx:id="pleaseCompleteAllFieldsText" alignment="CENTER" layoutX="92.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Please complete all fields!" textFill="RED">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="emailAlreadyRegisteredText" alignment="CENTER" layoutX="92.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Email already registered!" textFill="RED">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="passwordConfirmationMismatchText" alignment="CENTER" layoutX="92.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Password confirmation mismatch!" textFill="RED">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="usernameAlreadyExistsTextLabel" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Username already exists!" textFill="RED">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="invalidEmailFormatText" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Invalid email format!" textFill="RED">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="usernameMustBeAtLeast5CharactersLongText" alignment="CENTER" layoutX="102.0" layoutY="339.0" prefHeight="17.0" prefWidth="336.0" text="Username must be at least 5 characters long!" textFill="RED">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="errorFormatPasswordText" alignment="CENTER" layoutX="95.0" layoutY="331.0" prefHeight="36.0" prefWidth="330.0" text="Password must be 6-20 characters long and include numbers, lowercase, uppercase letters, and special characters" textFill="RED" wrapText="true" />
+      <Label fx:id="errorLabel" alignment="CENTER" layoutX="95.0" layoutY="331.0" prefHeight="36.0" prefWidth="330.0" text="Error" textFill="RED" wrapText="true" />
    </children>
 </AnchorPane>

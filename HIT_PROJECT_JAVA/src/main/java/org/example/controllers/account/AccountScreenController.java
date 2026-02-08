@@ -1,11 +1,15 @@
 package org.example.controllers.account;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.example.dao.UserDAO;
 import org.example.model.user.User;
 import org.example.utils.ImageLoaderGlobal;
@@ -24,6 +28,8 @@ public class AccountScreenController {
     @FXML private Button btnEditAvatar;
     @FXML private Button btnLogout;
     @FXML private Button btnChangeName;
+    @FXML private Button btnChangePass;
+    @FXML private Button btnForgotPassword;
 
     @FXML private Button btnHome, btnHistory, btnFavorite, btnAI, btnAccount;
 
@@ -84,6 +90,14 @@ public class AccountScreenController {
         if (btnChangeName != null) {
             btnChangeName.setOnAction(e -> handleUpdateName());
         }
+        if (btnChangePass != null) {
+            btnChangePass.setOnAction(e -> {
+                SceneUtils.switchScene(btnChangePass, "/view/account/change_password.fxml", "Đổi mật khẩu");
+            });
+        }
+        if (btnForgotPassword != null) {
+            btnForgotPassword.setOnAction(e -> openForgotPasswordDialog());
+        }
     }
 
     private void handleChangeAvatar() {
@@ -122,6 +136,28 @@ public class AccountScreenController {
         SessionManager.getInstance().logout();
         SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Welcome", btnLogout);
     }
+    private void openForgotPasswordDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/account/account_forgot_password_dialog.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.setTitle("Bảo mật tài khoản");
+            stage.setScene(new Scene(root));
+
+            Stage parentStage = (Stage) btnForgotPassword.getScene().getWindow();
+            stage.initOwner(parentStage);
+
+            stage.showAndWait();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println("Lỗi mở dialog đổi mật khẩu: " + ex.getMessage());
+        }
+    }
+
+
 
     private void setupNavigation() {
         if (btnAccount != null) {

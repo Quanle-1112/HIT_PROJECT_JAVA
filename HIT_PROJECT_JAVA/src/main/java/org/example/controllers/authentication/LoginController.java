@@ -16,7 +16,8 @@ public class LoginController {
     @FXML private Button cancelButton, loginButton, forgotPasswordButton;
     @FXML private PasswordField enterPasswordField;
     @FXML private TextField usernameTextField;
-    @FXML private Label invalidLoginText, pleaseCompleteAllFieldsText;
+
+    @FXML private Label errorLabel;
 
     @FXML private TextField showPasswordTextField;
     @FXML private Button togglePasswordButton;
@@ -27,7 +28,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(invalidLoginText, pleaseCompleteAllFieldsText);
+        UIExceptionHandler.hideError(errorLabel);
 
         if (showPasswordTextField != null && enterPasswordField != null) {
             showPasswordTextField.textProperty().bindBidirectional(enterPasswordField.textProperty());
@@ -35,18 +36,17 @@ public class LoginController {
 
         loginButton.setOnAction(event -> handleLogin());
 
+        enterPasswordField.setOnAction(event -> handleLogin());
+        usernameTextField.setOnAction(event -> handleLogin());
+
         cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Welcome", cancelButton));
 
-        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", "Forgot Password"));
-
-        if (togglePasswordButton != null) {
-            togglePasswordButton.setOnAction(event -> handleTogglePassword());
-        }
+        togglePasswordButton.setOnAction(event -> togglePassword());
+        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", "Quên mật khẩu"));
     }
 
-    private void handleTogglePassword() {
+    private void togglePassword() {
         isPasswordVisible = !isPasswordVisible;
-
         if (isPasswordVisible) {
             enterPasswordField.setVisible(false);
             showPasswordTextField.setVisible(true);
@@ -59,10 +59,10 @@ public class LoginController {
     }
 
     private void handleLogin() {
-        UIExceptionHandler.hideError(invalidLoginText, pleaseCompleteAllFieldsText);
+        UIExceptionHandler.hideError(errorLabel);
 
         if (ValidationUtils.areFieldsEmpty(usernameTextField, enterPasswordField)) {
-            UIExceptionHandler.showError(pleaseCompleteAllFieldsText);
+            showError("Vui lòng điền đầy đủ thông tin!");
             return;
         }
 
@@ -70,7 +70,6 @@ public class LoginController {
 
         if (user != null) {
             SessionManager.getInstance().setCurrentUser(user);
-
             if (user.isFirstLogin()) {
                 ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/authentication/confirm_information_screen.fxml", "Xác nhận thông tin");
                 if (controller != null) controller.setCurrentUser(user);
@@ -78,7 +77,12 @@ public class LoginController {
                 SceneUtils.switchScene(loginButton, "/view/read/home_screen.fxml", "Trang chủ");
             }
         } else {
-            UIExceptionHandler.showError(invalidLoginText);
+            showError("Tên đăng nhập hoặc mật khẩu không đúng!");
         }
+    }
+
+    private void showError(String message) {
+        errorLabel.setText(message);
+        UIExceptionHandler.showError(errorLabel);
     }
 }

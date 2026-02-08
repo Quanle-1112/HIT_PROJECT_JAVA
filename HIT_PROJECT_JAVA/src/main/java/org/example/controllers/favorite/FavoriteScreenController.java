@@ -10,8 +10,7 @@ import javafx.scene.layout.VBox;
 import org.example.dao.FavoriteDAO;
 import org.example.model.user.UserFavorite;
 import org.example.utils.SceneUtils;
-import org.example.utils.SessionManager; // Import SessionManager
-
+import org.example.utils.SessionManager;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
