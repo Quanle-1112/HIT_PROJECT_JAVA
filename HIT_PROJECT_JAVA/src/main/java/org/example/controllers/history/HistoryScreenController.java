@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.constant.MessageConstant;
 import org.example.dao.HistoryDAO;
 import org.example.model.user.UserHistory;
 import org.example.utils.SceneUtils;
@@ -39,7 +40,7 @@ public class HistoryScreenController {
         if (currentUserId != -1) {
             loadHistoryData();
         } else {
-            showEmptyMessage("Vui lòng đăng nhập để xem lịch sử.");
+            showEmptyMessage(MessageConstant.HISTORY_LOGIN_REQ);
             if (btnClearAll != null) btnClearAll.setDisable(true);
         }
     }
@@ -55,7 +56,7 @@ public class HistoryScreenController {
                     listContainer.getChildren().clear();
 
                     if (historyList == null || historyList.isEmpty()) {
-                        showEmptyMessage("Chưa có lịch sử đọc truyện.");
+                        showEmptyMessage(MessageConstant.HISTORY_EMPTY);
                         if (btnClearAll != null) btnClearAll.setDisable(true);
                     } else {
                         if (btnClearAll != null) btnClearAll.setDisable(false);
@@ -88,7 +89,7 @@ public class HistoryScreenController {
             Platform.runLater(() -> {
                 if (success) {
                     listContainer.getChildren().clear();
-                    showEmptyMessage("Đã xóa toàn bộ lịch sử.");
+                    showEmptyMessage(MessageConstant.HISTORY_EMPTY);
                 } else {
                     btnClearAll.setDisable(false);
                 }
@@ -98,7 +99,7 @@ public class HistoryScreenController {
 
     public void checkListEmptyAfterDelete() {
         if (listContainer.getChildren().isEmpty()) {
-            showEmptyMessage("Chưa có lịch sử đọc truyện.");
+            showEmptyMessage(MessageConstant.HISTORY_EMPTY);
             if (btnClearAll != null) btnClearAll.setDisable(true);
         }
     }

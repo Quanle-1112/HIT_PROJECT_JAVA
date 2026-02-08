@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Duration;
+import org.example.constant.MessageConstant;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.OtpStatus;
 import org.example.services.IForgotPasswordService;
@@ -37,7 +38,7 @@ public class ConfirmVerifyCodeController {
         String otp = codeTextField.getText().trim();
 
         if (otp.isEmpty()) {
-            showError("Vui lòng nhập mã OTP!");
+            showError(MessageConstant.OTP_EMPTY);
             return;
         }
 
@@ -47,9 +48,9 @@ public class ConfirmVerifyCodeController {
             ChangePasswordToLoginController controller = SceneUtils.switchScene(verifyButton, "/view/authentication/change_password_to_login.fxml", "Đổi mật khẩu");
             if (controller != null) controller.setUserEmail(userEmail);
         } else if (status == OtpStatus.EXPIRED_CODE) {
-            showError("Mã OTP đã hết hạn. Vui lòng gửi lại!");
+            showError(MessageConstant.OTP_EXPIRED);
         } else {
-            showError("Mã OTP không chính xác!");
+            showError(MessageConstant.OTP_INVALID);
         }
     }
 
@@ -64,12 +65,12 @@ public class ConfirmVerifyCodeController {
                 resendCodeButton.setVisible(true);
 
                 if (status == OtpStatus.SUCCESS) {
-                    showError("Đã gửi lại mã OTP vào email!");
+                    showError(MessageConstant.OTP_SENT_SUCCESS);
                     errorLabel.setStyle("-fx-text-fill: green;");
                     startTimer();
                 } else {
                     errorLabel.setStyle("-fx-text-fill: red;");
-                    showError("Gửi lại thất bại. Vui lòng thử lại sau.");
+                    showError(MessageConstant.OTP_RESEND_FAIL);
                 }
             });
         }).start();

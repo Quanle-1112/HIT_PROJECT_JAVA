@@ -30,6 +30,7 @@ public class AccountScreenController {
     @FXML private Button btnChangeName;
     @FXML private Button btnChangePass;
     @FXML private Button btnForgotPassword;
+    @FXML private Button btnDeleteAccount;
 
     @FXML private Button btnHome, btnHistory, btnFavorite, btnAI, btnAccount;
 
@@ -98,6 +99,9 @@ public class AccountScreenController {
         if (btnForgotPassword != null) {
             btnForgotPassword.setOnAction(e -> openForgotPasswordDialog());
         }
+        if (btnDeleteAccount != null) {
+            btnDeleteAccount.setOnAction(e -> openDeleteConfirmationDialog());
+        }
     }
 
     private void handleChangeAvatar() {
@@ -154,6 +158,30 @@ public class AccountScreenController {
         } catch (Exception ex) {
             ex.printStackTrace();
             System.err.println("Lỗi mở dialog đổi mật khẩu: " + ex.getMessage());
+        }
+    }
+
+    private void openDeleteConfirmationDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/account/account_delete_confirmation.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Xác nhận xóa tài khoản");
+            stage.setScene(new Scene(root));
+
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+
+            Stage mainStage = (Stage) btnDeleteAccount.getScene().getWindow();
+            stage.initOwner(mainStage);
+
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println("Lỗi mở dialog xóa tài khoản: " + ex.getMessage());
         }
     }
 

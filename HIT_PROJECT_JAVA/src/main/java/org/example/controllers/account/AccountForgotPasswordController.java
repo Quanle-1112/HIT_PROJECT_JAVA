@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
 import org.example.model.user.OtpStatus;
 import org.example.model.user.User;
@@ -66,7 +67,7 @@ public class AccountForgotPasswordController {
 
             Platform.runLater(() -> {
                 if (success) {
-                    lblStatus.setText("Mã OTP đã được gửi tới email của bạn.");
+                    lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
                     lblStatus.setStyle("-fx-text-fill: #19345D;");
                     startTimer();
                 } else {
@@ -104,7 +105,7 @@ public class AccountForgotPasswordController {
     private void handleVerifyOtp() {
         String otp = txtOtp.getText().trim();
         if (otp.isEmpty()) {
-            setStatusError("Vui lòng nhập mã OTP!");
+            setStatusError(MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
 
@@ -122,9 +123,9 @@ public class AccountForgotPasswordController {
             btnResendOtp.setText("Đã xác thực");
 
         } else if (status == OtpStatus.EXPIRED_CODE) {
-            setStatusError("Mã OTP đã hết hạn. Vui lòng gửi lại.");
+            setStatusError(MessageConstant.OTP_EXPIRED);
         } else {
-            setStatusError("Mã OTP không chính xác.");
+            setStatusError(MessageConstant.OTP_INVALID);
         }
     }
 
@@ -133,15 +134,15 @@ public class AccountForgotPasswordController {
         String confirmPass = txtConfirmPass.getText();
 
         if (ValidationUtils.areFieldsEmpty(txtNewPass, txtConfirmPass)) {
-            setStatusError("Vui lòng điền đầy đủ mật khẩu.");
+            setStatusError(MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
         if (!ValidationUtils.isValidPassword(newPass)) {
-            setStatusError("Mật khẩu yếu! (Cần 6-20 ký tự, hoa, thường, số, ký tự đặc biệt)");
+            setStatusError(MessageConstant.REGISTER_PASSWORD_INVALID);
             return;
         }
         if (!newPass.equals(confirmPass)) {
-            setStatusError("Mật khẩu xác nhận không khớp.");
+            setStatusError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;
         }
 
@@ -152,7 +153,7 @@ public class AccountForgotPasswordController {
             currentUser.setPassword(hashedPassword);
             SessionManager.getInstance().setCurrentUser(currentUser);
 
-            lblStatus.setText("Đổi mật khẩu thành công!");
+            lblStatus.setText(MessageConstant.CHANGE_PASS_SUCCESS);
             lblStatus.setStyle("-fx-text-fill: #19345D; -fx-font-weight: bold; -fx-font-size: 14px;");
 
             btnSavePassword.setDisable(true);
@@ -163,7 +164,7 @@ public class AccountForgotPasswordController {
             pause.play();
 
         } else {
-            setStatusError("Lỗi hệ thống: Không thể lưu mật khẩu.");
+            setStatusError(MessageConstant.UPDATE_FAIL);
         }
     }
 

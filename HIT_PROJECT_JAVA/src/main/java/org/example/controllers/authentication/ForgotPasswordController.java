@@ -3,6 +3,7 @@ package org.example.controllers.authentication;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.constant.MessageConstant;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.OtpStatus;
 import org.example.services.IForgotPasswordService;
@@ -31,7 +32,7 @@ public class ForgotPasswordController {
         String email = emailToResetPasswordText.getText().trim();
 
         if (ValidationUtils.areFieldsEmpty(emailToResetPasswordText)) {
-            showError("Vui lòng nhập địa chỉ Email!");
+            showError(MessageConstant.FORGOT_PASS_EMAIL_EMPTY);
             return;
         }
 
@@ -49,9 +50,9 @@ public class ForgotPasswordController {
                     ConfirmVerifyCodeController controller = SceneUtils.switchScene(sendRecoveryCodeButton, "/view/authentication/confirm_verify_code.fxml", "Xác nhận OTP");
                     if (controller != null) controller.setInitData(email);
                 } else if (status == OtpStatus.EMAIL_NOT_EXIST) {
-                    showError("Email này chưa được đăng ký trong hệ thống!");
+                    showError(MessageConstant.FORGOT_PASS_EMAIL_NOT_EXIST);
                 } else {
-                    showError("Gửi mã thất bại. Vui lòng kiểm tra kết nối mạng!");
+                    showError(MessageConstant.FORGOT_PASS_SEND_FAIL);
                 }
             });
         }).start();

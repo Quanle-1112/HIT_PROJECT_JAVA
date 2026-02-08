@@ -3,6 +3,7 @@ package org.example.controllers.read;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import org.example.constant.MessageConstant;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -46,7 +47,7 @@ public class ViewAllCategoriesController {
         task.setOnSucceeded(e -> {
             List<ApiCategory> categories = task.getValue();
             if (categories == null || categories.isEmpty()) {
-                statusLabel.setText("Không tải được danh sách thể loại.");
+                statusLabel.setText(MessageConstant.MSG_LOADING);
             } else {
                 statusLabel.setVisible(false);
                 renderCategoryButtons(categories);
@@ -54,7 +55,7 @@ public class ViewAllCategoriesController {
         });
 
         task.setOnFailed(e -> {
-            statusLabel.setText("Lỗi kết nối API!");
+            statusLabel.setText(MessageConstant.ERR_NETWORK);
             e.getSource().getException().printStackTrace();
         });
 

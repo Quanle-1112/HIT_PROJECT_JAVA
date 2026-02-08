@@ -2,6 +2,7 @@ package org.example.controllers.authentication;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.constant.MessageConstant;
 import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
@@ -29,22 +30,22 @@ public class ChangePasswordToLoginController {
         UIExceptionHandler.hideError(errorLabel);
 
         if (ValidationUtils.areFieldsEmpty(newPasswordField, confirmPasswordField)) {
-            showError("Vui lòng điền đầy đủ thông tin!");
+            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
         if (!ValidationUtils.isValidPassword(newPasswordField.getText())) {
-            showError("Mật khẩu mới phải từ 6-20 ký tự (Hoa, thường, số, ký tự đặc biệt)!");
+            showError(MessageConstant.REGISTER_PASSWORD_INVALID);
             return;
         }
         if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
-            showError("Mật khẩu xác nhận không khớp!");
+            showError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;
         }
 
         if (service.resetPassword(userEmail, newPasswordField.getText())) {
             SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", "Login");
         } else {
-            showError("Lỗi hệ thống: Không thể đổi mật khẩu.");
+            showError(MessageConstant.UPDATE_FAIL);
         }
     }
 

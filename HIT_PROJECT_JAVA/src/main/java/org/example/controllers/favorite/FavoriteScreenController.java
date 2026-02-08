@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.example.constant.MessageConstant;
 import org.example.dao.FavoriteDAO;
 import org.example.model.user.UserFavorite;
 import org.example.utils.SceneUtils;
@@ -36,7 +37,7 @@ public class FavoriteScreenController {
         if (currentUserId != -1) {
             loadFavoriteData();
         } else {
-            showEmptyMessage("Vui lòng đăng nhập để xem danh sách yêu thích.");
+            showEmptyMessage(MessageConstant.FAVORITE_LOGIN_REQ);
         }
     }
 
@@ -51,7 +52,7 @@ public class FavoriteScreenController {
                     listContainer.getChildren().clear();
 
                     if (favList == null || favList.isEmpty()) {
-                        showEmptyMessage("Bạn chưa yêu thích bộ truyện nào.");
+                        showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
                     } else {
                         try {
                             for (UserFavorite fav : favList) {
@@ -73,7 +74,7 @@ public class FavoriteScreenController {
 
     private void checkListEmptyAfterDelete() {
         if (listContainer.getChildren().isEmpty()) {
-            showEmptyMessage("Bạn chưa yêu thích bộ truyện nào.");
+            showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
         }
     }
 

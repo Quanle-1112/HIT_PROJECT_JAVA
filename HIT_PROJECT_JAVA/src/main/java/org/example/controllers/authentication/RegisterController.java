@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
+import org.example.constant.MessageConstant;
 import org.example.services.IRegisterService;
 import org.example.services.impl.IRegisterServiceImpl;
 import org.example.utils.SceneUtils;
@@ -39,27 +40,27 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
 
         if (ValidationUtils.areFieldsEmpty(emailTextField, usernameTextField, setPasswordField, confirmPasswordField)) {
-            showError("Vui lòng điền đầy đủ tất cả các trường!");
+            showError(MessageConstant.REGISTER_EMPTY_FIELDS);
             return;
         }
 
         if (!ValidationUtils.isValidEmail(email)) {
-            showError("Định dạng email không hợp lệ!");
+            showError(MessageConstant.REGISTER_EMAIL_INVALID);
             return;
         }
 
         if (username.length() < 5) {
-            showError("Tên đăng nhập phải có ít nhất 5 ký tự!");
+            showError(MessageConstant.REGISTER_USERNAME_SHORT);
             return;
         }
 
         if (!ValidationUtils.isValidPassword(password)) {
-            showError("Mật khẩu phải từ 6-20 ký tự, gồm chữ hoa, thường, số và ký tự đặc biệt!");
+            showError(MessageConstant.REGISTER_PASSWORD_INVALID);
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            showError("Mật khẩu xác nhận không khớp!");
+            showError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;
         }
 
@@ -71,7 +72,7 @@ public class RegisterController {
 
         String result = registerService.register(newUser, confirmPassword);
 
-        if ("SUCCESS".equals(result)) {
+        if (MessageConstant.REGISTER_SUCCESS.equals(result)) {
             SceneUtils.openNewWindow("/view/authentication/login.fxml", "Đăng nhập", registerButton);
         } else {
             showError(result);

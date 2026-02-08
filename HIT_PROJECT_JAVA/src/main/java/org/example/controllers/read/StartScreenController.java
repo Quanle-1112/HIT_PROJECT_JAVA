@@ -2,6 +2,7 @@ package org.example.controllers.read;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import org.example.constant.MessageConstant;
 import org.example.utils.SceneUtils;
 
 public class StartScreenController {
@@ -10,7 +11,7 @@ public class StartScreenController {
 
     @FXML
     public void initialize() {
-        loginButton.setOnAction(event -> SceneUtils.openNewWindow("/view/authentication/login.fxml", "Đăng nhập", loginButton));
-        registerButton.setOnAction(event -> SceneUtils.openNewWindow("/view/authentication/register.fxml", "Đăng ký tài khoản", registerButton));
+        loginButton.setOnAction(event -> SceneUtils.openNewWindow("/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN, loginButton));
+        registerButton.setOnAction(event -> SceneUtils.openNewWindow("/view/authentication/register.fxml", MessageConstant.TITLE_REGISTER, registerButton));
     }
 }

@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import org.example.constant.MessageConstant;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Gender;
 import org.example.model.user.OtpStatus;
@@ -109,7 +110,7 @@ public class ConfirmInformationController {
         String emailInput = emailText.getText().trim();
 
         if (!ValidationUtils.isValidEmail(emailInput)) {
-            showError("Định dạng Email không hợp lệ!");
+            showError(MessageConstant.REGISTER_EMAIL_INVALID);
             return;
         }
 
@@ -128,7 +129,7 @@ public class ConfirmInformationController {
                         codeSentSuccessfullyText.setVisible(true);
                     }
                 } else {
-                    showError("Không thể gửi Email. Vui lòng kiểm tra kết nối mạng!");
+                    showError(MessageConstant.FORGOT_PASS_SEND_FAIL);
                 }
             });
         }).start();
@@ -138,17 +139,17 @@ public class ConfirmInformationController {
         UIExceptionHandler.hideError(errorLabel, codeSentSuccessfullyText);
 
         if (!agreeCheckBox.isSelected()) {
-            showError("Vui lòng đồng ý với các điều khoản sử dụng!");
+            showError(MessageConstant.AGREE_CHECK_BOX);
             return;
         }
 
         if (ValidationUtils.areFieldsEmpty(hoVaTenText, sdtText, emailText, confirmEmailText)) {
-            showError("Vui lòng điền đầy đủ thông tin!");
+            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
 
         if (!ValidationUtils.isValidPhoneNumber(sdtText.getText().trim())) {
-            showError("Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0)!");
+            showError(MessageConstant.VALIDATION_PHONE_INVALID);
             return;
         }
 
@@ -158,11 +159,11 @@ public class ConfirmInformationController {
         OtpStatus status = userService.verifyOtp(emailInput, otp);
 
         if (status == OtpStatus.INVALID_CODE) {
-            showError("Mã xác thực không chính xác!");
+            showError(MessageConstant.OTP_INVALID);
             return;
         }
         if (status == OtpStatus.EXPIRED_CODE) {
-            showError("Mã xác thực đã hết hạn. Vui lòng gửi lại!");
+            showError(MessageConstant.OTP_EXPIRED);
             return;
         }
 
@@ -202,7 +203,7 @@ public class ConfirmInformationController {
                             SessionManager.getInstance().setCurrentUser(currentUser);
                             SceneUtils.openNewWindow("/view/read/home_screen.fxml", "Trang chủ", confirmButton);
                         } else {
-                            showError("Lỗi hệ thống: Không thể lưu thông tin. Vui lòng thử lại!");
+                            showError(MessageConstant.UPDATE_FAIL);
                             confirmButton.setDisable(false);
                             confirmButton.setText("XÁC NHẬN");
                         }

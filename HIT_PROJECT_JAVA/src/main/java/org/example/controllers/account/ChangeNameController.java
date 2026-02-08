@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
 import org.example.model.user.User;
 import org.example.utils.SceneUtils;
@@ -37,11 +38,11 @@ public class ChangeNameController {
         String newName = newNameField.getText().trim();
 
         if (newName.isEmpty()) {
-            showError("Tên không được để trống!");
+            showError(MessageConstant.VALIDATION_NAME_EMPTY);
             return;
         }
         if (newName.length() < 2) {
-            showError("Tên quá ngắn!");
+            showError(MessageConstant.VALIDATION_NAME_SHORT);
             return;
         }
 
@@ -55,7 +56,7 @@ public class ChangeNameController {
 
                 handleCancel();
             } else {
-                showError("Lỗi kết nối CSDL, vui lòng thử lại!");
+                showError(MessageConstant.ERR_DB_CONNECT);
             }
         }
     }

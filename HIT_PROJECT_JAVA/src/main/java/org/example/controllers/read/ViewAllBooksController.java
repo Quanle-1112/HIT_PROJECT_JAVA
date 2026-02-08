@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
+import org.example.constant.MessageConstant;
 import org.example.data.BookService;
 import org.example.utils.SceneUtils;
 
@@ -113,8 +114,8 @@ public class ViewAllBooksController {
             @Override
             protected List<ApiBookItem> call() {
                 switch (currentType) {
-                    case "completed": return bookService.getCompletedBooks(currentPage);
-                    case "coming_soon": return bookService.getComingSoonBooks(currentPage);
+                    case "COMPLETED": return bookService.getCompletedBooks(currentPage);
+                    case "COMING": return bookService.getComingSoonBooks(currentPage);
                     default: return bookService.getNewBooks(currentPage);
                 }
             }
@@ -125,7 +126,7 @@ public class ViewAllBooksController {
             List<ApiBookItem> books = task.getValue();
 
             if (books == null || books.isEmpty()) {
-                listContainer.getChildren().add(new Label("Không còn dữ liệu hoặc đã hết trang."));
+                listContainer.getChildren().add(new Label(MessageConstant.LIST_END_DATA));
                 btnNext.setDisable(true);
             } else {
                 btnNext.setDisable(false);
@@ -155,7 +156,7 @@ public class ViewAllBooksController {
 
         task.setOnFailed(event -> {
             listContainer.getChildren().clear();
-            listContainer.getChildren().add(new Label("Lỗi kết nối!"));
+            listContainer.getChildren().add(new Label(MessageConstant.ERR_NETWORK));
             Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
         });
 
