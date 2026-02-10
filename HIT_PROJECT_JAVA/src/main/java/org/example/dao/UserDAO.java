@@ -1,231 +1,96 @@
 package org.example.dao;
 
-import org.example.model.user.OtpStatus;
+import org.example.constant.MessageConstant;
+import org.example.exception.DatabaseException;
 import org.example.model.user.Role;
 import org.example.model.user.Gender;
 import org.example.model.user.User;
+
 import java.sql.*;
 
 public class UserDAO {
 
-    public static boolean updateOtp(String email, String otp) {
-        String sql = "UPDATE users SET otp_code = ?, otp_expiry = DATE_ADD(NOW(), INTERVAL 5 MINUTE) WHERE email = ?";
+    public User getUserByUsername(String username) {
+        String sql = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, otp);
-            stmt.setString(2, email);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
-    public static OtpStatus checkOtpStatus(String email, String inputOtp) {
-        String sql = "SELECT otp_expiry FROM users WHERE email = ? AND otp_code = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email);
-            stmt.setString(2, inputOtp);
+            stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                Timestamp expiry = rs.getTimestamp("otp_expiry");
-                if (expiry != null && expiry.after(new Timestamp(System.currentTimeMillis()))) {
-                    return OtpStatus.SUCCESS;
-                } else {
-                    return OtpStatus.EXPIRED_CODE;
+                User user = new User();
+                user.setId(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password_hash"));
+                user.setFullName(rs.getString("full_name"));
+
+                try {
+                    user.setGender(Gender.valueOf(rs.getString("gender")));
+                    user.setRole(Role.valueOf(rs.getString("role")));
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    user.setGender(Gender.Other);
+                    user.setRole(Role.USER);
                 }
-            } else {
-                return OtpStatus.INVALID_CODE;
+
+                user.setStatus(rs.getString("status"));
+                user.setCreatedAt(rs.getTimestamp("created_at"));
+                user.setAvatarUrl(rs.getString("avatar_url"));
+                user.setPhoneNumber(rs.getString("phone_number"));
+                user.setFirstLogin(rs.getBoolean("is_first_login"));
+                return user;
             }
+            return null;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return OtpStatus.INVALID_CODE;
+            throw new DatabaseException("Lỗi truy vấn thông tin người dùng: " + e.getMessage(), e);
         }
     }
 
-    public static boolean clearOtp(String email) {
-        String sql = "UPDATE users SET otp_code = NULL, otp_expiry = NULL WHERE email = ?";
+    public boolean isEmailExist(String email) {
+        String sql = "SELECT 1 FROM users WHERE email = ?";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
-            return stmt.executeUpdate() > 0;
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseException("Lỗi kiểm tra email tồn tại", e);
         }
     }
 
-    public static User getUserByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
+    public boolean isUsernameExist(String username) {
+        String sql = "SELECT 1 FROM users WHERE username = ?";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) return mapResultSetToUser(rs);
-        } catch (SQLException e) { e.printStackTrace(); }
-        return null;
+            return rs.next();
+        } catch (SQLException e) {
+            throw new DatabaseException("Lỗi kiểm tra username tồn tại", e);
+        }
     }
 
-    public static boolean isUsernameExist(String username) {
-        return checkExist("SELECT COUNT(*) FROM users WHERE username = ?", username);
-    }
-
-    public static boolean isEmailExist(String email) {
-        return checkExist("SELECT COUNT(*) FROM users WHERE email = ?", email);
-    }
-
-    public static boolean saveUser(User user) {
-        String sql = "INSERT INTO users (username, email, password, full_name, role, status, gender, is_first_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public void saveUser(User user) {
+        String sql = "INSERT INTO users (username, email, password_hash, full_name, role, gender, status, is_first_login) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getEmail());
             stmt.setString(3, user.getPassword());
             stmt.setString(4, user.getFullName());
             stmt.setString(5, user.getRole().toString());
-            stmt.setString(6, user.getStatus());
-            stmt.setString(7, user.getGender().toString());
-            stmt.setInt(8, 1);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-    }
+            stmt.setString(6, user.getGender().toString());
+            stmt.setString(7, user.getStatus());
+            stmt.setBoolean(8, true); // Mặc định true
 
-    public static boolean updateUser(User user) {
-        String sql = "UPDATE users SET full_name = ?, email = ?, gender = ?, avatar_url = ?, phone_number = ? WHERE user_id = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getFullName());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getGender().toString());
-            stmt.setString(4, user.getAvatarUrl());
-            stmt.setString(5, user.getPhoneNumber());
-            stmt.setInt(6, user.getId());
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-    }
-
-    public static boolean disableFirstLogin(int userId) {
-        String sql = "UPDATE users SET is_first_login = 0 WHERE user_id = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-    }
-
-    public static boolean updatePasswordByEmail(String email, String newHashedPassword) {
-        String sql = "UPDATE users SET password = ? WHERE email = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, newHashedPassword);
-            stmt.setString(2, email);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-    }
-
-    private static boolean checkExist(String sql, String param) {
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, param);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) return rs.getInt(1) > 0;
-        } catch (SQLException e) { e.printStackTrace(); }
-        return false;
-    }
-
-    private static User mapResultSetToUser(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setId(rs.getInt("user_id"));
-        user.setUsername(rs.getString("username"));
-        user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
-        user.setFullName(rs.getString("full_name"));
-        user.setAvatarUrl(rs.getString("avatar_url"));
-        user.setPhoneNumber(rs.getString("phone_number"));
-        user.setStatus(rs.getString("status"));
-        user.setCreatedAt(rs.getTimestamp("created_at"));
-        user.setFirstLogin(rs.getBoolean("is_first_login"));
-        try { user.setRole(Role.valueOf(rs.getString("role"))); } catch (Exception e) { user.setRole(Role.USER); }
-        try { user.setGender(Gender.valueOf(rs.getString("gender"))); } catch (Exception e) { user.setGender(Gender.Other); }
-        return user;
-    }
-
-    public boolean updateUserProfile(User user) {
-        String sql = "UPDATE users SET full_name = ?, avatar_url = ? WHERE user_id = ?";
-
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, user.getFullName());
-            stmt.setString(2, user.getAvatarUrl());
-            stmt.setInt(3, user.getId());
-
-            int rowsUpdated = stmt.executeUpdate();
-            return rowsUpdated > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi update user profile: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean updateUserPassword(int userId, String newPasswordHash) {
-        String sql = "UPDATE users SET password = ? WHERE user_id = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, newPasswordHash);
-            stmt.setInt(2, userId);
-
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean deleteUser(int userId) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DBConnect.getConnection();
-
-            conn.setAutoCommit(false);
-
-            String sqlHistory = "DELETE FROM user_history WHERE user_id = ?";
-            stmt = conn.prepareStatement(sqlHistory);
-            stmt.setInt(1, userId);
-            stmt.executeUpdate();
-            stmt.close();
-
-            String sqlFavorite = "DELETE FROM user_favorites WHERE user_id = ?";
-            stmt = conn.prepareStatement(sqlFavorite);
-            stmt.setInt(1, userId);
-            stmt.executeUpdate();
-            stmt.close();
-
-            String sqlUser = "DELETE FROM users WHERE user_id = ?";
-            stmt = conn.prepareStatement(sqlUser);
-            stmt.setInt(1, userId);
-            int rowsAffected = stmt.executeUpdate();
-
-            conn.commit();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new DatabaseException("Không thể tạo người dùng mới, không có dòng nào thay đổi.");
             }
-            return false;
-        } finally {
-            DBConnect.closeConnection(conn);
+        } catch (SQLException e) {
+            throw new DatabaseException("Lỗi khi lưu người dùng vào CSDL", e);
         }
     }
-
 }
