@@ -15,9 +15,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import org.example.api.apiAll.ApiOneBookResponse;
+import org.example.constant.MessageConstant;
 import org.example.dao.FavoriteDAO;
 import org.example.dao.HistoryDAO;
 import org.example.data.BookService;
+import org.example.exception.AppException;
 import org.example.model.chapter.AllChapter;
 import org.example.model.chapter.ChapterInfo;
 import org.example.model.user.UserFavorite;
@@ -75,7 +77,7 @@ public class BookDetailController {
     @FXML
     public void initialize() {
         backButton.setOnAction(event ->
-                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
+                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME)
         );
 
         btnPrev.setOnAction(e -> changePage(-1));
@@ -113,7 +115,7 @@ public class BookDetailController {
                 updateUI(data);
                 checkUserStatus();
             } else {
-                headerTitle.setText("Không tải được dữ liệu");
+                headerTitle.setText(MessageConstant.ERR_LOAD_BOOK);
             }
         });
 
@@ -146,6 +148,7 @@ public class BookDetailController {
                         }
                     }
                     if (this.lastReadChapter != null) {
+                        // "Đọc tiếp" không có trong Constant, giữ nguyên text động
                         readButton.setText("Đọc tiếp: Chap " + lastReadChapter.getChapterName());
                     }
                 }
@@ -159,6 +162,7 @@ public class BookDetailController {
 
         headerTitle.setText(item.getName());
         bookName.setText(item.getName());
+        // Các chuỗi "Trạng thái:", "Tác giả:" là label UI cụ thể, giữ nguyên hoặc tạo constant mới nếu cần thiết
         bookStatus.setText("Trạng thái: " + item.getStatus());
         bookAuthor.setText("Tác giả: Đang cập nhật");
 
@@ -195,7 +199,6 @@ public class BookDetailController {
         if (lastReadChapter != null) {
             openChapterReading(lastReadChapter);
         } else {
-
             ChapterInfo firstChapter = findFirstChapter();
             if (firstChapter != null) {
                 openChapterReading(firstChapter);
@@ -282,7 +285,7 @@ public class BookDetailController {
         updatePaginationControls();
 
         if (allChapters.isEmpty()) {
-            chapterListContainer.getChildren().add(new Label("Chưa có chương nào."));
+            chapterListContainer.getChildren().add(new Label(MessageConstant.ERR_NO_CHAPTER));
             return;
         }
 
@@ -301,7 +304,7 @@ public class BookDetailController {
                 chapterListContainer.getChildren().add(btnChapter);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 
@@ -348,7 +351,7 @@ public class BookDetailController {
             stage.getScene().setRoot(root);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 }

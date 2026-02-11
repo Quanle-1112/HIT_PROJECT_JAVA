@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.constant.MessageConstant;
 import org.example.data.BookService;
+import org.example.exception.AppException;
 import org.example.utils.SceneUtils;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class ViewAllBooksController {
     @FXML
     public void initialize() {
         backButton.setOnAction(event ->
-                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
+                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME)
         );
 
         btnPrevious.setOnAction(e -> changePage(-1));
@@ -142,7 +143,7 @@ public class ViewAllBooksController {
                         listContainer.getChildren().add(item);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    throw new AppException(MessageConstant.ERR_SYSTEM, e);
                 }
 
                 scrollPane.setVvalue(0.0);
@@ -158,6 +159,8 @@ public class ViewAllBooksController {
             listContainer.getChildren().clear();
             listContainer.getChildren().add(new Label(MessageConstant.ERR_NETWORK));
             Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
+
+            throw new AppException(MessageConstant.ERR_NETWORK, task.getException());
         });
 
         new Thread(task).start();

@@ -85,10 +85,10 @@ public class HistoryItemController {
                         UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", e.getMessage())
                 );
             } catch (Exception e) {
-                e.printStackTrace();
                 Platform.runLater(() ->
                         UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM)
                 );
+                throw new AppException(MessageConstant.ERR_SYSTEM, e);
             }
         }).start();
     }
@@ -105,8 +105,8 @@ public class HistoryItemController {
             stage.setScene(new Scene(root));
             stage.setTitle("WOWTruyen - " + currentHistory.getBookName());
         } catch (IOException e) {
-            e.printStackTrace();
             UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM);
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 }

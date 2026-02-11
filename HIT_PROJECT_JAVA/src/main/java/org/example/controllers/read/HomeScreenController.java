@@ -16,7 +16,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
+import org.example.constant.MessageConstant;
 import org.example.data.BookService;
+import org.example.exception.AppException;
 import org.example.utils.SceneUtils;
 import org.example.utils.UIFactory;
 
@@ -65,7 +67,7 @@ public class HomeScreenController {
 
         if (btnMoreCategory != null) {
             btnMoreCategory.setOnAction(e ->
-                    SceneUtils.switchScene(btnMoreCategory, "/view/read/view_all_categories.fxml", "Tất cả thể loại")
+                    SceneUtils.switchScene(btnMoreCategory, "/view/read/view_all_categories.fxml", MessageConstant.TITLE_ALL_CATEGORIES)
             );
         }
     }
@@ -74,7 +76,7 @@ public class HomeScreenController {
         if (categoryContainer == null) return;
 
         categoryContainer.getChildren().clear();
-        categoryContainer.getChildren().add(new Label("Đang tải danh sách..."));
+        categoryContainer.getChildren().add(new Label(MessageConstant.MSG_LOADING));
 
         CompletableFuture.supplyAsync(() -> bookService.getAllCategories())
                 .thenAccept(categories -> Platform.runLater(() -> {
@@ -83,7 +85,7 @@ public class HomeScreenController {
                     categoryContainer.getChildren().clear();
 
                     if (categories == null || categories.isEmpty()) {
-                        categoryContainer.getChildren().add(new Label("Lỗi tải thể loại."));
+                        categoryContainer.getChildren().add(new Label(MessageConstant.ERR_LOAD_CATEGORIES));
                         return;
                     }
 
@@ -136,9 +138,10 @@ public class HomeScreenController {
     }
 
     private void handleCategoryClick(Button sourceBtn, String slug) {
-        SearchResultController controller = SceneUtils.switchScene(searchButton, "/view/read/search_result.fxml", "Thể loại: " + sourceBtn.getText());
+        String title = "Thể loại: " + sourceBtn.getText();
+        SearchResultController controller = SceneUtils.switchScene(searchButton, "/view/read/search_result.fxml", title);
         if (controller != null) {
-            controller.initData("CATEGORY", slug, "Thể loại: " + sourceBtn.getText());
+            controller.initData("CATEGORY", slug, title);
         }
     }
 
@@ -151,7 +154,9 @@ public class HomeScreenController {
     private void handleSearch() {
         String query = searchTextField.getText().trim();
         if (query.isEmpty()) return;
-        SearchResultController controller = SceneUtils.switchScene(searchButton, "/view/read/search_result.fxml", "Tìm kiếm: " + query);
+
+        String title = "Tìm kiếm: " + query;
+        SearchResultController controller = SceneUtils.switchScene(searchButton, "/view/read/search_result.fxml", title);
         if (controller != null) controller.initData("SEARCH", query, "Kết quả tìm kiếm: " + query);
     }
 
@@ -162,16 +167,17 @@ public class HomeScreenController {
             btnHome.setDisable(true);
         }
 
-        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Home"));
-        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "History"));
-        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Favorite"));
-        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Account"));
+        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
+        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", MessageConstant.TITLE_HISTORY));
+        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", MessageConstant.TITLE_FAVORITE));
+        if (btnAI != null) btnAI.setOnAction(e -> SceneUtils.switchScene(btnAI, "/view/chatbox/chat_box.fxml", MessageConstant.CHAT_AI_TITLE));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", MessageConstant.TITLE_ACCOUNT));
     }
 
     private void setupViewAllButtons() {
-        if (btnMoreNew != null) btnMoreNew.setOnAction(e -> openViewAll("NEW", "Truyện Mới Cập Nhật"));
-        if (btnMoreCompleted != null) btnMoreCompleted.setOnAction(e -> openViewAll("COMPLETED", "Truyện Đã Hoàn Thành"));
-        if (btnMoreComing != null) btnMoreComing.setOnAction(e -> openViewAll("COMING", "Sắp Ra Mắt"));
+        if (btnMoreNew != null) btnMoreNew.setOnAction(e -> openViewAll("NEW", MessageConstant.TITLE_VIEW_ALL_NEW));
+        if (btnMoreCompleted != null) btnMoreCompleted.setOnAction(e -> openViewAll("COMPLETED", MessageConstant.TITLE_VIEW_ALL_COMPLETED));
+        if (btnMoreComing != null) btnMoreComing.setOnAction(e -> openViewAll("COMING", MessageConstant.TITLE_VIEW_ALL_COMING));
     }
 
     private void openViewAll(String type, String title) {
@@ -204,7 +210,9 @@ public class HomeScreenController {
                             ctrl.setData(book);
                             container.getChildren().add(card);
                         }
-                    } catch (IOException ex) { ex.printStackTrace(); }
+                    } catch (IOException ex) {
+                        throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+                    }
                 });
             }
         });

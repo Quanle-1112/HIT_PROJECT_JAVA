@@ -1,13 +1,16 @@
 package org.example.controllers.account;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
+import org.example.exception.AppException;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
-import org.example.utils.SceneUtils;
 import org.example.utils.SessionManager;
 
 public class ChangeNameController {
@@ -23,52 +26,63 @@ public class ChangeNameController {
     @FXML
     public void initialize() {
         currentUser = SessionManager.getInstance().getCurrentUser();
+        UIExceptionHandler.hideError(errorLabel);
 
         if (currentUser != null) {
             newNameField.setText(currentUser.getFullName());
         }
 
-        if (errorLabel != null) errorLabel.setVisible(false);
-
         btnSave.setOnAction(e -> handleSave());
-        btnCancel.setOnAction(e -> handleCancel());
+        btnCancel.setOnAction(e -> closeWindow());
     }
 
     private void handleSave() {
+        UIExceptionHandler.hideError(errorLabel);
         String newName = newNameField.getText().trim();
 
         if (newName.isEmpty()) {
-            showError(MessageConstant.VALIDATION_NAME_EMPTY);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.VALIDATION_NAME_EMPTY);
             return;
         }
-        if (newName.length() < 2) {
-            showError(MessageConstant.VALIDATION_NAME_SHORT);
+        if (newName.length() < 2 || newName.length() > 50) {
+            UIExceptionHandler.showError(errorLabel, MessageConstant.VALIDATION_NAME_SHORT);
             return;
         }
 
-        if (currentUser != null) {
-            currentUser.setFullName(newName);
+        btnSave.setDisable(true);
+        btnSave.setText(MessageConstant.CONFIRM_LOADING);
 
-            boolean success = userDAO.updateUserProfile(currentUser);
-
-            if (success) {
-                SessionManager.getInstance().setCurrentUser(currentUser);
-
-                handleCancel();
-            } else {
-                showError(MessageConstant.ERR_DB_CONNECT);
+        Task<Void> saveTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                currentUser.setFullName(newName);
+                if (!userDAO.updateUserProfile(currentUser)) {
+                    throw new AppException(MessageConstant.UPDATE_FAIL);
+                }
+                return null;
             }
-        }
+        };
+
+        saveTask.setOnSucceeded(e -> {
+            SessionManager.getInstance().setCurrentUser(currentUser);
+            closeWindow();
+        });
+
+        saveTask.setOnFailed(e -> {
+            btnSave.setDisable(false);
+            btnSave.setText("Lưu thay đổi");
+
+            Throwable ex = saveTask.getException();
+            UIExceptionHandler.showError(errorLabel, ex.getMessage());
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(saveTask).start();
     }
 
-    private void handleCancel() {
-        SceneUtils.switchScene(btnCancel, "/view/account/account_screen.fxml", "Tài khoản cá nhân");
-    }
-
-    private void showError(String msg) {
-        if (errorLabel != null) {
-            errorLabel.setText(msg);
-            errorLabel.setVisible(true);
-        }
+    private void closeWindow() {
+        Stage stage = (Stage) btnCancel.getScene().getWindow();
+        stage.close();
     }
 }

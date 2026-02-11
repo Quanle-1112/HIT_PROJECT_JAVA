@@ -98,7 +98,7 @@ public class ConfirmInformationController {
     private void handleUploadAvatar() {
         UIExceptionHandler.hideError(errorLabel);
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Chọn ảnh đại diện");
+        fileChooser.setTitle(MessageConstant.CHOOSE_AVATAR);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
         File file = fileChooser.showOpenDialog(btnUploadAvatar.getScene().getWindow());
 
@@ -128,7 +128,7 @@ public class ConfirmInformationController {
         sendOtpTask.setOnSucceeded(e -> {
             if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
             emailConfirmButton.setVisible(true);
-            emailConfirmButton.setText("Gửi lại");
+            emailConfirmButton.setText(MessageConstant.RESEND);
 
             if (sendOtpTask.getValue()) {
                 if (codeSentSuccessfullyText != null) codeSentSuccessfullyText.setVisible(true);
@@ -147,6 +147,8 @@ public class ConfirmInformationController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(sendOtpTask).start();
@@ -156,7 +158,7 @@ public class ConfirmInformationController {
         UIExceptionHandler.hideError(errorLabel);
 
         if (!agreeCheckBox.isSelected()) {
-            UIExceptionHandler.showError(errorLabel, "Vui lòng đồng ý với điều khoản sử dụng.");
+            UIExceptionHandler.showError(errorLabel, MessageConstant.AGREE_CHECK_BOX);
             return;
         }
 
@@ -166,18 +168,18 @@ public class ConfirmInformationController {
         }
 
         if (!ValidationUtils.isValidPhoneNumber(sdtText.getText().trim())) {
-            UIExceptionHandler.showError(errorLabel, "Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0).");
+            UIExceptionHandler.showError(errorLabel, MessageConstant.VALIDATION_PHONE_INVALID);
             return;
         }
 
         String inputOtp = confirmEmailText.getText().trim();
         if (inputOtp.isEmpty()) {
-            UIExceptionHandler.showError(errorLabel, "Vui lòng nhập mã xác nhận email.");
+            UIExceptionHandler.showError(errorLabel, MessageConstant.OTP_EMPTY);
             return;
         }
 
         confirmButton.setDisable(true);
-        confirmButton.setText("Đang xử lý...");
+        confirmButton.setText(MessageConstant.CONFIRM_LOADING);
 
         Task<Void> processTask = new Task<>() {
             @Override
@@ -190,7 +192,7 @@ public class ConfirmInformationController {
                 String avatarPath = (currentUser.getAvatarUrl() != null) ? currentUser.getAvatarUrl() : "";
                 if (selectedAvatarFile != null) {
                     avatarPath = saveAvatarToLocal(selectedAvatarFile);
-                    if (avatarPath == null) throw new AppException("Lỗi khi lưu ảnh đại diện.");
+                    if (avatarPath == null) throw new AppException(MessageConstant.ERR_DB_SAVE);
                 }
 
                 currentUser.setFullName(hoVaTenText.getText().trim());
@@ -218,7 +220,7 @@ public class ConfirmInformationController {
 
         processTask.setOnFailed(e -> {
             confirmButton.setDisable(false);
-            confirmButton.setText("XÁC NHẬN");
+            confirmButton.setText(MessageConstant.TITLE_CONFIRM_INFO);
 
             Throwable ex = processTask.getException();
             if (ex instanceof AuthException) {
@@ -228,6 +230,8 @@ public class ConfirmInformationController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(processTask).start();
@@ -245,8 +249,7 @@ public class ConfirmInformationController {
 
             return destPath.toAbsolutePath().toString();
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 

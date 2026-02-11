@@ -26,7 +26,7 @@ public class HistoryScreenController {
 
     @FXML private Label statusLabel;
 
-    @FXML private Button btnHome, btnHistory, btnFavorite, btnAccount;
+    @FXML private Button btnHome, btnHistory, btnFavorite,btnAI, btnAccount;
 
     private final HistoryDAO historyDAO = new HistoryDAO();
     private int currentUserId;
@@ -75,9 +75,8 @@ public class HistoryScreenController {
             Throwable ex = task.getException();
             if (ex instanceof Exception) {
                 UIExceptionHandler.handle((Exception) ex, statusLabel);
-            } else {
-                ex.printStackTrace();
             }
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(task).start();
@@ -95,8 +94,7 @@ public class HistoryScreenController {
                 listContainer.getChildren().add(item);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            UIExceptionHandler.showError(statusLabel, MessageConstant.ERR_SYSTEM);
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 
@@ -121,6 +119,7 @@ public class HistoryScreenController {
                 Platform.runLater(() -> UIExceptionHandler.handle(e, statusLabel));
             } catch (Exception e) {
                 Platform.runLater(() -> UIExceptionHandler.showError(statusLabel, MessageConstant.ERR_SYSTEM));
+                throw new AppException(MessageConstant.ERR_SYSTEM, e);
             }
         }).start();
     }
@@ -144,8 +143,9 @@ public class HistoryScreenController {
             btnHistory.setDisable(true);
         }
         if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
-        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "Lịch sử"));
-        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Yêu thích"));
+        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", MessageConstant.TITLE_HISTORY));
+        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", MessageConstant.TITLE_FAVORITE));
+        if (btnAI != null) btnAI.setOnAction(e -> SceneUtils.switchScene(btnAI, "/view/chatbox/chat_box.fxml", MessageConstant.CHAT_AI_TITLE));
         if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", MessageConstant.TITLE_ACCOUNT));
     }
 }

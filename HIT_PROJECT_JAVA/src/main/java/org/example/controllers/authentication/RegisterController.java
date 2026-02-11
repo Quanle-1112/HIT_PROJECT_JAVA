@@ -64,7 +64,7 @@ public class RegisterController {
         }
 
         registerButton.setDisable(true);
-        registerButton.setText("Đang đăng ký...");
+        registerButton.setText(MessageConstant.REGISTER_SUCCESS_LOADING);
 
         Task<Void> registerTask = new Task<>() {
             @Override
@@ -81,13 +81,13 @@ public class RegisterController {
         };
 
         registerTask.setOnSucceeded(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, "Thành công", MessageConstant.REGISTER_SUCCESS);
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.REGISTER_SUCCESS, MessageConstant.REGISTER_SUCCESS);
             SceneUtils.openNewWindow("/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN, registerButton);
         });
 
         registerTask.setOnFailed(e -> {
             registerButton.setDisable(false);
-            registerButton.setText("Register");
+            registerButton.setText(MessageConstant.TITLE_REGISTER);
 
             Throwable ex = registerTask.getException();
 
@@ -98,6 +98,8 @@ public class RegisterController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(registerTask).start();

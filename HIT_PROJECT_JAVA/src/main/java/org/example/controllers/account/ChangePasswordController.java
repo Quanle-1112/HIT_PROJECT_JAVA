@@ -1,30 +1,28 @@
 package org.example.controllers.account;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import org.example.constant.MessageConstant;
 import javafx.scene.control.PasswordField;
+import javafx.stage.Stage;
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
+import org.example.exception.AppException;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.utils.EncryptionUtils;
-import org.example.utils.SceneUtils;
 import org.example.utils.SessionManager;
 import org.example.utils.ValidationUtils;
 
 public class ChangePasswordController {
 
     @FXML private PasswordField oldPassField;
-
     @FXML private PasswordField newPassField;
-
     @FXML private PasswordField confirmPassField;
-
     @FXML private Label errorLabel;
-
     @FXML private Button btnSave;
-
     @FXML private Button btnCancel;
 
     private final UserDAO userDAO = new UserDAO();
@@ -33,76 +31,79 @@ public class ChangePasswordController {
     @FXML
     public void initialize() {
         currentUser = SessionManager.getInstance().getCurrentUser();
-
-        if (errorLabel != null) {
-            UIExceptionHandler.hideError(errorLabel);
-        }
+        UIExceptionHandler.hideError(errorLabel);
 
         btnSave.setOnAction(e -> handleSave());
-        btnCancel.setOnAction(e -> handleCancel());
+        btnCancel.setOnAction(e -> closeWindow());
     }
 
     private void handleSave() {
         UIExceptionHandler.hideError(errorLabel);
-
-
-        if (currentUser == null) {
-            return;
-        }
 
         String oldPass = oldPassField.getText();
         String newPass = newPassField.getText();
         String confirmPass = confirmPassField.getText();
 
         if (ValidationUtils.areFieldsEmpty(oldPassField, newPassField, confirmPassField)) {
-            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
 
         if (!EncryptionUtils.verifyPassword(oldPass, currentUser.getPassword())) {
-            showError(MessageConstant.CHANGE_PASS_OLD_WRONG);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.CHANGE_PASS_OLD_WRONG);
             return;
         }
 
         if (!ValidationUtils.isValidPassword(newPass)) {
-            showError(MessageConstant.REGISTER_PASSWORD_INVALID);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_PASSWORD_INVALID);
+            return;
+        }
+
+        if (oldPass.equals(newPass)) {
+            UIExceptionHandler.showError(errorLabel, "Mật khẩu mới không được trùng mật khẩu cũ.");
             return;
         }
 
         if (!newPass.equals(confirmPass)) {
-            showError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;
         }
 
-        try {
-            String hashedPassword = EncryptionUtils.hashPassword(newPass);
+        btnSave.setDisable(true);
+        btnSave.setText(MessageConstant.CONFIRM_LOADING);
 
-            currentUser.setPassword(hashedPassword);
-
-            boolean isUpdated = userDAO.updateUserPassword(currentUser.getId(), hashedPassword);
-
-            if (isUpdated) {
-                SessionManager.getInstance().setCurrentUser(currentUser);
-
-                SceneUtils.switchScene(btnSave, "/view/account/account_screen.fxml", "Tài khoản cá nhân");
-            } else {
-                showError(MessageConstant.UPDATE_FAIL);
+        Task<Void> changePassTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                String hashed = EncryptionUtils.hashPassword(newPass);
+                if (!userDAO.updateUserPassword(currentUser.getId(), hashed)) {
+                    throw new AppException(MessageConstant.UPDATE_FAIL);
+                }
+                currentUser.setPassword(hashed);
+                return null;
             }
+        };
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            showError(MessageConstant.ERR_SYSTEM);
-        }
+        changePassTask.setOnSucceeded(e -> {
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.UPDATE_SUCCESS, MessageConstant.CHANGE_PASS_SUCCESS);
+            closeWindow();
+        });
+
+        changePassTask.setOnFailed(e -> {
+            btnSave.setDisable(false);
+            btnSave.setText("Cập nhật mật khẩu");
+
+            Throwable ex = changePassTask.getException();
+            UIExceptionHandler.showError(errorLabel, ex.getMessage());
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(changePassTask).start();
     }
 
-    private void handleCancel() {
-        SceneUtils.switchScene(btnCancel, "/view/account/account_screen.fxml", "Tài khoản cá nhân");
-    }
-
-    private void showError(String message) {
-        if (errorLabel != null) {
-            errorLabel.setText(message);
-            UIExceptionHandler.showError(errorLabel);
-        }
+    private void closeWindow() {
+        Stage stage = (Stage) btnCancel.getScene().getWindow();
+        stage.close();
     }
 }

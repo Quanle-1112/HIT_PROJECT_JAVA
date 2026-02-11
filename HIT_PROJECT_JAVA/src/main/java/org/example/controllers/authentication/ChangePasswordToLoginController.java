@@ -58,7 +58,7 @@ public class ChangePasswordToLoginController {
         };
 
         updateTask.setOnSucceeded(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, "Thành công", MessageConstant.CHANGE_PASS_SUCCESS);
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.REGISTER_SUCCESS, MessageConstant.CHANGE_PASS_SUCCESS);
             SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN);
         });
 
@@ -72,6 +72,8 @@ public class ChangePasswordToLoginController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(updateTask).start();

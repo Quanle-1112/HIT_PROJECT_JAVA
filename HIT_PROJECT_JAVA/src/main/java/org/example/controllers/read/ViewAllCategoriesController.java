@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -31,7 +32,7 @@ public class ViewAllCategoriesController {
 
     @FXML
     public void initialize() {
-        backButton.setOnAction(e -> SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ"));
+        backButton.setOnAction(e -> SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
 
         loadCategories();
     }
@@ -56,7 +57,7 @@ public class ViewAllCategoriesController {
 
         task.setOnFailed(e -> {
             statusLabel.setText(MessageConstant.ERR_NETWORK);
-            e.getSource().getException().printStackTrace();
+            throw new AppException(MessageConstant.ERR_NETWORK, task.getException());
         });
 
         new Thread(task).start();
@@ -100,7 +101,7 @@ public class ViewAllCategoriesController {
             stage.setScene(new Scene(root));
             stage.setTitle("WOWTruyen - " + cat.getName());
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         }
     }
 }

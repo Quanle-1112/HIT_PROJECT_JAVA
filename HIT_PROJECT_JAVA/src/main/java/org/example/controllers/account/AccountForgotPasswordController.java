@@ -1,16 +1,15 @@
 package org.example.controllers.account;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
+import org.example.exception.AppException;
+import org.example.exception.AuthException;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.OtpStatus;
 import org.example.model.user.User;
 import org.example.services.IUserService;
@@ -37,151 +36,148 @@ public class AccountForgotPasswordController {
     private final UserDAO userDAO = new UserDAO();
     private User currentUser;
 
-    private Timeline timeline;
-    private int countdownTime = 30;
-
     @FXML
     public void initialize() {
         currentUser = SessionManager.getInstance().getCurrentUser();
+        UIExceptionHandler.hideError(lblStatus);
+
+        passwordContainer.setDisable(true);
+        passwordContainer.setOpacity(0.5);
+        btnSavePassword.setDisable(true);
 
         btnClose.setOnAction(e -> closeDialog());
-
-        if (currentUser != null) {
-            lblStatus.setText("Đang gửi mã tới: " + currentUser.getEmail());
-            sendOtp();
-        } else {
-            setStatusError("Lỗi: Không tìm thấy thông tin người dùng.");
-            setAllDisable(true);
-        }
-
+        btnResendOtp.setOnAction(e -> handleSendOtp());
         btnVerifyOtp.setOnAction(e -> handleVerifyOtp());
-        btnResendOtp.setOnAction(e -> handleResendOtp());
         btnSavePassword.setOnAction(e -> handleSavePassword());
+
+        handleSendOtp();
     }
 
-    private void sendOtp() {
+    private void handleSendOtp() {
+        UIExceptionHandler.hideError(lblStatus);
         btnResendOtp.setDisable(true);
+        btnResendOtp.setText(MessageConstant.CONFIRM_LOADING);
 
-        new Thread(() -> {
-            boolean success = userService.sendOtp(currentUser.getEmail());
-
-            Platform.runLater(() -> {
-                if (success) {
-                    lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
-                    lblStatus.setStyle("-fx-text-fill: #19345D;");
-                    startTimer();
-                } else {
-                    setStatusError("Gửi mã thất bại. Vui lòng kiểm tra mạng.");
-                    btnResendOtp.setDisable(false);
-                }
-            });
-        }).start();
-    }
-
-    private void handleResendOtp() {
-        lblStatus.setText("Đang gửi lại mã...");
-        lblStatus.setStyle("-fx-text-fill: #666;");
-        sendOtp();
-    }
-
-    private void startTimer() {
-        countdownTime = 30;
-        if (timeline != null) timeline.stop();
-
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            countdownTime--;
-            btnResendOtp.setText("Gửi lại mã (" + countdownTime + "s)");
-
-            if (countdownTime <= 0) {
-                timeline.stop();
-                btnResendOtp.setText("Gửi lại mã");
-                btnResendOtp.setDisable(false);
+        Task<Boolean> sendTask = new Task<>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return userService.sendOtp(currentUser.getEmail());
             }
-        }));
-        timeline.setCycleCount(30);
-        timeline.play();
+        };
+
+        sendTask.setOnSucceeded(e -> {
+            btnResendOtp.setDisable(false);
+            btnResendOtp.setText(MessageConstant.RESEND + " mã");
+            if (sendTask.getValue()) {
+                lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
+                lblStatus.setStyle("-fx-text-fill:  #19345D;");
+            } else {
+                UIExceptionHandler.showError(lblStatus, MessageConstant.OTP_RESEND_FAIL);
+            }
+        });
+
+        sendTask.setOnFailed(e -> {
+            btnResendOtp.setDisable(false);
+            btnResendOtp.setText(MessageConstant.RESEND + " mã");
+
+            Throwable ex = sendTask.getException();
+            if (ex instanceof AppException) {
+                UIExceptionHandler.showError(lblStatus, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), lblStatus);
+            }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(sendTask).start();
     }
 
     private void handleVerifyOtp() {
+        UIExceptionHandler.hideError(lblStatus);
         String otp = txtOtp.getText().trim();
+
         if (otp.isEmpty()) {
-            setStatusError(MessageConstant.LOGIN_EMPTY_FIELDS);
+            UIExceptionHandler.showError(lblStatus, MessageConstant.OTP_EMPTY);
             return;
         }
 
-        OtpStatus status = userService.verifyOtp(currentUser.getEmail(), otp);
+        Task<Void> verifyTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                OtpStatus status = userService.verifyOtp(currentUser.getEmail(), otp);
+                if (status != OtpStatus.SUCCESS) {
+                    throw new AuthException(MessageConstant.OTP_INVALID);
+                }
+                return null;
+            }
+        };
 
-        if (status == OtpStatus.SUCCESS) {
-            lblStatus.setText("Xác thực thành công! Hãy nhập mật khẩu mới.");
-            lblStatus.setStyle("-fx-text-fill: #19345D; -fx-font-weight: bold;");
+        verifyTask.setOnSucceeded(e -> {
+            lblStatus.setText("Xác thực thành công. Nhập mật khẩu mới.");
+            lblStatus.setStyle("-fx-text-fill:  #19345D;");
 
-            passwordContainer.setDisable(false);
             txtOtp.setDisable(true);
             btnVerifyOtp.setDisable(true);
             btnResendOtp.setDisable(true);
-            if (timeline != null) timeline.stop();
-            btnResendOtp.setText("Đã xác thực");
 
-        } else if (status == OtpStatus.EXPIRED_CODE) {
-            setStatusError(MessageConstant.OTP_EXPIRED);
-        } else {
-            setStatusError(MessageConstant.OTP_INVALID);
-        }
+            passwordContainer.setDisable(false);
+            passwordContainer.setOpacity(1.0);
+            btnSavePassword.setDisable(false);
+        });
+
+        verifyTask.setOnFailed(e -> {
+            Throwable ex = verifyTask.getException();
+            UIExceptionHandler.showError(lblStatus, ex.getMessage());
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(verifyTask).start();
     }
 
     private void handleSavePassword() {
         String newPass = txtNewPass.getText();
         String confirmPass = txtConfirmPass.getText();
 
-        if (ValidationUtils.areFieldsEmpty(txtNewPass, txtConfirmPass)) {
-            setStatusError(MessageConstant.LOGIN_EMPTY_FIELDS);
-            return;
-        }
         if (!ValidationUtils.isValidPassword(newPass)) {
-            setStatusError(MessageConstant.REGISTER_PASSWORD_INVALID);
+            UIExceptionHandler.showError(lblStatus, MessageConstant.REGISTER_PASSWORD_INVALID);
             return;
         }
         if (!newPass.equals(confirmPass)) {
-            setStatusError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
+            UIExceptionHandler.showError(lblStatus, MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;
         }
 
-        String hashedPassword = EncryptionUtils.hashPassword(newPass);
-        boolean success = userDAO.updateUserPassword(currentUser.getId(), hashedPassword);
+        Task<Void> saveTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                String hashed = EncryptionUtils.hashPassword(newPass);
+                if (!userDAO.updateUserPassword(currentUser.getId(), hashed)) {
+                    throw new AppException(MessageConstant.UPDATE_FAIL);
+                }
+                currentUser.setPassword(hashed);
+                return null;
+            }
+        };
 
-        if (success) {
-            currentUser.setPassword(hashedPassword);
-            SessionManager.getInstance().setCurrentUser(currentUser);
+        saveTask.setOnSucceeded(e -> {
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.UPDATE_SUCCESS, MessageConstant.CHANGE_PASS_SUCCESS);
+            closeDialog();
+        });
 
-            lblStatus.setText(MessageConstant.CHANGE_PASS_SUCCESS);
-            lblStatus.setStyle("-fx-text-fill: #19345D; -fx-font-weight: bold; -fx-font-size: 14px;");
+        saveTask.setOnFailed(e -> {
+            Throwable ex = saveTask.getException();
+            UIExceptionHandler.showError(lblStatus, ex.getMessage());
 
-            btnSavePassword.setDisable(true);
-            passwordContainer.setDisable(true);
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
 
-            PauseTransition pause = new PauseTransition(Duration.seconds(1));
-            pause.setOnFinished(event -> closeDialog());
-            pause.play();
-
-        } else {
-            setStatusError(MessageConstant.UPDATE_FAIL);
-        }
-    }
-
-    private void setStatusError(String msg) {
-        lblStatus.setText(msg);
-        lblStatus.setStyle("-fx-text-fill: red;");
+        new Thread(saveTask).start();
     }
 
     private void closeDialog() {
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
-    }
-
-    private void setAllDisable(boolean disable) {
-        txtOtp.setDisable(disable);
-        btnVerifyOtp.setDisable(disable);
-        btnResendOtp.setDisable(disable);
-        passwordContainer.setDisable(disable);
     }
 }

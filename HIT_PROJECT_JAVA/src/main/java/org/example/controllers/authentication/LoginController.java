@@ -76,7 +76,7 @@ public class LoginController {
         String password = isPasswordVisible ? showPasswordTextField.getText() : enterPasswordField.getText();
 
         loginButton.setDisable(true);
-        loginButton.setText("Đang đăng nhập...");
+        loginButton.setText(MessageConstant.LOGIN_SUCCESS);
 
         Task<User> loginTask = new Task<>() {
             @Override
@@ -107,7 +107,7 @@ public class LoginController {
 
         loginTask.setOnFailed(e -> {
             loginButton.setDisable(false);
-            loginButton.setText("Login");
+            loginButton.setText(MessageConstant.TITLE_LOGIN);
 
             Throwable ex = loginTask.getException();
 
@@ -118,6 +118,8 @@ public class LoginController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(loginTask).start();

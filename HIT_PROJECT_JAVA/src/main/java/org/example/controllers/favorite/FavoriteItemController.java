@@ -83,10 +83,10 @@ public class FavoriteItemController {
                         UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", e.getMessage())
                 );
             } catch (Exception e) {
-                e.printStackTrace();
                 Platform.runLater(() ->
                         UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM)
                 );
+                throw new AppException(MessageConstant.ERR_SYSTEM, e);
             }
         }).start();
     }
@@ -103,8 +103,8 @@ public class FavoriteItemController {
             stage.setScene(new Scene(root));
             stage.setTitle("WOWTruyen - " + currentFavorite.getBookName());
         } catch (IOException e) {
-            e.printStackTrace();
             UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM);
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 }

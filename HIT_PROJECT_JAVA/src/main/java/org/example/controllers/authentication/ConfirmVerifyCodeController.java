@@ -43,12 +43,12 @@ public class ConfirmVerifyCodeController {
         String otp = codeTextField.getText().trim();
 
         if (otp.isEmpty()) {
-            UIExceptionHandler.showError(errorLabel, "Vui lòng nhập mã xác thực!");
+            UIExceptionHandler.showError(errorLabel, MessageConstant.OTP_EMPTY);
             return;
         }
 
         verifyButton.setDisable(true);
-        verifyButton.setText("Đang kiểm tra...");
+        verifyButton.setText(MessageConstant.CONFIRM_LOADING);
 
         Task<Void> verifyTask = new Task<>() {
             @Override
@@ -62,14 +62,14 @@ public class ConfirmVerifyCodeController {
             ChangePasswordToLoginController controller = SceneUtils.switchScene(
                     verifyButton,
                     "/view/authentication/change_password_to_login.fxml",
-                    "Đổi mật khẩu mới"
+                    MessageConstant.TITLE_FORGOT_PASS
             );
             if (controller != null) controller.setUserEmail(userEmail);
         });
 
         verifyTask.setOnFailed(e -> {
             verifyButton.setDisable(false);
-            verifyButton.setText("Verify Code");
+            verifyButton.setText(MessageConstant.TITLE_CONFIRM_OTP);
 
             Throwable ex = verifyTask.getException();
             if (ex instanceof AuthException) {
@@ -77,6 +77,8 @@ public class ConfirmVerifyCodeController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(verifyTask).start();
@@ -112,6 +114,8 @@ public class ConfirmVerifyCodeController {
             Throwable ex = resendTask.getException();
             UIExceptionHandler.showError(errorLabel, ex.getMessage());
             errorLabel.setStyle("-fx-text-fill: red;");
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(resendTask).start();
@@ -122,10 +126,10 @@ public class ConfirmVerifyCodeController {
         final int[] seconds = {30};
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             seconds[0]--;
-            resendCodeButton.setText("Gửi lại mã (" + seconds[0] + "s)");
+            resendCodeButton.setText(MessageConstant.RESEND + " mã (" + seconds[0] + "s)");
             if (seconds[0] <= 0) {
                 resendCodeButton.setDisable(false);
-                resendCodeButton.setText("Gửi lại mã");
+                resendCodeButton.setText(MessageConstant.RESEND + " mã");
             }
         }));
         timeline.setCycleCount(30);

@@ -58,7 +58,7 @@ public class ForgotPasswordController {
             ConfirmVerifyCodeController controller = SceneUtils.switchScene(
                     sendRecoveryCodeButton,
                     "/view/authentication/confirm_verify_code.fxml",
-                    "Xác nhận OTP"
+                    MessageConstant.TITLE_CONFIRM_OTP
             );
             if (controller != null) controller.setInitData(email);
         });
@@ -75,6 +75,8 @@ public class ForgotPasswordController {
             } else {
                 UIExceptionHandler.handle(new Exception(ex), errorLabel);
             }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });
 
         new Thread(sendOtpTask).start();

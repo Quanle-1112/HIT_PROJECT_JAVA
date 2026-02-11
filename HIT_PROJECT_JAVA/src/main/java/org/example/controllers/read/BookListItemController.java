@@ -11,6 +11,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.api.apiAll.ApiCategory;
+import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
 import org.example.utils.ImageLoaderGlobal;
 
 import java.io.IOException;
@@ -76,7 +78,7 @@ public class BookListItemController {
                 stage.setTitle("WOWTruyen - " + book.getName());
 
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new AppException(MessageConstant.ERR_SYSTEM, e);
             }
         });
     }
