@@ -1,10 +1,13 @@
 package org.example.controllers.authentication;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
+import org.example.exception.AuthException;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
-import org.example.constant.MessageConstant;
 import org.example.services.IRegisterService;
 import org.example.services.impl.IRegisterServiceImpl;
 import org.example.utils.SceneUtils;
@@ -18,7 +21,6 @@ public class RegisterController {
     @FXML private PasswordField confirmPasswordField;
     @FXML private Button registerButton;
     @FXML private Button closeButton;
-
     @FXML private Label errorLabel;
 
     private final IRegisterService registerService = new IRegisterServiceImpl();
@@ -28,7 +30,9 @@ public class RegisterController {
         UIExceptionHandler.hideError(errorLabel);
 
         registerButton.setOnAction(event -> handleRegister());
-        closeButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Start Screen", closeButton));
+        closeButton.setOnAction(event ->
+                SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Start Screen", closeButton)
+        );
     }
 
     private void handleRegister() {
@@ -40,47 +44,64 @@ public class RegisterController {
         String confirmPassword = confirmPasswordField.getText();
 
         if (ValidationUtils.areFieldsEmpty(emailTextField, usernameTextField, setPasswordField, confirmPasswordField)) {
-            showError(MessageConstant.REGISTER_EMPTY_FIELDS);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_EMPTY_FIELDS);
             return;
         }
 
         if (!ValidationUtils.isValidEmail(email)) {
-            showError(MessageConstant.REGISTER_EMAIL_INVALID);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_EMAIL_INVALID);
             return;
         }
 
         if (username.length() < 5) {
-            showError(MessageConstant.REGISTER_USERNAME_SHORT);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_USERNAME_SHORT);
             return;
         }
 
         if (!ValidationUtils.isValidPassword(password)) {
-            showError(MessageConstant.REGISTER_PASSWORD_INVALID);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_PASSWORD_INVALID);
             return;
         }
 
-        if (!password.equals(confirmPassword)) {
-            showError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
-            return;
-        }
+        registerButton.setDisable(true);
+        registerButton.setText(MessageConstant.REGISTER_SUCCESS_LOADING);
 
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setEmail(email);
-        newUser.setPassword(password);
-        newUser.setFullName(username);
+        Task<Void> registerTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                User newUser = new User();
+                newUser.setUsername(username);
+                newUser.setEmail(email);
+                newUser.setPassword(password);
+                newUser.setFullName(username);
 
-        String result = registerService.register(newUser, confirmPassword);
+                registerService.register(newUser, confirmPassword);
+                return null;
+            }
+        };
 
-        if (MessageConstant.REGISTER_SUCCESS.equals(result)) {
-            SceneUtils.openNewWindow("/view/authentication/login.fxml", "Đăng nhập", registerButton);
-        } else {
-            showError(result);
-        }
-    }
+        registerTask.setOnSucceeded(e -> {
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.REGISTER_SUCCESS, MessageConstant.REGISTER_SUCCESS);
+            SceneUtils.openNewWindow("/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN, registerButton);
+        });
 
-    private void showError(String message) {
-        errorLabel.setText(message);
-        UIExceptionHandler.showError(errorLabel);
+        registerTask.setOnFailed(e -> {
+            registerButton.setDisable(false);
+            registerButton.setText(MessageConstant.TITLE_REGISTER);
+
+            Throwable ex = registerTask.getException();
+
+            if (ex instanceof AuthException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else if (ex instanceof AppException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), errorLabel);
+            }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(registerTask).start();
     }
 }

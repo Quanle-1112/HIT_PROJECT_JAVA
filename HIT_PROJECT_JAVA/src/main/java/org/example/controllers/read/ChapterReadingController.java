@@ -10,8 +10,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.example.api.apiAll.ApiChapterResponse;
+import org.example.constant.MessageConstant;
 import org.example.dao.HistoryDAO;
 import org.example.data.ChapterService;
+import org.example.exception.AppException;
 import org.example.model.chapter.ChapterInfo;
 import org.example.model.user.UserHistory;
 import org.example.utils.ImageLoaderGlobal;
@@ -64,7 +66,7 @@ public class ChapterReadingController {
 
         if (btnHome != null) {
             btnHome.setOnAction(e ->
-                    SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ")
+                    SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME)
             );
         }
 
@@ -90,7 +92,7 @@ public class ChapterReadingController {
     }
 
     private void loadChapter(ChapterInfo chapter) {
-        lblChapterName.setText("Đang tải...");
+        lblChapterName.setText(MessageConstant.MSG_LOADING);
         imageContainer.getChildren().clear();
         scrollPane.setVvalue(0);
 
@@ -127,8 +129,8 @@ public class ChapterReadingController {
                 renderImages(item);
                 updatePaginationUI();
             } else {
-                lblChapterName.setText("Lỗi chương");
-                Label errorLbl = new Label("Không tải được dữ liệu ảnh.");
+                lblChapterName.setText(MessageConstant.ERR_CHAPTER_CONTENT);
+                Label errorLbl = new Label(MessageConstant.ERR_LOAD_CHAPTER);
                 errorLbl.setStyle("-fx-text-fill: #333333; -fx-font-size: 14px;");
                 imageContainer.getChildren().add(errorLbl);
                 updatePaginationUI();
@@ -138,6 +140,7 @@ public class ChapterReadingController {
         task.setOnFailed(e -> {
             chapterInput.setDisable(false);
             updatePaginationUI();
+            throw new AppException(MessageConstant.ERR_SYSTEM, task.getException());
         });
 
         new Thread(task).start();
@@ -159,7 +162,6 @@ public class ChapterReadingController {
 
     private void handleManualChapterInput() {
         try {
-
             String input = chapterInput.getText().trim();
             int targetChapNum = Integer.parseInt(input);
 

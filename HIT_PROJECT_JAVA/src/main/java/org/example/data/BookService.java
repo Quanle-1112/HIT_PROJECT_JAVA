@@ -1,20 +1,14 @@
 package org.example.data;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonSyntaxException;
 import org.example.api.ApiGet;
-import org.example.api.apiAll.ApiAllBookResponse;
-import org.example.api.apiAll.ApiBookItem;
-import org.example.api.apiAll.ApiCategory;
-import org.example.api.apiAll.ApiOneBookResponse;
-import org.example.api.apiAll.ApiSearchBookResponse;
+import org.example.api.apiAll.*;
+import org.example.constant.MessageConstant;
+import org.example.exception.NetworkException;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,68 +16,64 @@ public class BookService {
 
     private final Gson gson = new Gson();
     private final String BASE_URL = "https://otruyenapi.com/v1/api";
-    private final int ITEM_LIMIT = 24;
 
     public List<ApiCategory> getAllCategories() {
-        String url = "https://otruyenapi.com/v1/api/the-loai";
-
-        String jsonResponse = ApiGet.getApi(url);
-
-        if (jsonResponse == null || jsonResponse.isEmpty()) {
-            System.err.println("API trả về rỗng!");
-            return Collections.emptyList();
-        }
+        String url = BASE_URL + "/the-loai";
+        String json = ApiGet.getApi(url);
 
         try {
-            JsonObject root = gson.fromJson(jsonResponse, JsonObject.class);
-            if (root.has("data")) {
-                JsonObject data = root.getAsJsonObject("data");
-                if (data.has("items")) {
-                    JsonArray items = data.getAsJsonArray("items");
-
-                    List<ApiCategory> categories = new ArrayList<>();
-                    for (JsonElement elem : items) {
-                        ApiCategory cat = gson.fromJson(elem, ApiCategory.class);
-                        categories.add(cat);
-                    }
-                    return categories;
-                }
+            ApiCategoryResponse response = gson.fromJson(json, ApiCategoryResponse.class);
+            if (response != null && response.getData() != null) {
+                return response.getData().getItems();
             }
-        } catch (Exception e) {
-            System.err.println("Lỗi phân tích JSON thể loại: " + e.getMessage());
-            e.printStackTrace();
+            return Collections.emptyList();
+        } catch (JsonSyntaxException e) {
+            throw new NetworkException(MessageConstant.ERR_LOAD_CATEGORIES, e);
         }
-        return Collections.emptyList();
-    }
-
-    private List<ApiBookItem> fetchBooksFromUrl(String url) {
-        String jsonResponse = ApiGet.getApi(url);
-        if (jsonResponse == null || jsonResponse.isEmpty()) return Collections.emptyList();
-        try {
-            ApiAllBookResponse response = gson.fromJson(jsonResponse, ApiAllBookResponse.class);
-            if (response != null && response.getData() != null) return response.getData().getItems();
-        } catch (Exception e) { e.printStackTrace(); }
-        return Collections.emptyList();
     }
 
     public List<ApiBookItem> getNewBooks(int page) {
-        return fetchBooksFromUrl(BASE_URL + "/danh-sach/truyen-moi?page=" + page);
+        return fetchBooks(BASE_URL + "/danh-sach/truyen-moi?page=" + page);
     }
+
     public List<ApiBookItem> getCompletedBooks(int page) {
-        return fetchBooksFromUrl(BASE_URL + "/danh-sach/hoan-thanh?page=" + page);
+        return fetchBooks(BASE_URL + "/danh-sach/hoan-thanh?page=" + page);
     }
+
     public List<ApiBookItem> getComingSoonBooks(int page) {
-        return fetchBooksFromUrl(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page);
+        return fetchBooks(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page);
+    }
+
+    public List<ApiBookItem> getBooksByCategory(String categorySlug, int page) {
+        return fetchBooks(BASE_URL + "/the-loai/" + categorySlug + "?page=" + page);
+    }
+
+    private List<ApiBookItem> fetchBooks(String url) {
+        String json = ApiGet.getApi(url);
+        try {
+            ApiAllBookResponse response = gson.fromJson(json, ApiAllBookResponse.class);
+            if (response != null && response.getData() != null) {
+                return response.getData().getItems();
+            }
+            return Collections.emptyList();
+        } catch (JsonSyntaxException e) {
+            throw new NetworkException(MessageConstant.ERR_LOAD_BOOKS, e);
+        }
     }
 
     public ApiOneBookResponse.ApiOneBookData getBookDetail(String slug) {
         String url = BASE_URL + "/truyen-tranh/" + slug;
         String json = ApiGet.getApi(url);
-        if (json == null) return null;
+
         try {
             ApiOneBookResponse res = gson.fromJson(json, ApiOneBookResponse.class);
-            return (res != null) ? res.getData() : null;
-        } catch (Exception e) { return null; }
+            if (res == null || res.getData() == null) {
+                throw new NetworkException(MessageConstant.ERR_BOOK_NOT_FOUND);
+            }
+            return res.getData();
+        } catch (JsonSyntaxException e) {
+            throw new NetworkException(MessageConstant.ERR_API_FORMAT, e);
+        }
     }
 
     public List<ApiBookItem> searchBooks(String query, int page) {
@@ -91,13 +81,15 @@ public class BookService {
             String encoded = URLEncoder.encode(query, StandardCharsets.UTF_8);
             String url = BASE_URL + "/tim-kiem?keyword=" + encoded + "&page=" + page;
             String json = ApiGet.getApi(url);
-            if (json == null) return Collections.emptyList();
-            ApiSearchBookResponse res = gson.fromJson(json, ApiSearchBookResponse.class);
-            return (res != null && res.getData() != null) ? res.getData().getItems() : Collections.emptyList();
-        } catch (Exception e) { return Collections.emptyList(); }
-    }
 
-    public List<ApiBookItem> getBooksByCategory(String slug, int page) {
-        return fetchBooksFromUrl(BASE_URL + "/the-loai/" + slug + "?page=" + page);
+            ApiSearchBookResponse res = gson.fromJson(json, ApiSearchBookResponse.class);
+            if (res != null && res.getData() != null) {
+                return res.getData().getItems();
+            }
+            return Collections.emptyList();
+
+        } catch (Exception e) {
+            throw new NetworkException(MessageConstant.ERR_SEARCH, e);
+        }
     }
 }

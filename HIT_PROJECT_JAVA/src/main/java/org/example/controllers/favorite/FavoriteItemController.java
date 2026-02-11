@@ -5,14 +5,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.constant.MessageConstant;
 import org.example.controllers.read.BookDetailController;
 import org.example.dao.FavoriteDAO;
+import org.example.exception.AppException;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.UserFavorite;
 import org.example.utils.ImageLoaderGlobal;
 
@@ -23,59 +27,68 @@ public class FavoriteItemController {
     @FXML private HBox itemContainer;
     @FXML private ImageView bookThumb;
     @FXML private Label bookTitle;
-    @FXML private Label statusLabel;
-    @FXML private Button btnRemove;
+    @FXML private Label addedDate;
+    @FXML private Button btnDelete;
 
     private final FavoriteDAO favoriteDAO = new FavoriteDAO();
-    private UserFavorite currentFav;
+    private UserFavorite currentFavorite;
 
     private final String IMAGE_BASE_URL = "https://img.otruyenapi.com/uploads/comics/";
 
-    public void setData(UserFavorite fav, Runnable onDeleteCallback) {
-        this.currentFav = fav;
+    public void setData(UserFavorite favorite, Runnable onDeleteCallback) {
+        this.currentFavorite = favorite;
 
-        bookTitle.setText(fav.getBookName());
+        bookTitle.setText(favorite.getBookName());
 
-        String dateAdded = "";
-        if (fav.getAddedAt() != null) {
-            dateAdded = fav.getAddedAt().toString();
-            if (dateAdded.length() > 10) dateAdded = dateAdded.substring(0, 10);
-        }
-        if (statusLabel != null) {
-            statusLabel.setText("Đã thêm: " + dateAdded);
+        if (addedDate != null && favorite.getAddedAt() != null) {
+            addedDate.setText("Đã thích: " + favorite.getAddedAt().toString().substring(0, 10));
         }
 
-        String rawThumb = fav.getThumbnailUrl();
-        String finalUrl;
-        if (rawThumb == null || rawThumb.isEmpty()) {
-            finalUrl = "";
-        } else if (rawThumb.startsWith("http")) {
-            finalUrl = rawThumb;
-        } else {
-            finalUrl = IMAGE_BASE_URL + rawThumb;
+        String imgUrl = favorite.getThumbnailUrl();
+        if (imgUrl != null && !imgUrl.startsWith("http")) {
+            imgUrl = IMAGE_BASE_URL + imgUrl;
         }
-        ImageLoaderGlobal.setImage(finalUrl, bookThumb);
+        ImageLoaderGlobal.setImage(imgUrl, bookThumb);
 
         itemContainer.setOnMouseClicked(e -> openBookDetail());
 
-        if (btnRemove != null) {
-            btnRemove.setOnAction(e -> {
+        if (btnDelete != null) {
+            btnDelete.setOnAction(e -> {
                 e.consume();
-                new Thread(() -> {
-                    boolean success = favoriteDAO.removeFavorite(fav.getUserId(), fav.getBookSlug());
-                    Platform.runLater(() -> {
-                        if (success) {
-                            VBox parent = (VBox) itemContainer.getParent();
-                            if (parent != null) {
-                                parent.getChildren().remove(itemContainer);
-
-                                if (onDeleteCallback != null) onDeleteCallback.run();
-                            }
-                        }
-                    });
-                }).start();
+                handleDelete(onDeleteCallback);
             });
         }
+    }
+
+    private void handleDelete(Runnable onDeleteCallback) {
+        new Thread(() -> {
+            try {
+                boolean success = favoriteDAO.removeFavorite(currentFavorite.getUserId(), currentFavorite.getBookSlug());
+
+                Platform.runLater(() -> {
+                    if (success) {
+                        VBox parent = (VBox) itemContainer.getParent();
+                        if (parent != null) {
+                            parent.getChildren().remove(itemContainer);
+
+                            if (onDeleteCallback != null) onDeleteCallback.run();
+                        }
+                    } else {
+                        UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_DB_DELETE);
+                    }
+                });
+
+            } catch (AppException e) {
+                Platform.runLater(() ->
+                        UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", e.getMessage())
+                );
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM)
+                );
+                throw new AppException(MessageConstant.ERR_SYSTEM, e);
+            }
+        }).start();
     }
 
     private void openBookDetail() {
@@ -84,13 +97,14 @@ public class FavoriteItemController {
             Parent root = loader.load();
 
             BookDetailController detailController = loader.getController();
-            detailController.setBookSlug(currentFav.getBookSlug());
+            detailController.setBookSlug(currentFavorite.getBookSlug());
 
             Stage stage = (Stage) itemContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("WOWTruyen - " + currentFav.getBookName());
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            stage.setTitle("WOWTruyen - " + currentFavorite.getBookName());
+        } catch (IOException e) {
+            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM);
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }
 }

@@ -1,6 +1,6 @@
 package org.example.controllers.favorite;
 
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -9,21 +9,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.example.constant.MessageConstant;
 import org.example.dao.FavoriteDAO;
+import org.example.exception.AppException;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.UserFavorite;
 import org.example.utils.SceneUtils;
 import org.example.utils.SessionManager;
+
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 public class FavoriteScreenController {
 
     @FXML private VBox listContainer;
 
-    @FXML private Button btnHome;
-    @FXML private Button btnAI;
-    @FXML private Button btnHistory;
-    @FXML private Button btnFavorite;
-    @FXML private Button btnAccount;
+    @FXML private Label statusLabel;
+
+    @FXML private Button btnHome, btnHistory, btnFavorite,btnAI, btnAccount;
 
     private final FavoriteDAO favoriteDAO = new FavoriteDAO();
     private int currentUserId;
@@ -32,7 +33,8 @@ public class FavoriteScreenController {
     public void initialize() {
         currentUserId = SessionManager.getInstance().getCurrentUserId();
 
-        setupBottomNavigation();
+        setupNavigation();
+        UIExceptionHandler.hideError(statusLabel);
 
         if (currentUserId != -1) {
             loadFavoriteData();
@@ -42,37 +44,54 @@ public class FavoriteScreenController {
     }
 
     private void loadFavoriteData() {
-        listContainer.getChildren().clear();
-        Label loadingLabel = new Label("Đang tải dữ liệu...");
-        loadingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #19345d; -fx-padding: 20;");
-        listContainer.getChildren().add(loadingLabel);
+        Task<List<UserFavorite>> task = new Task<>() {
+            @Override
+            protected List<UserFavorite> call() throws Exception {
+                return favoriteDAO.getFavoritesByUserId(currentUserId);
+            }
+        };
 
-        CompletableFuture.supplyAsync(() -> favoriteDAO.getFavoritesByUserId(currentUserId))
-                .thenAccept(favList -> Platform.runLater(() -> {
-                    listContainer.getChildren().clear();
+        task.setOnSucceeded(e -> {
+            List<UserFavorite> favorites = task.getValue();
+            listContainer.getChildren().clear();
 
-                    if (favList == null || favList.isEmpty()) {
-                        showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
-                    } else {
-                        try {
-                            for (UserFavorite fav : favList) {
-                                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/favorite/favorite_item.fxml"));
-                                HBox node = loader.load();
+            if (favorites == null || favorites.isEmpty()) {
+                showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
+            } else {
+                renderFavoriteList(favorites);
+            }
+        });
 
-                                FavoriteItemController controller = loader.getController();
-                                controller.setData(fav, this::checkListEmptyAfterDelete);
+        task.setOnFailed(e -> {
+            Throwable ex = task.getException();
+            if (ex instanceof Exception) {
+                UIExceptionHandler.handle((Exception) ex, statusLabel);
+            }
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
 
-                                listContainer.getChildren().add(node);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            showEmptyMessage("Lỗi hiển thị dữ liệu (Kiểm tra đường dẫn FXML)!");
-                        }
-                    }
-                }));
+        new Thread(task).start();
     }
 
-    private void checkListEmptyAfterDelete() {
+    private void renderFavoriteList(List<UserFavorite> favorites) {
+        try {
+            for (UserFavorite fav : favorites) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/favorite/favorite_item.fxml"));
+                HBox item = loader.load();
+
+                FavoriteItemController itemController = loader.getController();
+
+                itemController.setData(fav, this::checkListEmptyAfterDelete);
+
+                listContainer.getChildren().add(item);
+            }
+        } catch (IOException e) {
+            UIExceptionHandler.showError(statusLabel, MessageConstant.ERR_SYSTEM);
+            throw new AppException(MessageConstant.ERR_SYSTEM, e);
+        }
+    }
+
+    public void checkListEmptyAfterDelete() {
         if (listContainer.getChildren().isEmpty()) {
             showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
         }
@@ -84,16 +103,16 @@ public class FavoriteScreenController {
         listContainer.getChildren().add(label);
     }
 
-    private void setupBottomNavigation() {
-
+    private void setupNavigation() {
         if (btnFavorite != null) {
             btnFavorite.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
             btnFavorite.setDisable(true);
         }
-        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", "Trang chủ"));
-        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", "Lịch sử"));
-        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", "Yêu thích"));
-        if (btnAI != null) btnAI.setOnAction(e -> System.out.println("Tính năng AI đang phát triển"));
-        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", "Tài khoản"));
+
+        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
+        if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", MessageConstant.TITLE_HISTORY));
+        if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", MessageConstant.TITLE_FAVORITE));
+        if (btnAI != null) btnAI.setOnAction(e -> SceneUtils.switchScene(btnAI, "/view/chatbox/chat_box.fxml", MessageConstant.CHAT_AI_TITLE));
+        if (btnAccount != null) btnAccount.setOnAction(e -> SceneUtils.switchScene(btnAccount, "/view/account/account_screen.fxml", MessageConstant.TITLE_ACCOUNT));
     }
 }

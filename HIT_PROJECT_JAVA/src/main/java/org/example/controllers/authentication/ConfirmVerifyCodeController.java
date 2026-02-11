@@ -2,13 +2,14 @@ package org.example.controllers.authentication;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Duration;
 import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
+import org.example.exception.AuthException;
 import org.example.exception.UIExceptionHandler;
-import org.example.model.user.OtpStatus;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
 import org.example.utils.SceneUtils;
@@ -30,7 +31,11 @@ public class ConfirmVerifyCodeController {
 
         verifyButton.setOnAction(event -> handleVerify());
         resendCodeButton.setOnAction(event -> handleResend());
-        returnButton.setOnAction(event -> SceneUtils.switchScene(returnButton, "/view/authentication/forgot_password.fxml", "Quên mật khẩu"));
+        returnButton.setOnAction(event ->
+                SceneUtils.switchScene(returnButton, "/view/authentication/forgot_password.fxml", MessageConstant.TITLE_FORGOT_PASS)
+        );
+
+        startTimer();
     }
 
     private void handleVerify() {
@@ -38,42 +43,82 @@ public class ConfirmVerifyCodeController {
         String otp = codeTextField.getText().trim();
 
         if (otp.isEmpty()) {
-            showError(MessageConstant.OTP_EMPTY);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.OTP_EMPTY);
             return;
         }
 
-        OtpStatus status = service.verifyOtp(userEmail, otp);
+        verifyButton.setDisable(true);
+        verifyButton.setText(MessageConstant.CONFIRM_LOADING);
 
-        if (status == OtpStatus.SUCCESS) {
-            ChangePasswordToLoginController controller = SceneUtils.switchScene(verifyButton, "/view/authentication/change_password_to_login.fxml", "Đổi mật khẩu");
+        Task<Void> verifyTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                service.verifyOtp(userEmail, otp);
+                return null;
+            }
+        };
+
+        verifyTask.setOnSucceeded(e -> {
+            ChangePasswordToLoginController controller = SceneUtils.switchScene(
+                    verifyButton,
+                    "/view/authentication/change_password_to_login.fxml",
+                    MessageConstant.TITLE_FORGOT_PASS
+            );
             if (controller != null) controller.setUserEmail(userEmail);
-        } else if (status == OtpStatus.EXPIRED_CODE) {
-            showError(MessageConstant.OTP_EXPIRED);
-        } else {
-            showError(MessageConstant.OTP_INVALID);
-        }
+        });
+
+        verifyTask.setOnFailed(e -> {
+            verifyButton.setDisable(false);
+            verifyButton.setText(MessageConstant.TITLE_CONFIRM_OTP);
+
+            Throwable ex = verifyTask.getException();
+            if (ex instanceof AuthException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), errorLabel);
+            }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(verifyTask).start();
     }
 
     private void handleResend() {
+        UIExceptionHandler.hideError(errorLabel);
         resendCodeButton.setVisible(false);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(true);
 
-        new Thread(() -> {
-            OtpStatus status = service.sendOtp(userEmail);
-            Platform.runLater(() -> {
-                if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
-                resendCodeButton.setVisible(true);
+        Task<Void> resendTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                service.sendOtp(userEmail);
+                return null;
+            }
+        };
 
-                if (status == OtpStatus.SUCCESS) {
-                    showError(MessageConstant.OTP_SENT_SUCCESS);
-                    errorLabel.setStyle("-fx-text-fill: green;");
-                    startTimer();
-                } else {
-                    errorLabel.setStyle("-fx-text-fill: red;");
-                    showError(MessageConstant.OTP_RESEND_FAIL);
-                }
-            });
-        }).start();
+        resendTask.setOnSucceeded(e -> {
+            if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
+            resendCodeButton.setVisible(true);
+
+            UIExceptionHandler.showError(errorLabel, MessageConstant.OTP_SENT_SUCCESS);
+            errorLabel.setStyle("-fx-text-fill: green;");
+
+            startTimer();
+        });
+
+        resendTask.setOnFailed(e -> {
+            if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
+            resendCodeButton.setVisible(true);
+
+            Throwable ex = resendTask.getException();
+            UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            errorLabel.setStyle("-fx-text-fill: red;");
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(resendTask).start();
     }
 
     private void startTimer() {
@@ -81,19 +126,13 @@ public class ConfirmVerifyCodeController {
         final int[] seconds = {30};
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             seconds[0]--;
-            resendCodeButton.setText("Chờ (" + seconds[0] + "s)");
+            resendCodeButton.setText(MessageConstant.RESEND + " mã (" + seconds[0] + "s)");
             if (seconds[0] <= 0) {
                 resendCodeButton.setDisable(false);
-                resendCodeButton.setText("Gửi lại mã");
+                resendCodeButton.setText(MessageConstant.RESEND + " mã");
             }
         }));
         timeline.setCycleCount(30);
         timeline.play();
-    }
-
-    private void showError(String message) {
-        errorLabel.setStyle("-fx-text-fill: red;");
-        errorLabel.setText(message);
-        UIExceptionHandler.showError(errorLabel);
     }
 }

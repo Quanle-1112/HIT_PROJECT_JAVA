@@ -1,9 +1,12 @@
 package org.example.controllers.authentication;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
+import org.example.exception.AuthException;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.User;
 import org.example.services.ILoginService;
@@ -37,8 +40,11 @@ public class LoginController {
         enterPasswordField.setOnAction(event -> handleLogin());
         usernameTextField.setOnAction(event -> handleLogin());
 
-        cancelButton.setOnAction(event -> SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Start Screen", cancelButton));
-        forgotPasswordButton.setOnAction(event -> SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", MessageConstant.TITLE_FORGOT_PASS));
+        cancelButton.setOnAction(event -> System.exit(0));
+
+        forgotPasswordButton.setOnAction(event ->
+                SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", MessageConstant.TITLE_FORGOT_PASS)
+        );
 
         if (togglePasswordButton != null) {
             togglePasswordButton.setOnAction(event -> togglePasswordVisibility());
@@ -62,27 +68,60 @@ public class LoginController {
         UIExceptionHandler.hideError(errorLabel);
 
         if (ValidationUtils.areFieldsEmpty(usernameTextField, enterPasswordField)) {
-            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
 
-        User user = loginService.authenticate(usernameTextField.getText().trim(), enterPasswordField.getText());
+        String username = usernameTextField.getText().trim();
+        String password = isPasswordVisible ? showPasswordTextField.getText() : enterPasswordField.getText();
 
-        if (user != null) {
+        loginButton.setDisable(true);
+        loginButton.setText(MessageConstant.LOGIN_SUCCESS);
+
+        Task<User> loginTask = new Task<>() {
+            @Override
+            protected User call() throws Exception {
+                return loginService.authenticate(username, password);
+            }
+        };
+
+        loginTask.setOnSucceeded(e -> {
+            User user = loginTask.getValue();
             SessionManager.getInstance().setCurrentUser(user);
+
             if (user.isFirstLogin()) {
-                ConfirmInformationController controller = SceneUtils.switchScene(loginButton, "/view/authentication/confirm_information_screen.fxml", MessageConstant.TITLE_CONFIRM_INFO);
+                ConfirmInformationController controller = SceneUtils.switchScene(
+                        loginButton,
+                        "/view/authentication/confirm_information_screen.fxml",
+                        MessageConstant.TITLE_CONFIRM_INFO
+                );
                 if (controller != null) controller.setCurrentUser(user);
             } else {
-                SceneUtils.switchScene(loginButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME);
+                SceneUtils.switchScene(
+                        loginButton,
+                        "/view/read/home_screen.fxml",
+                        MessageConstant.TITLE_HOME
+                );
             }
-        } else {
-            showError(MessageConstant.LOGIN_FAIL);
-        }
-    }
+        });
 
-    private void showError(String message) {
-        errorLabel.setText(message);
-        UIExceptionHandler.showError(errorLabel);
+        loginTask.setOnFailed(e -> {
+            loginButton.setDisable(false);
+            loginButton.setText(MessageConstant.TITLE_LOGIN);
+
+            Throwable ex = loginTask.getException();
+
+            if (ex instanceof AuthException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else if (ex instanceof AppException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), errorLabel);
+            }
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(loginTask).start();
     }
 }

@@ -4,7 +4,7 @@ public class MessageConstant {
 
     public static final String LOGIN_EMPTY_FIELDS = "Vui lòng điền đầy đủ thông tin!";
     public static final String LOGIN_FAIL = "Tên đăng nhập hoặc mật khẩu không đúng!";
-    public static final String LOGIN_SUCCESS = "Đăng nhập thành công!";
+    public static final String LOGIN_SUCCESS = "Đang đăng nhập...";
 
     public static final String REGISTER_EMPTY_FIELDS = "Vui lòng điền đầy đủ tất cả các trường!";
     public static final String REGISTER_EMAIL_INVALID = "Định dạng email không hợp lệ!";
@@ -15,6 +15,11 @@ public class MessageConstant {
     public static final String REGISTER_USERNAME_EXIST = "Tên đăng nhập đã tồn tại!";
     public static final String REGISTER_SUCCESS = "SUCCESS";
     public static final String REGISTER_FAIL = "Lỗi hệ thống: Đăng ký thất bại.";
+    public static final String REGISTER_SUCCESS_LOADING = "Đang đăng ký...";
+
+    public static final String CONFIRM_LOADING = "Đang kiểm tra...";
+    public static final String CHOOSE_AVATAR = "Chọn ảnh đại diện";
+    public static final String RESEND = "Gửi lại";
 
     public static final String FORGOT_PASS_EMAIL_EMPTY = "Vui lòng nhập địa chỉ Email!";
     public static final String FORGOT_PASS_EMAIL_NOT_EXIST = "Email này chưa được đăng ký trong hệ thống!";
@@ -62,6 +67,39 @@ public class MessageConstant {
     public static final String TITLE_VIEW_ALL_COMING = "Danh sách truyện - Sắp ra mắt";
     public static final String TITLE_ALL_CATEGORIES = "Tất cả thể loại";
 
+    public static final String ACCOUNT_LOCKED = "Tài khoản của bạn đã bị khóa!";
+
+    public static final String ERR_API_EMPTY = "Dữ liệu từ máy chủ rỗng.";
+    public static final String ERR_API_FORMAT = "Dữ liệu từ máy chủ không đúng định dạng.";
+
+    public static final String ERR_DB_QUERY = "Lỗi truy vấn dữ liệu.";
+    public static final String ERR_DB_SAVE = "Không thể lưu dữ liệu vào hệ thống.";
+    public static final String ERR_DB_DELETE = "Không thể xóa dữ liệu.";
+    public static final String ERR_DB_UPDATE = "Cập nhật dữ liệu thất bại.";
+    public static final String ERR_USER_NOT_FOUND = "Không tìm thấy thông tin người dùng.";
+
+    public static final String ERR_LOAD_CATEGORIES = "Không thể tải danh sách thể loại.";
+    public static final String ERR_LOAD_BOOKS = "Không thể tải danh sách truyện.";
+    public static final String ERR_BOOK_NOT_FOUND = "Không tìm thấy thông tin truyện hoặc truyện bị lỗi.";
+    public static final String ERR_CHAPTER_CONTENT = "Nội dung chương bị lỗi hoặc không tồn tại.";
+    public static final String ERR_SEARCH = "Lỗi khi tìm kiếm truyện.";
+
     public static final String MSG_LOADING = "Đang tải dữ liệu...";
     public static final String MSG_EMPTY_DATA = "Không có dữ liệu.";
+
+    public static final String CHAT_USER_TITLE = "Bạn";
+    public static final String CHAT_AI_TITLE = "Gemini AI";
+    public static final String CHAT_INPUT_EMPTY = "Vui lòng nhập nội dung tin nhắn!";
+    public static final String CHAT_ERR_NO_RESPONSE = "Không nhận được phản hồi từ AI.";
+    public static final String CHAT_ERR_API = "Lỗi khi gọi API AI: ";
+
+    public static final String ERR_LOAD_BOOK = "Không thể tải danh sách truyện.";
+    public static final String ERR_LOAD_CHAPTER = "Không thể tải nội dung chương.";
+    public static final String ERR_NO_CHAPTER = "Truyện này chưa có chương nào.";
+    public static final String ERR_SEARCH_EMPTY = "Vui lòng nhập từ khóa tìm kiếm.";
+    public static final String MSG_ADDED_FAVORITE = "Đã thêm vào yêu thích.";
+    public static final String MSG_REMOVED_FAVORITE = "Đã xóa khỏi yêu thích.";
+
+    public static final String GEMINI_API_KEY = "AIzaSyA46sQ6nKF-CC6kFyro-ols8LfwMTRimrk";
+    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=";
 }

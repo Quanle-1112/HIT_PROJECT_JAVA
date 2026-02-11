@@ -1,6 +1,9 @@
 package org.example.dao;
 
+import org.example.constant.MessageConstant;
+import org.example.exception.DatabaseException;
 import org.example.model.user.UserHistory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,9 +33,8 @@ public class HistoryDAO {
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException(MessageConstant.ERR_DB_SAVE, e);
         }
-        return false;
     }
 
     public List<UserHistory> getHistoryByUserId(int userId) {
@@ -41,7 +43,6 @@ public class HistoryDAO {
 
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
 
@@ -58,7 +59,7 @@ public class HistoryDAO {
                 list.add(history);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException(MessageConstant.ERR_DB_QUERY, e);
         }
         return list;
     }
@@ -71,8 +72,7 @@ public class HistoryDAO {
             stmt.setString(2, bookSlug);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseException(MessageConstant.ERR_DB_DELETE, e);
         }
     }
 
@@ -83,8 +83,7 @@ public class HistoryDAO {
             stmt.setInt(1, userId);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseException(MessageConstant.ERR_DB_DELETE, e);
         }
     }
 }

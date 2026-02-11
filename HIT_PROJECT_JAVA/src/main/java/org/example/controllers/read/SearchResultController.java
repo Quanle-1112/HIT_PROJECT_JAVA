@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import org.example.api.apiAll.ApiBookItem;
 import org.example.constant.MessageConstant;
 import org.example.data.BookService;
+import org.example.exception.AppException;
 import org.example.utils.SceneUtils;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class SearchResultController {
     @FXML
     public void initialize() {
         backButton.setOnAction(event ->
-                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", "Trang chủ")
+                SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME)
         );
     }
 
@@ -72,7 +73,9 @@ public class SearchResultController {
                         itemController.setData(book);
                         resultContainer.getChildren().add(card);
                     }
-                } catch (IOException e) { e.printStackTrace(); }
+                } catch (IOException e) {
+                    throw new AppException(MessageConstant.ERR_SYSTEM, e);
+                }
             }
             Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
         });
@@ -81,6 +84,8 @@ public class SearchResultController {
             resultContainer.getChildren().clear();
             resultContainer.getChildren().add(new Label(MessageConstant.ERR_NETWORK));
             Platform.runLater(() -> SceneUtils.closeLoading(loadingStage));
+
+            throw new AppException(MessageConstant.ERR_NETWORK, task.getException());
         });
 
         new Thread(task).start();

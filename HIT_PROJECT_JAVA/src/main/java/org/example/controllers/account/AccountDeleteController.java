@@ -1,8 +1,6 @@
 package org.example.controllers.account;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,9 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import javafx.util.Duration;
 import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
+import org.example.exception.AppException;
+import org.example.exception.AuthException;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.OtpStatus;
 import org.example.model.user.User;
 import org.example.services.IUserService;
@@ -36,103 +36,96 @@ public class AccountDeleteController {
     private final UserDAO userDAO = new UserDAO();
     private User currentUser;
 
-    private Timeline timeline;
-    private int countdownTime = 30;
-
     @FXML
     public void initialize() {
         currentUser = SessionManager.getInstance().getCurrentUser();
+        UIExceptionHandler.hideError(lblStatus);
 
-        if (currentUser != null) {
-            lblStatus.setText("Đang gửi mã xác thực tới: " + currentUser.getEmail());
-            sendOtp();
-        } else {
-            lblStatus.setText("Lỗi phiên đăng nhập!");
-            btnConfirmDelete.setDisable(true);
-        }
-
-        btnResendOtp.setOnAction(e -> handleResendOtp());
-        btnConfirmDelete.setOnAction(e -> handleDelete());
+        btnResendOtp.setOnAction(e -> handleSendOtp());
+        btnConfirmDelete.setOnAction(e -> handleConfirmDelete());
 
         btnCancel.setOnAction(e -> closeDialog());
         btnClose.setOnAction(e -> closeDialog());
+
+        handleSendOtp();
     }
 
-    private void sendOtp() {
+    private void handleSendOtp() {
+        UIExceptionHandler.hideError(lblStatus);
         btnResendOtp.setDisable(true);
-        new Thread(() -> {
-            boolean success = userService.sendOtp(currentUser.getEmail());
-            Platform.runLater(() -> {
-                if (success) {
-                    lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
-                    lblStatus.setStyle("-fx-text-fill:  #19345D;");
-                    startTimer();
-                } else {
-                    lblStatus.setText(MessageConstant.OTP_RESEND_FAIL);
-                    lblStatus.setStyle("-fx-text-fill: red;");
-                    btnResendOtp.setDisable(false);
-                }
-            });
-        }).start();
-    }
+        btnResendOtp.setText(MessageConstant.CONFIRM_LOADING);
 
-    private void handleResendOtp() {
-        lblStatus.setText("Đang gửi lại mã...");
-        lblStatus.setStyle("-fx-text-fill: #666;");
-        sendOtp();
-    }
-
-    private void startTimer() {
-        countdownTime = 30;
-        if (timeline != null) timeline.stop();
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            countdownTime--;
-            btnResendOtp.setText("Gửi lại (" + countdownTime + "s)");
-            if (countdownTime <= 0) {
-                timeline.stop();
-                btnResendOtp.setText("Gửi lại mã");
-                btnResendOtp.setDisable(false);
+        Task<Boolean> sendTask = new Task<>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return userService.sendOtp(currentUser.getEmail());
             }
-        }));
-        timeline.setCycleCount(30);
-        timeline.play();
+        };
+
+        sendTask.setOnSucceeded(e -> {
+            btnResendOtp.setDisable(false);
+            btnResendOtp.setText(MessageConstant.RESEND + " mã");
+            if (sendTask.getValue()) {
+                lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
+                lblStatus.setStyle("-fx-text-fill: #19345D;");
+            } else {
+                UIExceptionHandler.showError(lblStatus, MessageConstant.OTP_RESEND_FAIL);
+            }
+        });
+
+        sendTask.setOnFailed(e -> {
+            btnResendOtp.setDisable(false);
+            btnResendOtp.setText(MessageConstant.RESEND + " mã");
+
+            Throwable ex = sendTask.getException();
+            UIExceptionHandler.handle(new Exception(ex), lblStatus);
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(sendTask).start();
     }
 
-    private void handleDelete() {
-        String inputOtp = txtOtp.getText().trim();
-        if (inputOtp.isEmpty()) {
-            lblStatus.setText(MessageConstant.OTP_EMPTY);
-            lblStatus.setStyle("-fx-text-fill: red;");
+    private void handleConfirmDelete() {
+        String otp = txtOtp.getText().trim();
+        if (otp.isEmpty()) {
+            UIExceptionHandler.showError(lblStatus, MessageConstant.OTP_EMPTY);
             return;
         }
 
-        OtpStatus status = userService.verifyOtp(currentUser.getEmail(), inputOtp);
+        btnConfirmDelete.setDisable(true);
+        btnConfirmDelete.setText(MessageConstant.CONFIRM_LOADING);
 
-        if (status == OtpStatus.SUCCESS) {
-            lblStatus.setText("OTP chính xác. Đang xóa dữ liệu...");
-            btnConfirmDelete.setDisable(true);
+        Task<Void> deleteTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                OtpStatus status = userService.verifyOtp(currentUser.getEmail(), otp);
+                if (status != OtpStatus.SUCCESS) {
+                    throw new AuthException(MessageConstant.OTP_INVALID);
+                }
 
-            new Thread(() -> {
-                boolean deleteSuccess = userDAO.deleteUser(currentUser.getId());
+                if (!userDAO.deleteUser(currentUser.getId())) {
+                    throw new AppException(MessageConstant.ERR_DB_DELETE);
+                }
+                return null;
+            }
+        };
 
-                Platform.runLater(() -> {
-                    if (deleteSuccess) {
-                        performLogoutAndRedirect();
-                    } else {
-                        lblStatus.setText(MessageConstant.ACCOUNT_DELETE_FAIL);
-                        lblStatus.setStyle("-fx-text-fill: red;");
-                        btnConfirmDelete.setDisable(false);
-                    }
-                });
-            }).start();
+        deleteTask.setOnSucceeded(e -> {
+            performLogoutAndRedirect();
+        });
 
-        } else if (status == OtpStatus.EXPIRED_CODE) {
-            lblStatus.setText(MessageConstant.OTP_EXPIRED);
-            lblStatus.setStyle("-fx-text-fill: red;");
-        } else {
-            lblStatus.setText(MessageConstant.OTP_INVALID);
-            lblStatus.setStyle("-fx-text-fill: red;");
-        }
+        deleteTask.setOnFailed(e -> {
+            btnConfirmDelete.setDisable(false);
+            btnConfirmDelete.setText("XÁC NHẬN XÓA");
+
+            Throwable ex = deleteTask.getException();
+            UIExceptionHandler.showError(lblStatus, ex.getMessage());
+
+            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+        });
+
+        new Thread(deleteTask).start();
     }
 
     private void performLogoutAndRedirect() {
@@ -140,6 +133,7 @@ public class AccountDeleteController {
 
         Stage dialogStage = (Stage) btnConfirmDelete.getScene().getWindow();
         Window owner = dialogStage.getOwner();
+        dialogStage.close();
 
         if (owner instanceof Stage) {
             Stage mainStage = (Stage) owner;
@@ -147,12 +141,11 @@ public class AccountDeleteController {
                 Parent root = FXMLLoader.load(getClass().getResource("/view/read/start_screen.fxml"));
                 mainStage.setScene(new Scene(root));
                 mainStage.setTitle("WOWTruyen - Welcome");
+                mainStage.centerOnScreen();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new AppException(MessageConstant.ERR_SYSTEM, e);
             }
         }
-
-        dialogStage.close();
     }
 
     private void closeDialog() {
