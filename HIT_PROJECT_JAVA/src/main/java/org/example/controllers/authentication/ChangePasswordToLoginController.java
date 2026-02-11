@@ -1,8 +1,10 @@
 package org.example.controllers.authentication;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
 import org.example.exception.UIExceptionHandler;
 import org.example.services.IForgotPasswordService;
 import org.example.services.impl.IForgotPasswordServiceImpl;
@@ -23,34 +25,55 @@ public class ChangePasswordToLoginController {
     public void initialize() {
         UIExceptionHandler.hideError(errorLabel);
         updateButton.setOnAction(event -> handleUpdate());
-        cancelButton.setOnAction(event -> SceneUtils.switchScene(cancelButton, "/view/authentication/forgot_password.fxml", "Quên mật khẩu"));
+        cancelButton.setOnAction(event ->
+                SceneUtils.switchScene(cancelButton, "/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN)
+        );
     }
 
     private void handleUpdate() {
         UIExceptionHandler.hideError(errorLabel);
 
         if (ValidationUtils.areFieldsEmpty(newPasswordField, confirmPasswordField)) {
-            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
         if (!ValidationUtils.isValidPassword(newPasswordField.getText())) {
-            showError(MessageConstant.REGISTER_PASSWORD_INVALID);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_PASSWORD_INVALID);
             return;
         }
         if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
-            showError(MessageConstant.REGISTER_PASSWORD_MISMATCH);
+            UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;
         }
 
-        if (service.resetPassword(userEmail, newPasswordField.getText())) {
-            SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", "Login");
-        } else {
-            showError(MessageConstant.UPDATE_FAIL);
-        }
-    }
+        updateButton.setDisable(true);
+        updateButton.setText("Đang cập nhật...");
 
-    private void showError(String message) {
-        errorLabel.setText(message);
-        UIExceptionHandler.showError(errorLabel);
+        Task<Void> updateTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                service.resetPassword(userEmail, newPasswordField.getText());
+                return null;
+            }
+        };
+
+        updateTask.setOnSucceeded(e -> {
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, "Thành công", MessageConstant.CHANGE_PASS_SUCCESS);
+            SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN);
+        });
+
+        updateTask.setOnFailed(e -> {
+            updateButton.setDisable(false);
+            updateButton.setText("Update Password");
+
+            Throwable ex = updateTask.getException();
+            if (ex instanceof AppException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), errorLabel);
+            }
+        });
+
+        new Thread(updateTask).start();
     }
 }

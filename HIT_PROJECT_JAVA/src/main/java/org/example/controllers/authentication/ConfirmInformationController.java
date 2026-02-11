@@ -3,12 +3,15 @@ package org.example.controllers.authentication;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.example.constant.MessageConstant;
+import org.example.exception.AppException;
+import org.example.exception.AuthException;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Gender;
 import org.example.model.user.OtpStatus;
@@ -27,6 +30,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 public class ConfirmInformationController {
 
@@ -41,197 +45,202 @@ public class ConfirmInformationController {
     @FXML private CheckBox agreeCheckBox;
 
     @FXML private Label errorLabel;
-
     @FXML private Label codeSentSuccessfullyText;
 
     private final IUserService userService = new IUserServiceImpl();
     private User currentUser;
-    private File selectedImageFile = null;
+    private File selectedAvatarFile;
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
         if (currentUser != null) {
-            emailText.setText(currentUser.getEmail());
-            emailText.setEditable(true);
+            if (currentUser.getEmail() != null) emailText.setText(currentUser.getEmail());
+            if (currentUser.getFullName() != null) hoVaTenText.setText(currentUser.getFullName());
         }
     }
 
     @FXML
     public void initialize() {
-        UIExceptionHandler.hideError(errorLabel, codeSentSuccessfullyText);
+        UIExceptionHandler.hideError(errorLabel);
+        if (codeSentSuccessfullyText != null) codeSentSuccessfullyText.setVisible(false);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
 
-        if (genderGroup == null) {
-            genderGroup = new ToggleGroup();
-            namRadioButton.setToggleGroup(genderGroup);
-            nuRadioButton.setToggleGroup(genderGroup);
-            khacRadioButton.setToggleGroup(genderGroup);
-        }
+        setupYearComboBox();
 
-        initYearComboBox();
+        setupGenderGroup();
+
+        emailText.setDisable(true);
 
         btnUploadAvatar.setOnAction(e -> handleUploadAvatar());
-        emailConfirmButton.setOnAction(e -> handleSendCode());
+        emailConfirmButton.setOnAction(e -> handleSendOtp());
         confirmButton.setOnAction(e -> handleConfirm());
     }
 
-    private void initYearComboBox() {
-        if (yearComboBox != null) {
-            int currentYear = LocalDate.now().getYear();
-            ObservableList<Integer> years = FXCollections.observableArrayList();
-            for (int i = currentYear - 5; i >= 1950; i--) {
-                years.add(i);
-            }
-            yearComboBox.setItems(years);
-            yearComboBox.getSelectionModel().selectFirst();
+    private void setupYearComboBox() {
+        ObservableList<Integer> years = FXCollections.observableArrayList();
+        int currentYear = LocalDate.now().getYear();
+        IntStream.rangeClosed(1950, currentYear).forEach(years::add);
+        FXCollections.reverse(years);
+        yearComboBox.setItems(years);
+        yearComboBox.setValue(2000);
+    }
+
+    private void setupGenderGroup() {
+        if (genderGroup == null) {
+            genderGroup = new ToggleGroup();
         }
+        namRadioButton.setToggleGroup(genderGroup);
+        nuRadioButton.setToggleGroup(genderGroup);
+        khacRadioButton.setToggleGroup(genderGroup);
+        khacRadioButton.setSelected(true);
     }
 
     private void handleUploadAvatar() {
+        UIExceptionHandler.hideError(errorLabel);
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn ảnh đại diện");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
-
         File file = fileChooser.showOpenDialog(btnUploadAvatar.getScene().getWindow());
-        if (file != null) {
-            selectedImageFile = file;
-            Image image = new Image(file.toURI().toString());
-            uploadImageButton.setImage(image);
 
-            double radius = Math.min(uploadImageButton.getFitWidth(), uploadImageButton.getFitHeight()) / 2;
-            javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(uploadImageButton.getFitWidth() / 2, uploadImageButton.getFitHeight() / 2, radius);
-            uploadImageButton.setClip(clip);
+        if (file != null) {
+            selectedAvatarFile = file;
+            uploadImageButton.setImage(new Image(file.toURI().toString()));
         }
     }
 
-    private void handleSendCode() {
-        UIExceptionHandler.hideError(errorLabel, codeSentSuccessfullyText);
+    private void handleSendOtp() {
+        UIExceptionHandler.hideError(errorLabel);
+        if (codeSentSuccessfullyText != null) codeSentSuccessfullyText.setVisible(false);
 
-        String emailInput = emailText.getText().trim();
-
-        if (!ValidationUtils.isValidEmail(emailInput)) {
-            showError(MessageConstant.REGISTER_EMAIL_INVALID);
-            return;
-        }
+        String email = emailText.getText().trim();
+        if (email.isEmpty()) return;
 
         emailConfirmButton.setVisible(false);
         if (sendingCodeButton != null) sendingCodeButton.setVisible(true);
 
-        new Thread(() -> {
-            boolean success = userService.sendOtp(emailInput);
+        Task<Boolean> sendOtpTask = new Task<>() {
+            @Override
+            protected Boolean call() throws Exception {
+                return userService.sendOtp(email);
+            }
+        };
 
-            Platform.runLater(() -> {
-                if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
-                emailConfirmButton.setVisible(true);
+        sendOtpTask.setOnSucceeded(e -> {
+            if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
+            emailConfirmButton.setVisible(true);
+            emailConfirmButton.setText("Gửi lại");
 
-                if (success) {
-                    if (codeSentSuccessfullyText != null) {
-                        codeSentSuccessfullyText.setVisible(true);
-                    }
-                } else {
-                    showError(MessageConstant.FORGOT_PASS_SEND_FAIL);
-                }
-            });
-        }).start();
+            if (sendOtpTask.getValue()) {
+                if (codeSentSuccessfullyText != null) codeSentSuccessfullyText.setVisible(true);
+            } else {
+                UIExceptionHandler.showError(errorLabel, MessageConstant.OTP_RESEND_FAIL);
+            }
+        });
+
+        sendOtpTask.setOnFailed(e -> {
+            if (sendingCodeButton != null) sendingCodeButton.setVisible(false);
+            emailConfirmButton.setVisible(true);
+
+            Throwable ex = sendOtpTask.getException();
+            if (ex instanceof AppException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), errorLabel);
+            }
+        });
+
+        new Thread(sendOtpTask).start();
     }
 
     private void handleConfirm() {
-        UIExceptionHandler.hideError(errorLabel, codeSentSuccessfullyText);
+        UIExceptionHandler.hideError(errorLabel);
 
         if (!agreeCheckBox.isSelected()) {
-            showError(MessageConstant.AGREE_CHECK_BOX);
+            UIExceptionHandler.showError(errorLabel, "Vui lòng đồng ý với điều khoản sử dụng.");
             return;
         }
 
-        if (ValidationUtils.areFieldsEmpty(hoVaTenText, sdtText, emailText, confirmEmailText)) {
-            showError(MessageConstant.LOGIN_EMPTY_FIELDS);
+        if (ValidationUtils.areFieldsEmpty(hoVaTenText, sdtText)) {
+            UIExceptionHandler.showError(errorLabel, MessageConstant.LOGIN_EMPTY_FIELDS);
             return;
         }
 
         if (!ValidationUtils.isValidPhoneNumber(sdtText.getText().trim())) {
-            showError(MessageConstant.VALIDATION_PHONE_INVALID);
+            UIExceptionHandler.showError(errorLabel, "Số điện thoại không hợp lệ (10 số, bắt đầu bằng 0).");
             return;
         }
 
-        String emailInput = emailText.getText().trim();
-        String otp = confirmEmailText.getText().trim();
-
-        OtpStatus status = userService.verifyOtp(emailInput, otp);
-
-        if (status == OtpStatus.INVALID_CODE) {
-            showError(MessageConstant.OTP_INVALID);
-            return;
-        }
-        if (status == OtpStatus.EXPIRED_CODE) {
-            showError(MessageConstant.OTP_EXPIRED);
+        String inputOtp = confirmEmailText.getText().trim();
+        if (inputOtp.isEmpty()) {
+            UIExceptionHandler.showError(errorLabel, "Vui lòng nhập mã xác nhận email.");
             return;
         }
 
         confirmButton.setDisable(true);
         confirmButton.setText("Đang xử lý...");
 
-        new Thread(() -> {
-            try {
-                if (currentUser != null) {
-                    currentUser.setFullName(hoVaTenText.getText().trim());
-                    currentUser.setPhoneNumber(sdtText.getText().trim());
-                    currentUser.setEmail(emailInput);
-
-                    Gender gender = Gender.Other;
-                    if (namRadioButton.isSelected()) gender = Gender.Male;
-                    else if (nuRadioButton.isSelected()) gender = Gender.Female;
-                    currentUser.setGender(gender);
-
-                    if (selectedImageFile != null) {
-                        String savedPath = saveAvatarToLocal(selectedImageFile);
-                        if (savedPath != null) {
-                            currentUser.setAvatarUrl(savedPath);
-                        }
-                    }
-
-                    boolean updateSuccess = userService.updateUserProfile(currentUser);
-
-                    boolean disableFirstLoginSuccess = false;
-                    if (updateSuccess) {
-                        disableFirstLoginSuccess = userService.disableFirstLogin(currentUser.getId());
-                    }
-
-                    boolean finalResult = updateSuccess && disableFirstLoginSuccess;
-
-                    Platform.runLater(() -> {
-                        if (finalResult) {
-                            SessionManager.getInstance().setCurrentUser(currentUser);
-                            SceneUtils.openNewWindow("/view/read/home_screen.fxml", "Trang chủ", confirmButton);
-                        } else {
-                            showError(MessageConstant.UPDATE_FAIL);
-                            confirmButton.setDisable(false);
-                            confirmButton.setText("XÁC NHẬN");
-                        }
-                    });
+        Task<Void> processTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                OtpStatus status = userService.verifyOtp(currentUser.getEmail(), inputOtp);
+                if (status != OtpStatus.SUCCESS) {
+                    throw new AuthException(MessageConstant.OTP_INVALID);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    showError("Lỗi: " + e.getMessage());
-                    confirmButton.setDisable(false);
-                    confirmButton.setText("XÁC NHẬN");
-                });
+
+                String avatarPath = (currentUser.getAvatarUrl() != null) ? currentUser.getAvatarUrl() : "";
+                if (selectedAvatarFile != null) {
+                    avatarPath = saveAvatarToLocal(selectedAvatarFile);
+                    if (avatarPath == null) throw new AppException("Lỗi khi lưu ảnh đại diện.");
+                }
+
+                currentUser.setFullName(hoVaTenText.getText().trim());
+                currentUser.setPhoneNumber(sdtText.getText().trim());
+                currentUser.setAvatarUrl(avatarPath);
+
+                if (namRadioButton.isSelected()) currentUser.setGender(Gender.Male);
+                else if (nuRadioButton.isSelected()) currentUser.setGender(Gender.Female);
+                else currentUser.setGender(Gender.Other);
+
+                if (!userService.updateUserProfile(currentUser)) {
+                    throw new AppException(MessageConstant.UPDATE_FAIL);
+                }
+
+                userService.disableFirstLogin(currentUser.getId());
+
+                return null;
             }
-        }).start();
+        };
+
+        processTask.setOnSucceeded(e -> {
+            SessionManager.getInstance().setCurrentUser(currentUser);
+            SceneUtils.switchScene(confirmButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME);
+        });
+
+        processTask.setOnFailed(e -> {
+            confirmButton.setDisable(false);
+            confirmButton.setText("XÁC NHẬN");
+
+            Throwable ex = processTask.getException();
+            if (ex instanceof AuthException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else if (ex instanceof AppException) {
+                UIExceptionHandler.showError(errorLabel, ex.getMessage());
+            } else {
+                UIExceptionHandler.handle(new Exception(ex), errorLabel);
+            }
+        });
+
+        new Thread(processTask).start();
     }
 
     private String saveAvatarToLocal(File sourceFile) {
         try {
             String userDir = System.getProperty("user.dir");
             Path avatarDir = Paths.get(userDir, "user_data", "avatars");
-
-            if (!Files.exists(avatarDir)) {
-                Files.createDirectories(avatarDir);
-            }
+            if (!Files.exists(avatarDir)) Files.createDirectories(avatarDir);
 
             String fileName = "avatar_" + UUID.randomUUID() + getFileExtension(sourceFile);
             Path destPath = avatarDir.resolve(fileName);
-
             Files.copy(sourceFile.toPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
 
             return destPath.toAbsolutePath().toString();
@@ -245,12 +254,5 @@ public class ConfirmInformationController {
         String name = file.getName();
         int lastIndexOf = name.lastIndexOf(".");
         return (lastIndexOf == -1) ? "" : name.substring(lastIndexOf);
-    }
-
-    private void showError(String message) {
-        if (errorLabel != null) {
-            errorLabel.setText(message);
-            UIExceptionHandler.showError(errorLabel);
-        }
     }
 }

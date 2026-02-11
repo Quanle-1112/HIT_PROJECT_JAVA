@@ -1,6 +1,9 @@
 package org.example.dao;
 
+import org.example.constant.MessageConstant;
+import org.example.exception.DatabaseException;
 import org.example.model.user.UserFavorite;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,12 +19,10 @@ public class FavoriteDAO {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.setString(2, bookSlug);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
+            return stmt.executeQuery().next();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException(MessageConstant.ERR_DB_QUERY, e);
         }
-        return false;
     }
 
     public boolean addFavorite(UserFavorite fav) {
@@ -34,9 +35,8 @@ public class FavoriteDAO {
             stmt.setString(4, fav.getThumbnailUrl());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException(MessageConstant.ERR_DB_SAVE, e);
         }
-        return false;
     }
 
     public boolean removeFavorite(int userId, String bookSlug) {
@@ -47,9 +47,8 @@ public class FavoriteDAO {
             stmt.setString(2, bookSlug);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException(MessageConstant.ERR_DB_DELETE, e);
         }
-        return false;
     }
 
     public List<UserFavorite> getFavoritesByUserId(int userId) {
@@ -71,7 +70,7 @@ public class FavoriteDAO {
                 list.add(fav);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException(MessageConstant.ERR_DB_QUERY, e);
         }
         return list;
     }

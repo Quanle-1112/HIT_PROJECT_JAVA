@@ -5,14 +5,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.constant.MessageConstant;
 import org.example.controllers.read.BookDetailController;
 import org.example.dao.HistoryDAO;
+import org.example.exception.AppException;
+import org.example.exception.UIExceptionHandler;
 import org.example.model.user.UserHistory;
 import org.example.utils.ImageLoaderGlobal;
 
@@ -37,47 +41,56 @@ public class HistoryItemController {
         bookTitle.setText(history.getBookName());
         lastChapter.setText("Đang đọc: " + history.getLastChapterName());
 
-        String timeStr = "";
         if (history.getReadAt() != null) {
-            String rawDate = history.getReadAt().toString();
-            timeStr = rawDate.length() > 16 ? rawDate.substring(0, 16) : rawDate;
-        }
-        readTime.setText(timeStr);
-
-        String rawThumb = history.getThumbnailUrl();
-        String finalUrl;
-
-        if (rawThumb == null || rawThumb.isEmpty()) {
-            finalUrl = "";
-        } else if (rawThumb.startsWith("http")) {
-            finalUrl = rawThumb;
+            readTime.setText(history.getReadAt().toString().substring(0, 16));
         } else {
-            finalUrl = IMAGE_BASE_URL + rawThumb;
+            readTime.setText("");
         }
 
-        ImageLoaderGlobal.setImage(finalUrl, bookThumb);
+        String imgUrl = history.getThumbnailUrl();
+        if (imgUrl != null && !imgUrl.startsWith("http")) {
+            imgUrl = IMAGE_BASE_URL + imgUrl;
+        }
+        ImageLoaderGlobal.setImage(imgUrl, bookThumb);
 
         itemContainer.setOnMouseClicked(e -> openBookDetail());
 
         if (btnDelete != null) {
             btnDelete.setOnAction(e -> {
                 e.consume();
-
-                new Thread(() -> {
-                    boolean success = historyDAO.deleteHistory(history.getUserId(), history.getBookSlug());
-                    Platform.runLater(() -> {
-                        if (success) {
-                            VBox parent = (VBox) itemContainer.getParent();
-                            if (parent != null) {
-                                parent.getChildren().remove(itemContainer);
-
-                                if (onDeleteCallback != null) onDeleteCallback.run();
-                            }
-                        }
-                    });
-                }).start();
+                handleDelete(onDeleteCallback);
             });
         }
+    }
+
+    private void handleDelete(Runnable onDeleteCallback) {
+        new Thread(() -> {
+            try {
+                boolean success = historyDAO.deleteHistory(currentHistory.getUserId(), currentHistory.getBookSlug());
+
+                Platform.runLater(() -> {
+                    if (success) {
+                        VBox parent = (VBox) itemContainer.getParent();
+                        if (parent != null) {
+                            parent.getChildren().remove(itemContainer);
+
+                            if (onDeleteCallback != null) onDeleteCallback.run();
+                        }
+                    } else {
+                        UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_DB_DELETE);
+                    }
+                });
+            } catch (AppException e) {
+                Platform.runLater(() ->
+                        UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi Hệ Thống", e.getMessage())
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() ->
+                        UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM)
+                );
+            }
+        }).start();
     }
 
     private void openBookDetail() {
@@ -91,8 +104,9 @@ public class HistoryItemController {
             Stage stage = (Stage) itemContainer.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("WOWTruyen - " + currentHistory.getBookName());
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM);
         }
     }
 }

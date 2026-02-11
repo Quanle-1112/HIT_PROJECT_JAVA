@@ -1,7 +1,12 @@
 package org.example.services.impl;
 
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
+import org.example.exception.AuthException;
+import org.example.exception.DatabaseException;
+import org.example.exception.NetworkException;
 import org.example.model.user.OtpStatus;
+import org.example.model.user.User;
 import org.example.services.IForgotPasswordService;
 import org.example.utils.EmailUtils;
 import org.example.utils.EncryptionUtils;
@@ -12,34 +17,51 @@ public class IForgotPasswordServiceImpl implements IForgotPasswordService {
     private final UserDAO userDAO = new UserDAO();
 
     @Override
-    public OtpStatus sendOtp(String email) {
-        if (!userDAO.isEmailExist(email)) return OtpStatus.EMAIL_NOT_EXIST;
+    public void sendOtp(String email) {
+        if (!userDAO.isEmailExist(email)) {
+            throw new AuthException(MessageConstant.FORGOT_PASS_EMAIL_NOT_EXIST);
+        }
 
         String otp = OtpUtils.generateOtp();
 
         if (userDAO.updateOtp(email, otp)) {
-            boolean sent = EmailUtils.sendEmail(
+            boolean isSent = EmailUtils.sendEmail(
                     email,
-                    "WOWTruyen - Reset Password",
-                    "Mã xác thực: " + otp + "\nMã hết hạn sau 5 phút."
+                    "WOWTruyen - Khôi phục mật khẩu",
+                    "Mã xác thực khôi phục mật khẩu của bạn là: " + otp + "\nVui lòng không chia sẻ mã này."
             );
-            return sent ? OtpStatus.SUCCESS : OtpStatus.SEND_FAILED;
+            if (!isSent) {
+                throw new NetworkException(MessageConstant.FORGOT_PASS_SEND_FAIL);
+            }
+        } else {
+            throw new DatabaseException(MessageConstant.ERR_DB_UPDATE);
         }
-        return OtpStatus.SEND_FAILED;
     }
 
     @Override
-    public OtpStatus verifyOtp(String email, String otp) {
+    public void verifyOtp(String email, String otp) {
         OtpStatus status = userDAO.checkOtpStatus(email, otp);
-        if (status == OtpStatus.SUCCESS) {
-            userDAO.clearOtp(email);
+        if (status == OtpStatus.INVALID_CODE) {
+            throw new AuthException(MessageConstant.OTP_INVALID);
         }
-        return status;
+        if (status == OtpStatus.EXPIRED_CODE) {
+            throw new AuthException(MessageConstant.OTP_EXPIRED);
+        }
+        userDAO.clearOtp(email);
     }
 
     @Override
-    public boolean resetPassword(String email, String newPassword) {
+    public void resetPassword(String email, String newPassword) {
+        User user = userDAO.getUserByEmail(email);
+        if (user == null) {
+            throw new AuthException(MessageConstant.ERR_USER_NOT_FOUND);
+        }
+
         String hashedPassword = EncryptionUtils.hashPassword(newPassword);
-        return userDAO.updatePasswordByEmail(email, hashedPassword);
+        boolean success = userDAO.updateUserPassword(user.getId(), hashedPassword);
+
+        if (!success) {
+            throw new DatabaseException(MessageConstant.UPDATE_FAIL);
+        }
     }
 }

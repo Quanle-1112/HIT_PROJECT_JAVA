@@ -62,6 +62,32 @@ public class MessageConstant {
     public static final String TITLE_VIEW_ALL_COMING = "Danh sách truyện - Sắp ra mắt";
     public static final String TITLE_ALL_CATEGORIES = "Tất cả thể loại";
 
+    public static final String ACCOUNT_LOCKED = "Tài khoản của bạn đã bị khóa!";
+
+    public static final String ERR_API_EMPTY = "Dữ liệu từ máy chủ rỗng.";
+    public static final String ERR_API_FORMAT = "Dữ liệu từ máy chủ không đúng định dạng.";
+
+    public static final String ERR_DB_QUERY = "Lỗi truy vấn dữ liệu.";
+    public static final String ERR_DB_SAVE = "Không thể lưu dữ liệu vào hệ thống.";
+    public static final String ERR_DB_DELETE = "Không thể xóa dữ liệu.";
+    public static final String ERR_DB_UPDATE = "Cập nhật dữ liệu thất bại.";
+    public static final String ERR_USER_NOT_FOUND = "Không tìm thấy thông tin người dùng.";
+
+    public static final String ERR_LOAD_CATEGORIES = "Không thể tải danh sách thể loại.";
+    public static final String ERR_LOAD_BOOKS = "Không thể tải danh sách truyện.";
+    public static final String ERR_BOOK_NOT_FOUND = "Không tìm thấy thông tin truyện hoặc truyện bị lỗi.";
+    public static final String ERR_CHAPTER_CONTENT = "Nội dung chương bị lỗi hoặc không tồn tại.";
+    public static final String ERR_SEARCH = "Lỗi khi tìm kiếm truyện.";
+
     public static final String MSG_LOADING = "Đang tải dữ liệu...";
     public static final String MSG_EMPTY_DATA = "Không có dữ liệu.";
+
+    public static final String CHAT_USER_TITLE = "Bạn";
+    public static final String CHAT_AI_TITLE = "Gemini AI";
+    public static final String CHAT_INPUT_EMPTY = "Vui lòng nhập nội dung tin nhắn!";
+    public static final String CHAT_ERR_NO_RESPONSE = "Không nhận được phản hồi từ AI.";
+    public static final String CHAT_ERR_API = "Lỗi khi gọi API AI: ";
+
+    public static final String GEMINI_API_KEY = "AIzaSyA46sQ6nKF-CC6kFyro-ols8LfwMTRimrk";
+    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 }

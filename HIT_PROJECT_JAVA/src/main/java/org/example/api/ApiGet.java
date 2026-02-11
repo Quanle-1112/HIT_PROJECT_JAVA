@@ -4,6 +4,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.example.constant.MessageConstant;
+import org.example.exception.NetworkException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -26,17 +28,18 @@ public class ApiGet {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                System.err.println("Lỗi API [" + response.code() + "]: " + url);
-                return null;
+                throw new NetworkException(MessageConstant.ERR_NETWORK + " (Code: " + response.code() + ")");
             }
 
             ResponseBody body = response.body();
-            return body != null ? body.string() : "";
+            if (body == null) {
+                throw new NetworkException(MessageConstant.ERR_API_EMPTY);
+            }
+
+            return body.string();
 
         } catch (IOException e) {
-            System.err.println("Lỗi kết nối: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw new NetworkException(MessageConstant.ERR_NETWORK, e);
         }
     }
 }
