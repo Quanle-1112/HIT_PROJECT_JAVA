@@ -163,7 +163,7 @@ public class HomeScreenController {
 
     private void setupBottomNavigation() {
         if (btnHome != null) {
-            btnHome.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+            btnHome.setStyle(MessageConstant.BUTTON_COLOR);
             btnHome.setDisable(true);
         }
 

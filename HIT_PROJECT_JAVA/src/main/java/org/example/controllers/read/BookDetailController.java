@@ -148,7 +148,6 @@ public class BookDetailController {
                         }
                     }
                     if (this.lastReadChapter != null) {
-                        // "Đọc tiếp" không có trong Constant, giữ nguyên text động
                         readButton.setText("Đọc tiếp: Chap " + lastReadChapter.getChapterName());
                     }
                 }
@@ -162,7 +161,6 @@ public class BookDetailController {
 
         headerTitle.setText(item.getName());
         bookName.setText(item.getName());
-        // Các chuỗi "Trạng thái:", "Tác giả:" là label UI cụ thể, giữ nguyên hoặc tạo constant mới nếu cần thiết
         bookStatus.setText("Trạng thái: " + item.getStatus());
         bookAuthor.setText("Tác giả: Đang cập nhật");
 

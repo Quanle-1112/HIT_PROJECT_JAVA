@@ -70,7 +70,7 @@ public class AccountForgotPasswordController {
             btnResendOtp.setText(MessageConstant.RESEND + " mã");
             if (sendTask.getValue()) {
                 lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
-                lblStatus.setStyle("-fx-text-fill:  #19345D;");
+                lblStatus.setStyle(MessageConstant.BACKGROUND_COLOR);
             } else {
                 UIExceptionHandler.showError(lblStatus, MessageConstant.OTP_RESEND_FAIL);
             }
@@ -115,7 +115,7 @@ public class AccountForgotPasswordController {
 
         verifyTask.setOnSucceeded(e -> {
             lblStatus.setText("Xác thực thành công. Nhập mật khẩu mới.");
-            lblStatus.setStyle("-fx-text-fill:  #19345D;");
+            lblStatus.setStyle(MessageConstant.BACKGROUND_COLOR);
 
             txtOtp.setDisable(true);
             btnVerifyOtp.setDisable(true);

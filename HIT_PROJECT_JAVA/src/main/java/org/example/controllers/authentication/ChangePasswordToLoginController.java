@@ -47,7 +47,7 @@ public class ChangePasswordToLoginController {
         }
 
         updateButton.setDisable(true);
-        updateButton.setText("Đang cập nhật...");
+        updateButton.setText(MessageConstant.UPDATE_LOADING);
 
         Task<Void> updateTask = new Task<>() {
             @Override
@@ -64,7 +64,7 @@ public class ChangePasswordToLoginController {
 
         updateTask.setOnFailed(e -> {
             updateButton.setDisable(false);
-            updateButton.setText("Update Password");
+            updateButton.setText(MessageConstant.UPDATE_PASSWORD);
 
             Throwable ex = updateTask.getException();
             if (ex instanceof AppException) {

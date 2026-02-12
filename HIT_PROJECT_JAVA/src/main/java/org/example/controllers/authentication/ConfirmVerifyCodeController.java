@@ -102,7 +102,7 @@ public class ConfirmVerifyCodeController {
             resendCodeButton.setVisible(true);
 
             UIExceptionHandler.showError(errorLabel, MessageConstant.OTP_SENT_SUCCESS);
-            errorLabel.setStyle("-fx-text-fill: green;");
+            errorLabel.setStyle(MessageConstant.BACKGROUND_COLOR);
 
             startTimer();
         });
@@ -113,7 +113,7 @@ public class ConfirmVerifyCodeController {
 
             Throwable ex = resendTask.getException();
             UIExceptionHandler.showError(errorLabel, ex.getMessage());
-            errorLabel.setStyle("-fx-text-fill: red;");
+            errorLabel.setStyle(MessageConstant.RED_COLOR);
 
             throw new AppException(MessageConstant.ERR_SYSTEM, ex);
         });

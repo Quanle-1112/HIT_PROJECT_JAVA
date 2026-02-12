@@ -67,7 +67,7 @@ public class AccountDeleteController {
             btnResendOtp.setText(MessageConstant.RESEND + " mã");
             if (sendTask.getValue()) {
                 lblStatus.setText(MessageConstant.OTP_SENT_SUCCESS);
-                lblStatus.setStyle("-fx-text-fill: #19345D;");
+                lblStatus.setStyle(MessageConstant.BACKGROUND_COLOR);
             } else {
                 UIExceptionHandler.showError(lblStatus, MessageConstant.OTP_RESEND_FAIL);
             }

@@ -171,7 +171,7 @@ public class AccountScreenController {
 
     private void setupNavigation() {
         if (btnAccount != null) {
-            btnAccount.setStyle("-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+            btnAccount.setStyle(MessageConstant.BUTTON_COLOR);
             btnAccount.setDisable(true);
         }
         if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
