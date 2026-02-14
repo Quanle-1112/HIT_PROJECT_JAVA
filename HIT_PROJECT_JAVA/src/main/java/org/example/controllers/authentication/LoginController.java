@@ -41,7 +41,9 @@ public class LoginController {
         enterPasswordField.setOnAction(event -> handleLogin());
         usernameTextField.setOnAction(event -> handleLogin());
 
-        cancelButton.setOnAction(event -> System.exit(0));
+        cancelButton.setOnAction(event ->
+                SceneUtils.switchScene(cancelButton, "/view/read/start_screen.fxml", MessageConstant.TITLE_START)
+        );
 
         forgotPasswordButton.setOnAction(event ->
                 SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", MessageConstant.TITLE_FORGOT_PASS)

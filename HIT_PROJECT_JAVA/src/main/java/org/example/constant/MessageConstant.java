@@ -46,6 +46,7 @@ public class MessageConstant {
     public static final String UPDATE_SUCCESS = "Cập nhật thành công!";
     public static final String UPDATE_FAIL = "Lỗi hệ thống: Không thể lưu thông tin. Vui lòng thử lại!";
 
+    public static final String TITLE_START = "Bắt đầu";
     public static final String TITLE_LOGIN = "Đăng nhập";
     public static final String TITLE_REGISTER = "Đăng ký tài khoản";
     public static final String TITLE_HOME = "Trang chủ";
