@@ -1,5 +1,6 @@
 package org.example.controllers.favorite;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.scene.layout.VBox;
 import org.example.constant.MessageConstant;
 import org.example.dao.FavoriteDAO;
 import org.example.exception.AppException;
+import org.example.exception.DatabaseException;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.UserFavorite;
 import org.example.utils.SceneUtils;
@@ -21,74 +23,75 @@ import java.util.List;
 public class FavoriteScreenController {
 
     @FXML private VBox listContainer;
-
     @FXML private Label statusLabel;
 
-    @FXML private Button btnHome, btnHistory, btnFavorite,btnAI, btnAccount;
+    @FXML private Button btnHome, btnHistory, btnFavorite, btnAI, btnAccount;
 
     private final FavoriteDAO favoriteDAO = new FavoriteDAO();
-    private int currentUserId;
 
     @FXML
     public void initialize() {
-        currentUserId = SessionManager.getInstance().getCurrentUserId();
-
         setupNavigation();
         UIExceptionHandler.hideError(statusLabel);
 
-        if (currentUserId != -1) {
+        int userId = SessionManager.getInstance().getCurrentUserId();
+
+        if (userId != -1) {
             loadFavoriteData();
         } else {
+            listContainer.getChildren().clear();
             showEmptyMessage(MessageConstant.FAVORITE_LOGIN_REQ);
         }
     }
 
     private void loadFavoriteData() {
+        int userId = SessionManager.getInstance().getCurrentUserId();
+        if (userId == -1) return;
+
+        UIExceptionHandler.hideError(statusLabel);
+
         Task<List<UserFavorite>> task = new Task<>() {
             @Override
             protected List<UserFavorite> call() throws Exception {
-                return favoriteDAO.getFavoritesByUserId(currentUserId);
+                List<UserFavorite> favorites = favoriteDAO.getFavoritesByUserId(userId);
+                if (favorites == null) {
+                    throw new DatabaseException(MessageConstant.ERR_DB_QUERY);
+                }
+                return favorites;
             }
         };
 
         task.setOnSucceeded(e -> {
-            List<UserFavorite> favorites = task.getValue();
+            List<UserFavorite> favoriteList = task.getValue();
             listContainer.getChildren().clear();
 
-            if (favorites == null || favorites.isEmpty()) {
+            if (favoriteList.isEmpty()) {
                 showEmptyMessage(MessageConstant.FAVORITE_EMPTY);
             } else {
-                renderFavoriteList(favorites);
+                try {
+                    for (UserFavorite favorite : favoriteList) {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/favorite/favorite_item.fxml"));
+                        HBox item = loader.load();
+
+                        FavoriteItemController itemController = loader.getController();
+                        itemController.setData(favorite, () -> {
+                            listContainer.getChildren().remove(item);
+                            checkListEmptyAfterDelete();
+                        });
+
+                        listContainer.getChildren().add(item);
+                    }
+                } catch (IOException ex) {
+                    UIExceptionHandler.handle(new AppException(MessageConstant.ERR_SYSTEM, ex), statusLabel);
+                }
             }
         });
 
         task.setOnFailed(e -> {
-            Throwable ex = task.getException();
-            if (ex instanceof Exception) {
-                UIExceptionHandler.handle((Exception) ex, statusLabel);
-            }
-            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+            UIExceptionHandler.handle((Exception) task.getException(), statusLabel);
         });
 
         new Thread(task).start();
-    }
-
-    private void renderFavoriteList(List<UserFavorite> favorites) {
-        try {
-            for (UserFavorite fav : favorites) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/favorite/favorite_item.fxml"));
-                HBox item = loader.load();
-
-                FavoriteItemController itemController = loader.getController();
-
-                itemController.setData(fav, this::checkListEmptyAfterDelete);
-
-                listContainer.getChildren().add(item);
-            }
-        } catch (IOException e) {
-            UIExceptionHandler.showError(statusLabel, MessageConstant.ERR_SYSTEM);
-            throw new AppException(MessageConstant.ERR_SYSTEM, e);
-        }
     }
 
     public void checkListEmptyAfterDelete() {
