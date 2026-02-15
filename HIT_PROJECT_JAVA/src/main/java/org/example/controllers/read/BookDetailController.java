@@ -76,6 +76,7 @@ public class BookDetailController {
 
     @FXML
     public void initialize() {
+
         backButton.setOnAction(event ->
                 SceneUtils.switchScene(backButton, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME)
         );
@@ -93,6 +94,8 @@ public class BookDetailController {
         if (readNewestButton != null) readNewestButton.setOnAction(e -> handleReadNewestButton());
         if (favoriteButton != null) favoriteButton.setOnAction(e -> handleFavoriteButton());
     }
+
+
 
     public void setBookSlug(String slug) {
         this.bookSlug = slug;
