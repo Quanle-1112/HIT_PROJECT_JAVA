@@ -114,11 +114,9 @@ public class AccountScreenController {
                 currentUser.setAvatarUrl(newPath);
                 SessionManager.getInstance().setCurrentUser(currentUser);
                 avatarView.setImage(new Image(new File(newPath).toURI().toString()));
-                UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.UPDATE_SUCCESS, "Cập nhật ảnh đại diện thành công!");
             });
 
             uploadTask.setOnFailed(e -> {
-                UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", uploadTask.getException().getMessage());
                 throw new AppException(MessageConstant.ERR_SYSTEM, uploadTask.getException());
             });
 
@@ -159,7 +157,6 @@ public class AccountScreenController {
             }
 
         } catch (IOException e) {
-            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", MessageConstant.ERR_SYSTEM);
             throw new AppException(MessageConstant.ERR_SYSTEM, e);
         }
     }

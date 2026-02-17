@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -11,6 +12,7 @@ import javafx.scene.layout.VBox;
 import org.example.constant.MessageConstant;
 import org.example.dao.HistoryDAO;
 import org.example.exception.AppException;
+import org.example.exception.DatabaseException;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.UserHistory;
 import org.example.utils.SceneUtils;
@@ -23,18 +25,13 @@ public class HistoryScreenController {
 
     @FXML private VBox listContainer;
     @FXML private Button btnClearAll;
-
     @FXML private Label statusLabel;
-
-    @FXML private Button btnHome, btnHistory, btnFavorite,btnAI, btnAccount;
+    @FXML private Button btnHome, btnHistory, btnFavorite, btnAI, btnAccount;
 
     private final HistoryDAO historyDAO = new HistoryDAO();
-    private int currentUserId;
 
     @FXML
     public void initialize() {
-        currentUserId = SessionManager.getInstance().getCurrentUserId();
-
         setupNavigation();
         UIExceptionHandler.hideError(statusLabel);
 
@@ -42,7 +39,9 @@ public class HistoryScreenController {
             btnClearAll.setOnAction(e -> handleClearAll());
         }
 
-        if (currentUserId != -1) {
+        int userId = SessionManager.getInstance().getCurrentUserId();
+
+        if (userId != -1) {
             loadHistoryData();
         } else {
             showEmptyMessage(MessageConstant.HISTORY_LOGIN_REQ);
@@ -51,10 +50,19 @@ public class HistoryScreenController {
     }
 
     private void loadHistoryData() {
+        int userId = SessionManager.getInstance().getCurrentUserId();
+        if (userId == -1) return;
+
+        UIExceptionHandler.hideError(statusLabel);
+
         Task<List<UserHistory>> task = new Task<>() {
             @Override
             protected List<UserHistory> call() throws Exception {
-                return historyDAO.getHistoryByUserId(currentUserId);
+                List<UserHistory> data = historyDAO.getHistoryByUserId(userId);
+                if (data == null) {
+                    throw new DatabaseException(MessageConstant.ERR_DB_QUERY);
+                }
+                return data;
             }
         };
 
@@ -62,66 +70,67 @@ public class HistoryScreenController {
             List<UserHistory> historyList = task.getValue();
             listContainer.getChildren().clear();
 
-            if (historyList == null || historyList.isEmpty()) {
+            if (historyList.isEmpty()) {
                 showEmptyMessage(MessageConstant.HISTORY_EMPTY);
                 if (btnClearAll != null) btnClearAll.setDisable(true);
             } else {
                 if (btnClearAll != null) btnClearAll.setDisable(false);
-                renderHistoryList(historyList);
+                try {
+                    for (UserHistory history : historyList) {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/history/history_item.fxml"));
+                        HBox item = loader.load();
+
+                        HistoryItemController itemController = loader.getController();
+                        itemController.setData(history, () -> {
+                            listContainer.getChildren().remove(item);
+                            checkListEmptyAfterDelete();
+                        });
+
+                        listContainer.getChildren().add(item);
+                    }
+                } catch (IOException ex) {
+                    UIExceptionHandler.handle(new AppException(MessageConstant.ERR_SYSTEM, ex), statusLabel);
+                }
             }
         });
 
         task.setOnFailed(e -> {
-            Throwable ex = task.getException();
-            if (ex instanceof Exception) {
-                UIExceptionHandler.handle((Exception) ex, statusLabel);
-            }
-            throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+            UIExceptionHandler.handle((Exception) task.getException(), statusLabel);
         });
 
         new Thread(task).start();
     }
 
-    private void renderHistoryList(List<UserHistory> historyList) {
-        try {
-            for (UserHistory history : historyList) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/history/history_item.fxml"));
-                HBox item = loader.load();
-
-                HistoryItemController itemController = loader.getController();
-                itemController.setData(history, this::checkListEmptyAfterDelete);
-
-                listContainer.getChildren().add(item);
-            }
-        } catch (IOException e) {
-            throw new AppException(MessageConstant.ERR_SYSTEM, e);
-        }
-    }
-
     private void handleClearAll() {
-        UIExceptionHandler.hideError(statusLabel);
+        int userId = SessionManager.getInstance().getCurrentUserId();
+        if (userId == -1) return;
 
-        new Thread(() -> {
-            try {
-                boolean success = historyDAO.deleteAllByUserId(currentUserId);
-
-                Platform.runLater(() -> {
-                    if (success) {
-                        listContainer.getChildren().clear();
-                        showEmptyMessage(MessageConstant.HISTORY_EMPTY);
-                        if (btnClearAll != null) btnClearAll.setDisable(true);
-                    } else {
-                        UIExceptionHandler.showError(statusLabel, MessageConstant.ERR_DB_DELETE);
-                    }
-                });
-
-            } catch (AppException e) {
-                Platform.runLater(() -> UIExceptionHandler.handle(e, statusLabel));
-            } catch (Exception e) {
-                Platform.runLater(() -> UIExceptionHandler.showError(statusLabel, MessageConstant.ERR_SYSTEM));
-                throw new AppException(MessageConstant.ERR_SYSTEM, e);
+        Task<Boolean> task = new Task<>() {
+            @Override
+            protected Boolean call() throws Exception {
+                boolean success = historyDAO.deleteAllByUserId(userId);
+                if (!success) {
+                    throw new DatabaseException(MessageConstant.ERR_DB_DELETE);
+                }
+                return true;
             }
-        }).start();
+        };
+
+        task.setOnSucceeded(e -> {
+            listContainer.getChildren().clear();
+            showEmptyMessage(MessageConstant.HISTORY_EMPTY);
+            if (btnClearAll != null) btnClearAll.setDisable(true);
+
+            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION,
+                    "Thành công",
+                    "Đã xóa toàn bộ lịch sử đọc.");
+        });
+
+        task.setOnFailed(e -> {
+            UIExceptionHandler.handle((Exception) task.getException(), statusLabel);
+        });
+
+        new Thread(task).start();
     }
 
     public void checkListEmptyAfterDelete() {
@@ -142,6 +151,7 @@ public class HistoryScreenController {
             btnHistory.setStyle(MessageConstant.BUTTON_COLOR);
             btnHistory.setDisable(true);
         }
+
         if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
         if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", MessageConstant.TITLE_HISTORY));
         if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", MessageConstant.TITLE_FAVORITE));

@@ -59,11 +59,6 @@ public class ChangePasswordController {
             return;
         }
 
-        if (oldPass.equals(newPass)) {
-            UIExceptionHandler.showError(errorLabel, "Mật khẩu mới không được trùng mật khẩu cũ.");
-            return;
-        }
-
         if (!newPass.equals(confirmPass)) {
             UIExceptionHandler.showError(errorLabel, MessageConstant.REGISTER_PASSWORD_MISMATCH);
             return;

@@ -44,7 +44,7 @@ public class ChatBoxController {
         setupNavigation();
         setupChatInterface();
 
-        addMessage(MessageConstant.CHAT_AI_TITLE, "Xin chào! Tôi có thể giúp gì cho bạn hôm nay?", false);
+        addMessage(MessageConstant.CHAT_AI_TITLE, MessageConstant.AI_MESSAGE, false);
     }
 
     private void setupChatInterface() {
