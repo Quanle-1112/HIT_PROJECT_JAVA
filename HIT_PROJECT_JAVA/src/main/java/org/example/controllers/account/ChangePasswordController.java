@@ -91,7 +91,7 @@ public class ChangePasswordController {
 
         changePassTask.setOnFailed(e -> {
             btnSave.setDisable(false);
-            btnSave.setText("Cập nhật mật khẩu");
+            btnSave.setText(MessageConstant.UPDATE_PASSWORD);
 
             Throwable ex = changePassTask.getException();
             UIExceptionHandler.showError(errorLabel, ex.getMessage());

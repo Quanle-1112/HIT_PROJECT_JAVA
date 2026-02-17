@@ -31,7 +31,7 @@ public class RegisterController {
 
         registerButton.setOnAction(event -> handleRegister());
         closeButton.setOnAction(event ->
-                SceneUtils.openNewWindow("/view/read/start_screen.fxml", "Start Screen", closeButton)
+                SceneUtils.openNewWindow("/view/authentiaction/register.fxml", "Login", closeButton)
         );
     }
 
@@ -81,7 +81,6 @@ public class RegisterController {
         };
 
         registerTask.setOnSucceeded(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.REGISTER_SUCCESS, MessageConstant.REGISTER_SUCCESS);
             SceneUtils.openNewWindow("/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN, registerButton);
         });
 

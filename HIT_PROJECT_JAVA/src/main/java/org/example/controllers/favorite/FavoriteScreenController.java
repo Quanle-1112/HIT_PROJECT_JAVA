@@ -105,7 +105,7 @@ public class FavoriteScreenController {
 
     private void setupNavigation() {
         if (btnFavorite != null) {
-            btnFavorite.setStyle("-fx-background-color: #F0F2F5; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;");
+            btnFavorite.setStyle(MessageConstant.BUTTON_COLOR);
             btnFavorite.setDisable(true);
         }
 

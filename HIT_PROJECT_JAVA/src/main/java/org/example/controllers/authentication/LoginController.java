@@ -8,6 +8,7 @@ import org.example.constant.MessageConstant;
 import org.example.exception.AppException;
 import org.example.exception.AuthException;
 import org.example.exception.UIExceptionHandler;
+import org.example.model.user.Role;
 import org.example.model.user.User;
 import org.example.services.ILoginService;
 import org.example.services.impl.ILoginServiceImpl;
@@ -40,7 +41,9 @@ public class LoginController {
         enterPasswordField.setOnAction(event -> handleLogin());
         usernameTextField.setOnAction(event -> handleLogin());
 
-        cancelButton.setOnAction(event -> System.exit(0));
+        cancelButton.setOnAction(event ->
+                SceneUtils.switchScene(cancelButton, "/view/read/start_screen.fxml", MessageConstant.TITLE_START)
+        );
 
         forgotPasswordButton.setOnAction(event ->
                 SceneUtils.switchScene(forgotPasswordButton, "/view/authentication/forgot_password.fxml", MessageConstant.TITLE_FORGOT_PASS)
@@ -89,19 +92,27 @@ public class LoginController {
             User user = loginTask.getValue();
             SessionManager.getInstance().setCurrentUser(user);
 
-            if (user.isFirstLogin()) {
-                ConfirmInformationController controller = SceneUtils.switchScene(
-                        loginButton,
-                        "/view/authentication/confirm_information_screen.fxml",
-                        MessageConstant.TITLE_CONFIRM_INFO
-                );
-                if (controller != null) controller.setCurrentUser(user);
-            } else {
+            if (user.getRole() == Role.ADMIN) {
                 SceneUtils.switchScene(
                         loginButton,
-                        "/view/read/home_screen.fxml",
-                        MessageConstant.TITLE_HOME
+                        "/view/admin/admin_dashboard.fxml",
+                        "WOWTruyen - Administrator"
                 );
+            } else {
+                if (user.isFirstLogin()) {
+                    ConfirmInformationController controller = SceneUtils.switchScene(
+                            loginButton,
+                            "/view/authentication/confirm_information_screen.fxml",
+                            MessageConstant.TITLE_CONFIRM_INFO
+                    );
+                    if (controller != null) controller.setCurrentUser(user);
+                } else {
+                    SceneUtils.switchScene(
+                            loginButton,
+                            "/view/read/home_screen.fxml",
+                            MessageConstant.TITLE_HOME
+                    );
+                }
             }
         });
 

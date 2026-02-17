@@ -17,9 +17,14 @@ public class MessageConstant {
     public static final String REGISTER_FAIL = "Lỗi hệ thống: Đăng ký thất bại.";
     public static final String REGISTER_SUCCESS_LOADING = "Đang đăng ký...";
 
+    public static final String UPDATE_PASSWORD = "Cập nhật mật khẩu";
     public static final String CONFIRM_LOADING = "Đang kiểm tra...";
+    public static final String UPDATE_LOADING = "Đang cập nhật...";
     public static final String CHOOSE_AVATAR = "Chọn ảnh đại diện";
     public static final String RESEND = "Gửi lại";
+    public static final String BUTTON_COLOR = "-fx-background-color: #E0E0E0; -fx-background-radius: 10; -fx-text-fill: #19345D; -fx-font-weight: bold;";
+    public static final String AI_MESSAGE = "Xin chào! Tôi có thể giúp gì cho bạn hôm nay?";
+    public static final String RED_COLOR = "-fx-text-fill: red;";
 
     public static final String FORGOT_PASS_EMAIL_EMPTY = "Vui lòng nhập địa chỉ Email!";
     public static final String FORGOT_PASS_EMAIL_NOT_EXIST = "Email này chưa được đăng ký trong hệ thống!";
@@ -41,6 +46,7 @@ public class MessageConstant {
     public static final String UPDATE_SUCCESS = "Cập nhật thành công!";
     public static final String UPDATE_FAIL = "Lỗi hệ thống: Không thể lưu thông tin. Vui lòng thử lại!";
 
+    public static final String TITLE_START = "Bắt đầu";
     public static final String TITLE_LOGIN = "Đăng nhập";
     public static final String TITLE_REGISTER = "Đăng ký tài khoản";
     public static final String TITLE_HOME = "Trang chủ";
@@ -61,6 +67,7 @@ public class MessageConstant {
     public static final String ERR_NETWORK = "Lỗi kết nối mạng hoặc API!";
     public static final String ERR_SYSTEM = "Đã xảy ra lỗi không mong muốn!";
     public static final String ERR_DB_CONNECT = "Lỗi kết nối CSDL, vui lòng thử lại!";
+    public static final String BACKGROUND_COLOR = "-fx-text-fill: #19345D;";
 
     public static final String TITLE_VIEW_ALL_NEW = "Danh sách truyện - Mới cập nhật";
     public static final String TITLE_VIEW_ALL_COMPLETED = "Danh sách truyện - Đã hoàn thành";
@@ -100,6 +107,6 @@ public class MessageConstant {
     public static final String MSG_ADDED_FAVORITE = "Đã thêm vào yêu thích.";
     public static final String MSG_REMOVED_FAVORITE = "Đã xóa khỏi yêu thích.";
 
-    public static final String GEMINI_API_KEY = "AIzaSyA46sQ6nKF-CC6kFyro-ols8LfwMTRimrk";
+    public static final String GEMINI_API_KEY = "AIzaSyB0fhDXOdzSs7DzYo8MSFY3zRXTN6Pt9xg";
     public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=";
 }

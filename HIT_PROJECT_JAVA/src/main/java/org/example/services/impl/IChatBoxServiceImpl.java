@@ -24,7 +24,7 @@ public class IChatBoxServiceImpl implements IChatBoxService {
 
     @Override
     public String askGemini(String prompt) {
-        String url = MessageConstant.GEMINI_API_URL + MessageConstant.GEMINI_API_KEY;
+        String url = MessageConstant.GEMINI_API_URL + MessageConstant.GEMINI_API_KEY.trim();
 
         JSONObject textPart = new JSONObject();
         textPart.put("text", prompt);
