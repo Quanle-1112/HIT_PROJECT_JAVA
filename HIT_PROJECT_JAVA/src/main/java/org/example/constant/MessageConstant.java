@@ -68,6 +68,8 @@ public class MessageConstant {
     public static final String ERR_SYSTEM = "Đã xảy ra lỗi không mong muốn!";
     public static final String ERR_DB_CONNECT = "Lỗi kết nối CSDL, vui lòng thử lại!";
     public static final String BACKGROUND_COLOR = "-fx-text-fill: #19345D;";
+    public static final String STYLE_ACTIVE = "-fx-background-color: #19345D; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;";
+    public static final String STYLE_DISABLED = "-fx-background-color: #cccccc; -fx-text-fill: #888888; -fx-background-radius: 5;";
 
     public static final String TITLE_VIEW_ALL_NEW = "Danh sách truyện - Mới cập nhật";
     public static final String TITLE_VIEW_ALL_COMPLETED = "Danh sách truyện - Đã hoàn thành";
@@ -75,6 +77,10 @@ public class MessageConstant {
     public static final String TITLE_ALL_CATEGORIES = "Tất cả thể loại";
 
     public static final String ACCOUNT_LOCKED = "Tài khoản của bạn đã bị khóa!";
+    public static final String READ_FIRST = "Đọc từ đầu";
+    public static final String OTHER_NAME = "Tên khác: ";
+    public static final String OTHER_AUTHOR = "Tác giả: Đang cập nhật";
+    public static final String READ_MORE = "Đọc tiếp: ";
 
     public static final String ERR_API_EMPTY = "Dữ liệu từ máy chủ rỗng.";
     public static final String ERR_API_FORMAT = "Dữ liệu từ máy chủ không đúng định dạng.";
