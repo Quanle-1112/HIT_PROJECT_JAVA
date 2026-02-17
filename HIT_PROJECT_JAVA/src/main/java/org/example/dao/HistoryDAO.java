@@ -33,6 +33,7 @@ public class HistoryDAO {
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new DatabaseException(MessageConstant.ERR_DB_SAVE, e);
         }
     }
@@ -43,8 +44,10 @@ public class HistoryDAO {
 
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 UserHistory history = new UserHistory();
                 history.setHistoryId(rs.getInt("history_id"));
@@ -63,25 +66,28 @@ public class HistoryDAO {
         return list;
     }
 
-    public UserHistory getHistoryByUserAndBook(int userId, String bookSlug) {
+    public UserHistory getHistory(int userId, String bookSlug) {
         String sql = "SELECT * FROM user_history WHERE user_id = ? AND book_slug = ?";
+
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
             stmt.setString(2, bookSlug);
 
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                UserHistory history = new UserHistory();
-                history.setUserId(rs.getInt("user_id"));
-                history.setBookSlug(rs.getString("book_slug"));
-                history.setBookName(rs.getString("book_name"));
-                history.setThumbnailUrl(rs.getString("thumbnail_url"));
-                history.setLastChapterName(rs.getString("last_chapter_name"));
-                history.setLastChapterApiData(rs.getString("last_chapter_api_data"));
-                history.setReadAt(rs.getTimestamp("read_at"));
-                return history;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    UserHistory history = new UserHistory();
+                    history.setHistoryId(rs.getInt("history_id"));
+                    history.setUserId(rs.getInt("user_id"));
+                    history.setBookSlug(rs.getString("book_slug"));
+                    history.setBookName(rs.getString("book_name"));
+                    history.setThumbnailUrl(rs.getString("thumbnail_url"));
+                    history.setLastChapterName(rs.getString("last_chapter_name"));
+                    history.setLastChapterApiData(rs.getString("last_chapter_api_data"));
+                    history.setReadAt(rs.getTimestamp("read_at"));
+                    return history;
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException(MessageConstant.ERR_DB_QUERY, e);
