@@ -71,7 +71,7 @@ public class ManageBooksController {
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
             protected List<ApiBookItem> call() throws Exception {
-                return bookService.searchBook(keyword, 1);
+                return bookService.searchBooks(keyword, 1);
             }
         };
 
