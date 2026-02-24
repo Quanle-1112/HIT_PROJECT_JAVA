@@ -14,16 +14,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.admin.AdminDashboardController">
+<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;"
+            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.admin.AdminDashboardController">
     <children>
-        <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);"
+                    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <Label layoutX="20.0" layoutY="15.0" text="Admin Dashboard" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="20.0" />
                     </font>
                 </Label>
-                <Button fx:id="btnLogout" layoutX="390.0" layoutY="13.0" mnemonicParsing="false" style="-fx-background-color: #C0392B; -fx-background-radius: 5; -fx-cursor: hand;" text="Log" textFill="WHITE" AnchorPane.rightAnchor="15.0">
+                <Button fx:id="btnLogout" layoutX="390.0" layoutY="13.0" mnemonicParsing="false" style="-fx-background-color: #C0392B; -fx-background-radius: 5; -fx-cursor: hand;"
+                        text="Log" textFill="WHITE" AnchorPane.rightAnchor="15.0">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
@@ -31,7 +34,8 @@
             </children>
         </AnchorPane>
 
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" layoutY="60.0" prefHeight="740.0" prefWidth="450.0" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" layoutY="60.0" prefHeight="740.0" prefWidth="450.0" style="-fx-background-color: transparent; -fx-background: transparent;"
+                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
             <content>
                 <VBox spacing="20.0">
                     <padding>
@@ -41,7 +45,7 @@
 
                         <VBox spacing="5.0">
                             <children>
-                                <Label fx:id="adminNameLabel" text="Hi, Administrator" textFill="#19345d">
+                                <Label fx:id="lblAdminName" text="Hi, Administrator" textFill="#19345d">
                                     <font>
                                         <Font name="System Bold" size="24.0" />
                                     </font>
@@ -56,7 +60,8 @@
 
                         <HBox spacing="15.0">
                             <children>
-                                <VBox alignment="CENTER_LEFT" prefHeight="80.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" HBox.hgrow="ALWAYS">
+                                <VBox alignment="CENTER_LEFT" prefHeight="80.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"
+                                      HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label text="Tổng User" textFill="#7f8c8d">
                                             <font><Font size="12.0" /></font>
@@ -69,7 +74,9 @@
                                         <Insets left="15.0" />
                                     </padding>
                                 </VBox>
-                                <VBox alignment="CENTER_LEFT" prefHeight="80.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);" HBox.hgrow="ALWAYS">
+
+                                <VBox alignment="CENTER_LEFT" prefHeight="80.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"
+                                      HBox.hgrow="ALWAYS">
                                     <children>
                                         <Label text="Truyện Đang Có" textFill="#7f8c8d">
                                             <font><Font size="12.0" /></font>
