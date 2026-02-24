@@ -18,15 +18,17 @@
                 <Button fx:id="btnBack" layoutX="10.0" layoutY="13.0" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" text="&lt;" textFill="WHITE">
                     <font><Font name="System Bold" size="18.0" /></font>
                 </Button>
-                <Label layoutX="50.0" layoutY="15.0" text="Ẩn / Hiện Truyện" textFill="WHITE">
-                    <font><Font name="System Bold" size="20.0" /></font>
+                <Label layoutX="50.0" layoutY="15.0" text="Quản lý Truyện" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
                 </Label>
             </children>
         </AnchorPane>
 
-        <HBox layoutX="15.0" layoutY="75.0" spacing="10.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0">
+        <HBox alignment="CENTER" layoutY="70.0" prefHeight="50.0" prefWidth="450.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <children>
-                <TextField fx:id="txtSearchBook" prefHeight="40.0" promptText="Nhập tên truyện..." style="-fx-background-radius: 20; -fx-padding: 0 15; -fx-border-color: #BDC3C7; -fx-border-radius: 20;" HBox.hgrow="ALWAYS">
+                <TextField fx:id="txtSearch" prefHeight="40.0" prefWidth="300.0" promptText="Nhập tên truyện cần tìm..." style="-fx-background-radius: 20; -fx-border-radius: 20;">
                     <font><Font size="13.0" /></font>
                 </TextField>
                 <Button fx:id="btnSearchBook" mnemonicParsing="false" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: #19345D; -fx-background-radius: 20; -fx-cursor: hand;" text="Tìm" textFill="WHITE">
@@ -46,7 +48,7 @@
 
                         <FlowPane fx:id="bookListContainer" hgap="15.0" vgap="15.0">
                             <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="5.0" />
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
                             </padding>
                         </FlowPane>
                     </children>

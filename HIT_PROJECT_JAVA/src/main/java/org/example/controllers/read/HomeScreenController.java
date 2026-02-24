@@ -145,7 +145,6 @@ public class HomeScreenController {
         }
     }
 
-
     private void setupSearch() {
         if (searchButton != null) searchButton.setOnAction(e -> handleSearch());
         if (searchTextField != null) searchTextField.setOnAction(e -> handleSearch());
@@ -160,14 +159,12 @@ public class HomeScreenController {
         if (controller != null) controller.initData("SEARCH", query, "Kết quả tìm kiếm: " + query);
     }
 
-
     private void setupBottomNavigation() {
         if (btnHome != null) {
             btnHome.setStyle(MessageConstant.BUTTON_COLOR);
             btnHome.setDisable(true);
         }
 
-        if (btnHome != null) btnHome.setOnAction(e -> SceneUtils.switchScene(btnHome, "/view/read/home_screen.fxml", MessageConstant.TITLE_HOME));
         if (btnHistory != null) btnHistory.setOnAction(e -> SceneUtils.switchScene(btnHistory, "/view/history/history_screen.fxml", MessageConstant.TITLE_HISTORY));
         if (btnFavorite != null) btnFavorite.setOnAction(e -> SceneUtils.switchScene(btnFavorite, "/view/favorite/favorite_screen.fxml", MessageConstant.TITLE_FAVORITE));
         if (btnAI != null) btnAI.setOnAction(e -> SceneUtils.switchScene(btnAI, "/view/chatbox/chat_box.fxml", MessageConstant.CHAT_AI_TITLE));
@@ -199,23 +196,43 @@ public class HomeScreenController {
 
         task.setOnSucceeded(e -> {
             List<ApiBookItem> books = task.getValue();
-            if (books != null) {
-                Platform.runLater(() -> {
-                    container.getChildren().clear();
+            Platform.runLater(() -> {
+                container.getChildren().clear();
+
+                if (books == null || books.isEmpty()) {
+                    Label emptyLabel = new Label(MessageConstant.MSG_EMPTY_DATA);
+                    emptyLabel.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic; -fx-padding: 20;");
+                    container.getChildren().add(emptyLabel);
+                } else {
                     try {
+                        int limit = 15;
+                        int count = 0;
                         for (ApiBookItem book : books) {
+                            if (count >= limit) break;
+
                             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/read/book_item.fxml"));
                             VBox card = loader.load();
                             BookItemController ctrl = loader.getController();
                             ctrl.setData(book);
                             container.getChildren().add(card);
+                            count++;
                         }
                     } catch (IOException ex) {
                         throw new AppException(MessageConstant.ERR_SYSTEM, ex);
                     }
-                });
-            }
+                }
+            });
         });
+
+        task.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                container.getChildren().clear();
+                Label errorLabel = new Label("Lỗi khi tải dữ liệu.");
+                errorLabel.setStyle("-fx-text-fill: red; -fx-padding: 20;");
+                container.getChildren().add(errorLabel);
+            });
+        });
+
         new Thread(task).start();
     }
 }

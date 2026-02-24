@@ -5,17 +5,32 @@ import com.google.gson.JsonSyntaxException;
 import org.example.api.ApiGet;
 import org.example.api.apiAll.*;
 import org.example.constant.MessageConstant;
+import org.example.dao.HiddenBookDAO;
 import org.example.exception.NetworkException;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class BookService {
 
     private final Gson gson = new Gson();
     private final String BASE_URL = "https://otruyenapi.com/v1/api";
+
+    private final HiddenBookDAO hiddenBookDAO = new HiddenBookDAO();
+    private List<ApiBookItem> filterHiddenBooks(List<ApiBookItem> books) {
+        if (books == null || books.isEmpty()) {
+            return books;
+        }
+        Set<String> hiddenSlugs = hiddenBookDAO.getAllHiddenSlugs();
+
+        books.removeIf(book -> hiddenSlugs.contains(book.getSlug()));
+
+        return books;
+    }
+
 
     public List<ApiCategory> getAllCategories() {
         String url = BASE_URL + "/the-loai";
@@ -33,19 +48,19 @@ public class BookService {
     }
 
     public List<ApiBookItem> getNewBooks(int page) {
-        return fetchBooks(BASE_URL + "/danh-sach/truyen-moi?page=" + page);
+        return filterHiddenBooks(fetchBooks(BASE_URL + "/danh-sach/truyen-moi?page=" + page));
     }
 
     public List<ApiBookItem> getCompletedBooks(int page) {
-        return fetchBooks(BASE_URL + "/danh-sach/hoan-thanh?page=" + page);
+        return filterHiddenBooks(fetchBooks(BASE_URL + "/danh-sach/hoan-thanh?page=" + page));
     }
 
     public List<ApiBookItem> getComingSoonBooks(int page) {
-        return fetchBooks(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page);
+        return filterHiddenBooks(fetchBooks(BASE_URL + "/danh-sach/sap-ra-mat?page=" + page));
     }
 
     public List<ApiBookItem> getBooksByCategory(String categorySlug, int page) {
-        return fetchBooks(BASE_URL + "/the-loai/" + categorySlug + "?page=" + page);
+        return filterHiddenBooks(fetchBooks(BASE_URL + "/the-loai/" + categorySlug + "?page=" + page));
     }
 
     private List<ApiBookItem> fetchBooks(String url) {
@@ -84,12 +99,14 @@ public class BookService {
 
             ApiSearchBookResponse res = gson.fromJson(json, ApiSearchBookResponse.class);
             if (res != null && res.getData() != null) {
-                return res.getData().getItems();
+                // Áp dụng bộ lọc cho kết quả tìm kiếm
+                return filterHiddenBooks(res.getData().getItems());
             }
             return Collections.emptyList();
 
         } catch (Exception e) {
-            throw new NetworkException(MessageConstant.ERR_SEARCH, e);
+            e.printStackTrace();
+            return Collections.emptyList();
         }
     }
 }
