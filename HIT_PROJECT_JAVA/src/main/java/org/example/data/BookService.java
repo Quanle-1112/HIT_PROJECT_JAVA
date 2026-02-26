@@ -99,7 +99,6 @@ public class BookService {
 
             ApiSearchBookResponse res = gson.fromJson(json, ApiSearchBookResponse.class);
             if (res != null && res.getData() != null) {
-                // Áp dụng bộ lọc cho kết quả tìm kiếm
                 return filterHiddenBooks(res.getData().getItems());
             }
             return Collections.emptyList();

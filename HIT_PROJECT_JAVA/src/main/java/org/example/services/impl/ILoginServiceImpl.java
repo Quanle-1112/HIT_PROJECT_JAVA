@@ -23,7 +23,7 @@ public class ILoginServiceImpl implements ILoginService {
             throw new AuthException(MessageConstant.LOGIN_FAIL);
         }
 
-        if ("BAN".equalsIgnoreCase(user.getStatus())) {
+        if ("BANNED".equalsIgnoreCase(user.getStatus())) {
             throw new AuthException(MessageConstant.ACCOUNT_LOCKED);
         }
 

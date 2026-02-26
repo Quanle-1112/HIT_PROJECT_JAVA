@@ -80,8 +80,7 @@ public class ChangePasswordController {
         };
 
         changePassTask.setOnSucceeded(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.UPDATE_SUCCESS, MessageConstant.CHANGE_PASS_SUCCESS);
-            closeWindow();
+            redirectToLogin();
         });
 
         changePassTask.setOnFailed(e -> {
@@ -100,5 +99,27 @@ public class ChangePasswordController {
     private void closeWindow() {
         Stage stage = (Stage) btnCancel.getScene().getWindow();
         stage.close();
+    }
+
+    private void redirectToLogin() {
+        SessionManager.getInstance().logout();
+
+        javafx.stage.Stage dialogStage = (javafx.stage.Stage) btnCancel.getScene().getWindow();
+        javafx.stage.Window owner = dialogStage.getOwner();
+
+        dialogStage.close();
+
+        if (owner instanceof javafx.stage.Stage) {
+            javafx.stage.Stage mainStage = (javafx.stage.Stage) owner;
+            try {
+                javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("/view/authentication/login.fxml"));
+                mainStage.setScene(new javafx.scene.Scene(root));
+                mainStage.setTitle(MessageConstant.TITLE_LOGIN);
+                mainStage.centerOnScreen();
+            } catch (java.io.IOException ex) {
+                ex.printStackTrace();
+                throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+            }
+        }
     }
 }

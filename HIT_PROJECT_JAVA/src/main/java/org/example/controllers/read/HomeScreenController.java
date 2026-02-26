@@ -62,7 +62,7 @@ public class HomeScreenController {
         if (categoryContainer != null) {
             loadDefaultCategories();
         } else {
-            System.err.println("LỖI: Không tìm thấy 'categoryContainer' trong FXML. Hãy kiểm tra fx:id.");
+            System.err.println(MessageConstant.ERROR_LABEL);
         }
 
         if (btnMoreCategory != null) {

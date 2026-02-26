@@ -19,29 +19,43 @@
                     <font>
                         <Font name="System Bold" size="22.0" />
                     </font>
-                </Label> <Button fx:id="btnClearAll" layoutX="345.0" layoutY="15.0" mnemonicParsing="false" style="-fx-background-color: #C0392B; -fx-background-radius: 15; -fx-cursor: hand;" text="Xóa tất cả" textFill="WHITE">
-                <font>
-                    <Font name="System Bold" size="12.0" />
-                </font>
-            </Button>
+                </Label>
+                <Button fx:id="btnClearAll" layoutX="345.0" layoutY="15.0" mnemonicParsing="false" prefHeight="30.0" style="-fx-background-color: #C0392B; -fx-background-radius: 15; -fx-cursor: hand;" text="Xóa tất cả" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="13.0" />
+                    </font>
+                </Button>
             </children>
         </AnchorPane>
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ECECE7; -fx-background-color: transparent;" BorderPane.alignment="CENTER">
-            <content>
-                <VBox fx:id="listContainer" alignment="TOP_CENTER" spacing="12.0">
-                    <padding>
-                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                    </padding>
-                </VBox>
-            </content>
-        </ScrollPane>
+        <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="statusLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Thông báo" textFill="#27ae60" visible="false">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets bottom="5.0" top="10.0" />
+                    </VBox.margin>
+                </Label>
+
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ECECE7; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="listContainer" spacing="10.0">
+                            <padding>
+                                <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                            </padding>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
     </center>
 
     <bottom>
-        <HBox alignment="CENTER" prefHeight="60.0" spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #DDDDDD; -fx-border-width: 1 0 0 0;" BorderPane.alignment="CENTER">
+        <HBox alignment="CENTER" prefHeight="60.0" prefWidth="450.0" spacing="10.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #DDDDDD; -fx-border-width: 1 0 0 0;" BorderPane.alignment="CENTER">
             <children>
                 <Button fx:id="btnHome" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Home" textFill="#19345d">
                     <font><Font name="System Bold" size="13.0" /></font>
@@ -52,11 +66,9 @@
                 <Button fx:id="btnFavorite" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Favorite" textFill="#19345d">
                     <font><Font name="System Bold" size="13.0" /></font>
                 </Button>
-            <Button fx:id="btnAI" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="ChatBox" textFill="#19345d">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font>
-            </Button>
+                <Button fx:id="btnAI" mnemonicParsing="false" prefHeight="40.0" prefWidth="80.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="ChatBox" textFill="#19345d">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Button>
                 <Button fx:id="btnAccount" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textFill="#19345d">
                     <font><Font name="System Bold" size="13.0" /></font>
                 </Button>

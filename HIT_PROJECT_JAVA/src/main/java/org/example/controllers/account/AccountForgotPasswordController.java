@@ -162,8 +162,7 @@ public class AccountForgotPasswordController {
         };
 
         saveTask.setOnSucceeded(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.UPDATE_SUCCESS, MessageConstant.CHANGE_PASS_SUCCESS);
-            closeDialog();
+            redirectToLogin();
         });
 
         saveTask.setOnFailed(e -> {
@@ -179,5 +178,27 @@ public class AccountForgotPasswordController {
     private void closeDialog() {
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
+    }
+
+    private void redirectToLogin() {
+        SessionManager.getInstance().logout();
+
+        Stage dialogStage = (Stage) btnClose.getScene().getWindow();
+        javafx.stage.Window owner = dialogStage.getOwner();
+
+        dialogStage.close();
+
+        if (owner instanceof Stage) {
+            Stage mainStage = (Stage) owner;
+            try {
+                javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource("/view/authentication/login.fxml"));
+                mainStage.setScene(new javafx.scene.Scene(root));
+                mainStage.setTitle(MessageConstant.TITLE_LOGIN);
+                mainStage.centerOnScreen();
+            } catch (java.io.IOException ex) {
+                ex.printStackTrace();
+                throw new AppException(MessageConstant.ERR_SYSTEM, ex);
+            }
+        }
     }
 }

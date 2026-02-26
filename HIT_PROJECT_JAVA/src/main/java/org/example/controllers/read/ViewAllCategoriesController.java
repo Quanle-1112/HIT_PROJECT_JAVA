@@ -69,17 +69,17 @@ public class ViewAllCategoriesController {
         for (ApiCategory cat : categories) {
             Button btn = new Button(cat.getName());
 
-            btn.setStyle("-fx-background-color: WHITE; -fx-border-color: #19345D; -fx-border-radius: 20; -fx-background-radius: 20; -fx-cursor: hand;");
+            btn.setStyle(MessageConstant.COLOR_11);
             btn.setTextFill(javafx.scene.paint.Color.web("#19345D"));
             btn.setFont(Font.font("System", FontWeight.BOLD, 13));
             btn.setPadding(new Insets(8, 15, 8, 15));
 
             btn.setOnMouseEntered(e -> {
-                btn.setStyle("-fx-background-color: #19345D; -fx-border-color: #19345D; -fx-border-radius: 20; -fx-background-radius: 20; -fx-cursor: hand;");
+                btn.setStyle(MessageConstant.COLOR_11);
                 btn.setTextFill(javafx.scene.paint.Color.WHITE);
             });
             btn.setOnMouseExited(e -> {
-                btn.setStyle("-fx-background-color: WHITE; -fx-border-color: #19345D; -fx-border-radius: 20; -fx-background-radius: 20; -fx-cursor: hand;");
+                btn.setStyle(MessageConstant.COLOR_11);
                 btn.setTextFill(javafx.scene.paint.Color.web("#19345D"));
             });
 

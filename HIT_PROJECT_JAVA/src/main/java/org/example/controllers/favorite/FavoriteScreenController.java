@@ -102,7 +102,7 @@ public class FavoriteScreenController {
 
     private void showEmptyMessage(String message) {
         Label label = new Label(message);
-        label.setStyle("-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20; -fx-font-style: italic;");
+        label.setStyle(MessageConstant.COLOR_9);
         listContainer.getChildren().add(label);
     }
 

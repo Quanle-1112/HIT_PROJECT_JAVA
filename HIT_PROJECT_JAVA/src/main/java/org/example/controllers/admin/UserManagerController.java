@@ -82,10 +82,10 @@ public class UserManagerController {
                             User user = getTableView().getItems().get(getIndex());
 
                             if ("BAN".equalsIgnoreCase(user.getStatus())) {
-                                btnAction.setText("Mở khóa");
+                                btnAction.setText(MessageConstant.NO_LOCK);
                                 btnAction.setStyle(MessageConstant.COLOR_7);
                             } else {
-                                btnAction.setText("Khóa");
+                                btnAction.setText(MessageConstant.LOCK);
                                 btnAction.setStyle(MessageConstant.COLOR_8);
                             }
 
@@ -152,7 +152,7 @@ public class UserManagerController {
         }
 
         boolean isBanning = "ACTIVE".equalsIgnoreCase(user.getStatus());
-        String newStatus = isBanning ? "BAN" : "ACTIVE";
+        String newStatus = isBanning ? "BANNED" : "ACTIVE";
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/confirm_action_dialog.fxml"));
@@ -179,13 +179,13 @@ public class UserManagerController {
                     user.setStatus(newStatus);
                     tableUsers.refresh();
 
-                    String msg = "Đã cập nhật trạng thái thành công.";
-                    if (isBanning && blacklistUpdated) msg += "\nEmail đã được thêm vào Blacklist.";
-                    if (!isBanning && blacklistUpdated) msg += "\nEmail đã được gỡ khỏi Blacklist.";
+                    String msg = MessageConstant.UPDATE_COMPLETE;
+                    if (isBanning && blacklistUpdated) msg += MessageConstant.ADD_EMAIL_IN_BLACK_LIST;
+                    if (!isBanning && blacklistUpdated) msg += MessageConstant.REMOVE_EMAIL_IN_BLACK_LIST;
 
-                    UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, "Thành công", msg);
+                    UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.SUCCESS, msg);
                 } else {
-                    UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", "Thao tác thất bại. Vui lòng thử lại.");
+                    UIExceptionHandler.showAlert(Alert.AlertType.ERROR, MessageConstant.ERROR, MessageConstant.OPERATION_FAILED);
                 }
             });
 
