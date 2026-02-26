@@ -35,6 +35,7 @@ public class MessageConstant {
     public static final String OTP_RESEND_FAIL = "Gửi lại thất bại. Vui lòng thử lại sau.";
     public static final String OTP_INVALID = "Mã OTP không chính xác.";
     public static final String OTP_EXPIRED = "Mã OTP đã hết hạn. Vui Lòng gửi lại!";
+    public static final String CONFIRM_COMPLETE = "Xác thực thành công. Nhập mật khẩu mới.";
 
     public static final String VALIDATION_NAME_EMPTY = "Tên không được để trống!";
     public static final String VALIDATION_NAME_SHORT = "Tên quá ngắn!";
@@ -63,6 +64,24 @@ public class MessageConstant {
     public static final String HISTORY_LOGIN_REQ = "Vui lòng đăng nhập để xem lịch sử.";
     public static final String SEARCH_NO_RESULT = "Không tìm thấy truyện nào.";
     public static final String LIST_END_DATA = "Không còn dữ liệu hoặc đã hết trang.";
+    public static final String HELLO = "Xin chào, ";
+    public static final String LOCK_ACCOUNT = "Khóa tài khoản: ";
+    public static final String LOCK_ACCOUNT_1 = "Khóa tài khoản";
+    public static final String UN_LOCK_ACCOUNT = "Mở khóa tài khoản: ";
+    public static final String COLOR_1 = "#d32f2f";
+    public static final String EMAIL = "Email ";
+    public static final String EMAIL_BLOCK = " sẽ bị thêm vào danh sách đen (Blacklist).";
+    public static final String COLOR_2 = "-fx-background-color: #d32f2f; -fx-background-radius: 5; -fx-cursor: hand;";
+    public static final String COLOR_3 = "#27ae60";
+    public static final String COLOR_4 = "-fx-background-color: #27ae60; -fx-background-radius: 5; -fx-cursor: hand;";
+    public static final String COLOR_5 = "-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);";
+    public static final String COLOR_6 = "-fx-font-weight: bold; -fx-text-fill: #19345d; -fx-alignment: center;";
+    public static final String COLOR_7 = "-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;";
+    public static final String COLOR_8 = "-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;";
+    public static final String REMOVE_FROM_BLACKLIST = "Email sẽ được gỡ khỏi danh sách đen.";
+    public static final String UN_LOCK = "Mở khóa";
+    public static final String NEW_USER = "Người dùng mới đăng ký";
+    public static final String CATEGORY_COMIC = "Phân bố thể loại truyện";
 
     public static final String ERR_NETWORK = "Lỗi kết nối mạng hoặc API!";
     public static final String ERR_SYSTEM = "Đã xảy ra lỗi không mong muốn!";
@@ -75,15 +94,24 @@ public class MessageConstant {
     public static final String TITLE_VIEW_ALL_COMPLETED = "Danh sách truyện - Đã hoàn thành";
     public static final String TITLE_VIEW_ALL_COMING = "Danh sách truyện - Sắp ra mắt";
     public static final String TITLE_ALL_CATEGORIES = "Tất cả thể loại";
+    public static final String TITLE_APP = "WOWTruyen - Welcome";
+    public static final String TITLE_ADMIN = "Admin Dashboard";
 
     public static final String ACCOUNT_LOCKED = "Tài khoản của bạn đã bị khóa!";
     public static final String READ_FIRST = "Đọc từ đầu";
     public static final String OTHER_NAME = "Tên khác: ";
     public static final String OTHER_AUTHOR = "Tác giả: Đang cập nhật";
     public static final String READ_MORE = "Đọc tiếp: ";
+    public static final String SAVE = "Lưu thay đổi";
+    public static final String LOADING_SEARCH = "Đang tìm kiếm...";
+    public static final String CONNECT_ERROR = "Không tìm thấy kết quả hoặc lỗi mạng.";
+    public static final String SEARCH_COMIC_ERROR = "Không có truyện nào trùng khớp.";
 
     public static final String ERR_API_EMPTY = "Dữ liệu từ máy chủ rỗng.";
     public static final String ERR_API_FORMAT = "Dữ liệu từ máy chủ không đúng định dạng.";
+    public static final String API_ERROR = "Lỗi khi tải dữ liệu từ API.";
+    public static final String HIDDEN = "Đang Ẩn";
+    public static final String NO_HIDDEN = "Đang Hiện";
 
     public static final String ERR_DB_QUERY = "Lỗi truy vấn dữ liệu.";
     public static final String ERR_DB_SAVE = "Không thể lưu dữ liệu vào hệ thống.";
@@ -99,6 +127,7 @@ public class MessageConstant {
 
     public static final String MSG_LOADING = "Đang tải dữ liệu...";
     public static final String MSG_EMPTY_DATA = "Không có dữ liệu.";
+    public static final String LOADING_LIST_COMIC = "Đang tải danh sách truyện từ hệ thống...";
 
     public static final String CHAT_USER_TITLE = "Bạn";
     public static final String CHAT_AI_TITLE = "Gemini AI";
@@ -112,6 +141,8 @@ public class MessageConstant {
     public static final String ERR_SEARCH_EMPTY = "Vui lòng nhập từ khóa tìm kiếm.";
     public static final String MSG_ADDED_FAVORITE = "Đã thêm vào yêu thích.";
     public static final String MSG_REMOVED_FAVORITE = "Đã xóa khỏi yêu thích.";
+    public static final String CONFIRM_DELETE = "XÁC NHẬN XÓA";
+
 
     public static final String GEMINI_API_KEY = "AIzaSyB0fhDXOdzSs7DzYo8MSFY3zRXTN6Pt9xg";
     public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=";

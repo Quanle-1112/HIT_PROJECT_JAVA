@@ -163,7 +163,7 @@ public class AccountScreenController {
 
     private void handleLogout() {
         SessionManager.getInstance().logout();
-        SceneUtils.openNewWindow("/view/read/start_screen.fxml", "WOWTruyen - Welcome", btnLogout);
+        SceneUtils.openNewWindow("/view/read/start_screen.fxml", MessageConstant.TITLE_APP, btnLogout);
     }
 
     private void setupNavigation() {

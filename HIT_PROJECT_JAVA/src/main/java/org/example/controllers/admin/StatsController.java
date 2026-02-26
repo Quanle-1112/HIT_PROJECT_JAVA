@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import org.example.api.apiAll.ApiCategory;
+import org.example.constant.MessageConstant;
 import org.example.dao.AdminDAO;
 import org.example.data.BookService;
 import org.example.utils.SceneUtils;
@@ -25,7 +26,7 @@ public class StatsController {
     @FXML
     public void initialize() {
         btnBack.setOnAction(e ->
-                SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", "Admin Dashboard")
+                SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", MessageConstant.TITLE_ADMIN)
         );
 
         loadStatsData();
@@ -39,7 +40,7 @@ public class StatsController {
                 int hiddenBooks = adminDAO.countHiddenBooks();
 
                 XYChart.Series<String, Number> series = new XYChart.Series<>();
-                series.setName("Người dùng mới đăng ký");
+                series.setName(MessageConstant.NEW_USER);
 
                 series.getData().add(new XYChart.Data<>("Tháng 10", totalUsers * 0.1));
                 series.getData().add(new XYChart.Data<>("Tháng 11", totalUsers * 0.2));
@@ -75,7 +76,7 @@ public class StatsController {
             }
 
             chartCategory.setData(pieData);
-            chartCategory.setTitle("Phân bố thể loại truyện");
+            chartCategory.setTitle(MessageConstant.CATEGORY_COMIC);
         });
 
         new Thread(taskCategory).start();

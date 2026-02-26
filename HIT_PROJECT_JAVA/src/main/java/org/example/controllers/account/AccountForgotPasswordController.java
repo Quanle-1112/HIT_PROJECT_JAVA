@@ -114,7 +114,7 @@ public class AccountForgotPasswordController {
         };
 
         verifyTask.setOnSucceeded(e -> {
-            lblStatus.setText("Xác thực thành công. Nhập mật khẩu mới.");
+            lblStatus.setText(MessageConstant.CONFIRM_COMPLETE);
             lblStatus.setStyle(MessageConstant.BACKGROUND_COLOR);
 
             txtOtp.setDisable(true);

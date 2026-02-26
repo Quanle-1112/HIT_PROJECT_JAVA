@@ -20,7 +20,7 @@ public class AdminDashboardController {
     @FXML
     public void initialize() {
         if (SessionManager.getInstance().getCurrentUser() != null) {
-            lblAdminName.setText("Xin chào, " + SessionManager.getInstance().getCurrentUser().getFullName());
+            lblAdminName.setText(MessageConstant.HELLO + SessionManager.getInstance().getCurrentUser().getFullName());
         }
 
         cardUserManager.setOnMouseClicked(e ->

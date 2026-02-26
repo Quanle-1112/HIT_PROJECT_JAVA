@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Role;
@@ -49,7 +50,7 @@ public class UserManagerController {
         setupSearch();
 
         btnBack.setOnAction(e ->
-                SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", "Admin Dashboard")
+                SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", MessageConstant.TITLE_ADMIN)
         );
     }
 
@@ -82,10 +83,10 @@ public class UserManagerController {
 
                             if ("BAN".equalsIgnoreCase(user.getStatus())) {
                                 btnAction.setText("Mở khóa");
-                                btnAction.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+                                btnAction.setStyle(MessageConstant.COLOR_7);
                             } else {
                                 btnAction.setText("Khóa");
-                                btnAction.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+                                btnAction.setStyle(MessageConstant.COLOR_8);
                             }
 
                             if (user.getRole() == Role.ADMIN) {
@@ -125,7 +126,6 @@ public class UserManagerController {
         });
 
         loadTask.setOnFailed(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách người dùng.");
         });
 
         new Thread(loadTask).start();
@@ -148,7 +148,6 @@ public class UserManagerController {
 
     private void toggleUserStatus(User user) {
         if (user.getRole() == Role.ADMIN) {
-            UIExceptionHandler.showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Không thể khóa tài khoản Admin.");
             return;
         }
 
@@ -197,7 +196,6 @@ public class UserManagerController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở giao diện xác nhận.");
         }
     }
 }

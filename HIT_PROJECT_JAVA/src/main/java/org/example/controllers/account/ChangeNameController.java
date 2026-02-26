@@ -70,7 +70,7 @@ public class ChangeNameController {
 
         saveTask.setOnFailed(e -> {
             btnSave.setDisable(false);
-            btnSave.setText("Lưu thay đổi");
+            btnSave.setText(MessageConstant.SAVE);
 
             Throwable ex = saveTask.getException();
             UIExceptionHandler.showError(errorLabel, ex.getMessage());
