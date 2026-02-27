@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.admin.StatsController">
+<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.admin.StatsController">
     <children>
         <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -46,7 +46,7 @@
                                 </VBox>
                                 <VBox alignment="CENTER" prefHeight="100.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Label text="Tổng Truyện" textFill="#7f8c8d" />
+                                        <Label text="Truyện đã ẩn" textFill="#7f8c8d" />
                                         <Label fx:id="lblTotalBooks" text="560" textFill="#27ae60">
                                             <font><Font name="System Bold" size="24.0" /></font>
                                         </Label>

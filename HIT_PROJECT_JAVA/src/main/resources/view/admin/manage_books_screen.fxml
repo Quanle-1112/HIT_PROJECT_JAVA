@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.admin.ManageBooksController">
+<AnchorPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.admin.ManageBooksController">
     <children>
         <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -37,11 +37,25 @@
             </children>
         </HBox>
 
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" layoutY="130.0" prefHeight="670.0" prefWidth="450.0" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="130.0">
+        <HBox alignment="CENTER" layoutY="125.0" prefHeight="40.0" prefWidth="450.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Button fx:id="btnPrevPage" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-cursor: hand; -fx-background-radius: 5;" text="&lt;&lt; Trang Trước" textFill="WHITE">
+                    <font><Font name="System Bold" size="12.0" /></font>
+                </Button>
+                <Button fx:id="btnNextPage" mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-cursor: hand; -fx-background-radius: 5;" text="Trang Sau &gt;&gt;" textFill="WHITE">
+                    <font><Font name="System Bold" size="12.0" /></font>
+                </Button>
+                <Button fx:id="btnHiddenList" mnemonicParsing="false" style="-fx-background-color: #e74c3c; -fx-cursor: hand; -fx-background-radius: 5;" text="Danh Sách Đã Ẩn" textFill="WHITE">
+                    <font><Font name="System Bold" size="12.0" /></font>
+                </Button>
+            </children>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" layoutY="175.0" prefHeight="625.0" prefWidth="450.0" style="-fx-background-color: transparent; -fx-background: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="175.0">
             <content>
                 <VBox>
                     <children>
-                        <Label text="Kết quả tìm kiếm:" textFill="#7f8c8d">
+                        <Label fx:id="lblStatus" text="Kết quả hiển thị:" textFill="#7f8c8d">
                             <font><Font name="System Italic" size="12.0" /></font>
                             <VBox.margin><Insets bottom="10.0" left="20.0" /></VBox.margin>
                         </Label>

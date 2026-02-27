@@ -1,11 +1,13 @@
 package org.example.controllers.admin;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import org.example.api.apiAll.ApiCategory;
 import org.example.constant.MessageConstant;
 import org.example.dao.AdminDAO;
@@ -19,6 +21,9 @@ public class StatsController {
     @FXML private Button btnBack;
     @FXML private BarChart<String, Number> chartUserGrowth;
     @FXML private PieChart chartCategory;
+
+    @FXML private Label lblTotalUsers;
+    @FXML private Label lblTotalBooks;
 
     private final AdminDAO adminDAO = new AdminDAO();
     private final BookService bookService = new BookService();
@@ -47,9 +52,18 @@ public class StatsController {
                 series.getData().add(new XYChart.Data<>("Tháng 12", totalUsers * 0.3));
                 series.getData().add(new XYChart.Data<>("Hiện tại", totalUsers));
 
-                javafx.application.Platform.runLater(() -> {
-                    chartUserGrowth.getData().clear();
-                    chartUserGrowth.getData().add(series);
+                Platform.runLater(() -> {
+                    if (chartUserGrowth != null) {
+                        chartUserGrowth.getData().clear();
+                        chartUserGrowth.getData().add(series);
+                    }
+
+                    if (lblTotalUsers != null) {
+                        lblTotalUsers.setText(String.valueOf(totalUsers));
+                    }
+                    if (lblTotalBooks != null) {
+                        lblTotalBooks.setText(String.valueOf(hiddenBooks));
+                    }
                 });
                 return null;
             }
@@ -75,8 +89,10 @@ public class StatsController {
                 pieData.add(new PieChart.Data("Khác", 25));
             }
 
-            chartCategory.setData(pieData);
-            chartCategory.setTitle(MessageConstant.CATEGORY_COMIC);
+            if (chartCategory != null) {
+                chartCategory.setData(pieData);
+                chartCategory.setTitle(MessageConstant.CATEGORY_COMIC);
+            }
         });
 
         new Thread(taskCategory).start();
