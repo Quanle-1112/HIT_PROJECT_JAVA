@@ -12,6 +12,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import org.example.api.apiAll.ApiBookItem;
+import org.example.constant.MessageConstant;
 import org.example.dao.HiddenBookDAO;
 import org.example.data.BookService;
 import org.example.utils.ImageLoaderGlobal;
@@ -32,7 +33,7 @@ public class ManageBooksController {
 
     @FXML
     public void initialize() {
-        btnBack.setOnAction(e -> SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", "Admin Dashboard"));
+        btnBack.setOnAction(e -> SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", MessageConstant.TITLE_ADMIN));
 
         btnSearchBook.setOnAction(e -> {
             String query = txtSearch.getText().trim();
@@ -46,7 +47,7 @@ public class ManageBooksController {
 
     private void loadDefaultBooks() {
         bookListContainer.getChildren().clear();
-        bookListContainer.getChildren().add(new Label("Đang tải danh sách truyện từ hệ thống..."));
+        bookListContainer.getChildren().add(new Label(MessageConstant.LOADING_LIST_COMIC));
 
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
@@ -58,7 +59,7 @@ public class ManageBooksController {
         task.setOnSucceeded(e -> displayBooks(task.getValue()));
         task.setOnFailed(e -> {
             bookListContainer.getChildren().clear();
-            bookListContainer.getChildren().add(new Label("Lỗi khi tải dữ liệu từ API."));
+            bookListContainer.getChildren().add(new Label(MessageConstant.API_ERROR));
         });
 
         new Thread(task).start();
@@ -66,7 +67,7 @@ public class ManageBooksController {
 
     private void searchAndDisplayBooks(String keyword) {
         bookListContainer.getChildren().clear();
-        bookListContainer.getChildren().add(new Label("Đang tìm kiếm..."));
+        bookListContainer.getChildren().add(new Label(MessageConstant.LOADING_SEARCH));
 
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
@@ -78,7 +79,7 @@ public class ManageBooksController {
         task.setOnSucceeded(e -> displayBooks(task.getValue()));
         task.setOnFailed(e -> {
             bookListContainer.getChildren().clear();
-            bookListContainer.getChildren().add(new Label("Không tìm thấy kết quả hoặc lỗi mạng."));
+            bookListContainer.getChildren().add(new Label(MessageConstant.CONNECT_ERROR));
         });
 
         new Thread(task).start();
@@ -88,7 +89,7 @@ public class ManageBooksController {
         bookListContainer.getChildren().clear();
 
         if (books == null || books.isEmpty()) {
-            bookListContainer.getChildren().add(new Label("Không có truyện nào trùng khớp."));
+            bookListContainer.getChildren().add(new Label(MessageConstant.SEARCH_COMIC_ERROR));
             return;
         }
 
@@ -105,7 +106,7 @@ public class ManageBooksController {
         VBox card = new VBox(8);
         card.setAlignment(Pos.TOP_CENTER);
         card.setPrefWidth(120);
-        card.setStyle("-fx-background-color: white; -fx-padding: 10; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);");
+        card.setStyle(MessageConstant.COLOR_5);
 
         ImageView imageView = new ImageView();
         imageView.setFitWidth(100);
@@ -116,7 +117,7 @@ public class ManageBooksController {
         ImageLoaderGlobal.setImage("https://img.otruyenapi.com/uploads/comics/" + book.getThumbUrl(), imageView);
 
         Label lblName = new Label(book.getName());
-        lblName.setStyle("-fx-font-weight: bold; -fx-text-fill: #19345d; -fx-alignment: center;");
+        lblName.setStyle(MessageConstant.COLOR_6);
         lblName.setMaxWidth(100);
         lblName.setWrapText(true);
         lblName.setPrefHeight(40);
@@ -144,11 +145,11 @@ public class ManageBooksController {
 
     private void updateButtonStyle(Button btn, boolean isHidden) {
         if (isHidden) {
-            btn.setText("Đang Ẩn");
-            btn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+            btn.setText(MessageConstant.HIDDEN);
+            btn.setStyle(MessageConstant.COLOR_7);
         } else {
-            btn.setText("Đang Hiện");
-            btn.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+            btn.setText(MessageConstant.NO_HIDDEN);
+            btn.setStyle(MessageConstant.COLOR_8);
         }
     }
 }

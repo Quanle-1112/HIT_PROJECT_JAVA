@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
 import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Role;
@@ -49,7 +50,7 @@ public class UserManagerController {
         setupSearch();
 
         btnBack.setOnAction(e ->
-                SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", "Admin Dashboard")
+                SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", MessageConstant.TITLE_ADMIN)
         );
     }
 
@@ -81,11 +82,11 @@ public class UserManagerController {
                             User user = getTableView().getItems().get(getIndex());
 
                             if ("BAN".equalsIgnoreCase(user.getStatus())) {
-                                btnAction.setText("Mở khóa");
-                                btnAction.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+                                btnAction.setText(MessageConstant.NO_LOCK);
+                                btnAction.setStyle(MessageConstant.COLOR_7);
                             } else {
-                                btnAction.setText("Khóa");
-                                btnAction.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+                                btnAction.setText(MessageConstant.LOCK);
+                                btnAction.setStyle(MessageConstant.COLOR_8);
                             }
 
                             if (user.getRole() == Role.ADMIN) {
@@ -125,7 +126,6 @@ public class UserManagerController {
         });
 
         loadTask.setOnFailed(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách người dùng.");
         });
 
         new Thread(loadTask).start();
@@ -148,12 +148,11 @@ public class UserManagerController {
 
     private void toggleUserStatus(User user) {
         if (user.getRole() == Role.ADMIN) {
-            UIExceptionHandler.showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Không thể khóa tài khoản Admin.");
             return;
         }
 
         boolean isBanning = "ACTIVE".equalsIgnoreCase(user.getStatus());
-        String newStatus = isBanning ? "BAN" : "ACTIVE";
+        String newStatus = isBanning ? "BANNED" : "ACTIVE";
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/admin/confirm_action_dialog.fxml"));
@@ -180,13 +179,13 @@ public class UserManagerController {
                     user.setStatus(newStatus);
                     tableUsers.refresh();
 
-                    String msg = "Đã cập nhật trạng thái thành công.";
-                    if (isBanning && blacklistUpdated) msg += "\nEmail đã được thêm vào Blacklist.";
-                    if (!isBanning && blacklistUpdated) msg += "\nEmail đã được gỡ khỏi Blacklist.";
+                    String msg = MessageConstant.UPDATE_COMPLETE;
+                    if (isBanning && blacklistUpdated) msg += MessageConstant.ADD_EMAIL_IN_BLACK_LIST;
+                    if (!isBanning && blacklistUpdated) msg += MessageConstant.REMOVE_EMAIL_IN_BLACK_LIST;
 
-                    UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, "Thành công", msg);
+                    UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.SUCCESS, msg);
                 } else {
-                    UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", "Thao tác thất bại. Vui lòng thử lại.");
+                    UIExceptionHandler.showAlert(Alert.AlertType.ERROR, MessageConstant.ERROR, MessageConstant.OPERATION_FAILED);
                 }
             });
 
@@ -197,7 +196,6 @@ public class UserManagerController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            UIExceptionHandler.showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở giao diện xác nhận.");
         }
     }
 }

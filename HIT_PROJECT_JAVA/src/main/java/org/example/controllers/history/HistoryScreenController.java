@@ -121,9 +121,11 @@ public class HistoryScreenController {
             showEmptyMessage(MessageConstant.HISTORY_EMPTY);
             if (btnClearAll != null) btnClearAll.setDisable(true);
 
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION,
-                    "Thành công",
-                    "Đã xóa toàn bộ lịch sử đọc.");
+            if (statusLabel != null) {
+                statusLabel.setText(MessageConstant.DELETE_HISTORY_LIST);
+                statusLabel.setStyle(MessageConstant.COLOR_DELETE_HISTORY_LIST);
+                statusLabel.setVisible(true);
+            }
         });
 
         task.setOnFailed(e -> {
@@ -142,7 +144,7 @@ public class HistoryScreenController {
 
     private void showEmptyMessage(String message) {
         Label label = new Label(message);
-        label.setStyle("-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20; -fx-font-style: italic;");
+        label.setStyle(MessageConstant.COLOR_9);
         listContainer.getChildren().add(label);
     }
 

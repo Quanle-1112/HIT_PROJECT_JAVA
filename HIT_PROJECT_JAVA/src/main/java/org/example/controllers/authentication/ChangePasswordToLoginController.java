@@ -58,7 +58,6 @@ public class ChangePasswordToLoginController {
         };
 
         updateTask.setOnSucceeded(e -> {
-            UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.REGISTER_SUCCESS, MessageConstant.CHANGE_PASS_SUCCESS);
             SceneUtils.switchScene(updateButton, "/view/authentication/login.fxml", MessageConstant.TITLE_LOGIN);
         });
 

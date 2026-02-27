@@ -96,7 +96,7 @@ public class LoginController {
                 SceneUtils.switchScene(
                         loginButton,
                         "/view/admin/admin_dashboard.fxml",
-                        "WOWTruyen - Administrator"
+                        MessageConstant.TITLE_ADMIN
                 );
             } else {
                 if (user.isFirstLogin()) {

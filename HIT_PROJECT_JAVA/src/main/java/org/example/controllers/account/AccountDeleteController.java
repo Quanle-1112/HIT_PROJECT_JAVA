@@ -117,7 +117,7 @@ public class AccountDeleteController {
 
         deleteTask.setOnFailed(e -> {
             btnConfirmDelete.setDisable(false);
-            btnConfirmDelete.setText("XÁC NHẬN XÓA");
+            btnConfirmDelete.setText(MessageConstant.CONFIRM_DELETE);
 
             Throwable ex = deleteTask.getException();
             UIExceptionHandler.showError(lblStatus, ex.getMessage());
@@ -140,7 +140,7 @@ public class AccountDeleteController {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/view/read/start_screen.fxml"));
                 mainStage.setScene(new Scene(root));
-                mainStage.setTitle("WOWTruyen - Welcome");
+                mainStage.setTitle(MessageConstant.TITLE_APP);
                 mainStage.centerOnScreen();
             } catch (IOException e) {
                 throw new AppException(MessageConstant.ERR_SYSTEM, e);

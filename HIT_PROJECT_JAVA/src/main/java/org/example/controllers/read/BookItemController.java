@@ -31,7 +31,7 @@ public class BookItemController {
         if (book.getChaptersLatest() != null && !book.getChaptersLatest().isEmpty()) {
             chapterLabel.setText("Chap " + book.getChaptersLatest().get(0).getChapter_name());
         } else {
-            chapterLabel.setText("Đang cập nhật");
+            chapterLabel.setText(MessageConstant.UPDATE_LOADING);
         }
 
         String imgUrl = IMAGE_BASE_URL + book.getThumbUrl();

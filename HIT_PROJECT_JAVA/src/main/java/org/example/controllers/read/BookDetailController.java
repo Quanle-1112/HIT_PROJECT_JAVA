@@ -216,10 +216,10 @@ public class BookDetailController {
             boolean isFav = favoriteTask.getValue();
             if (isFav) {
                 favoriteButton.setText("❤");
-                favoriteButton.setStyle("-fx-background-color: #FADBD8; -fx-text-fill: #E74C3C; -fx-border-color: #E74C3C; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand;");
+                favoriteButton.setStyle(MessageConstant.BUTTON_LIKE);
             } else {
                 favoriteButton.setText("♡");
-                favoriteButton.setStyle("-fx-background-color: #FFFFFF; -fx-text-fill: #E74C3C; -fx-border-color: #E0E0E0; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand;");
+                favoriteButton.setStyle(MessageConstant.BUTTON_NO_LIKE);
             }
         });
 
@@ -323,7 +323,7 @@ public class BookDetailController {
 
             Button btn = new Button(chap.getChapterName());
             btn.setMaxWidth(Double.MAX_VALUE);
-            btn.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;");
+            btn.setStyle(MessageConstant.COLOR_10);
             btn.setPadding(new javafx.geometry.Insets(8, 10, 8, 10));
             btn.setOnAction(e -> openChapterReading(chap, finalIndex));
             chapterListContainer.getChildren().add(btn);
