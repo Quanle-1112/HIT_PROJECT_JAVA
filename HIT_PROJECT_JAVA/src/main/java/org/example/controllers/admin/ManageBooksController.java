@@ -27,69 +27,138 @@ public class ManageBooksController {
     @FXML private TextField txtSearch;
     @FXML private Button btnSearchBook;
     @FXML private FlowPane bookListContainer;
+    @FXML private Label lblStatus;
+
+    @FXML private Button btnPrevPage;
+    @FXML private Button btnNextPage;
+    @FXML private Button btnHiddenList;
 
     private final BookService bookService = new BookService();
     private final HiddenBookDAO hiddenBookDAO = new HiddenBookDAO();
 
+    private int currentPage = 1;
+    private String currentKeyword = "";
+    private boolean isViewingHidden = false;
+
     @FXML
     public void initialize() {
-        btnBack.setOnAction(e -> SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", MessageConstant.TITLE_ADMIN));
+        btnBack.setOnAction(e -> SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", "Admin Dashboard"));
 
         btnSearchBook.setOnAction(e -> {
-            String query = txtSearch.getText().trim();
-            if (!query.isEmpty()) {
-                searchAndDisplayBooks(query);
+            currentKeyword = txtSearch.getText().trim();
+            currentPage = 1;
+            isViewingHidden = false;
+            if (!currentKeyword.isEmpty()) {
+                searchAndDisplayBooks();
+            } else {
+                loadDefaultBooks();
             }
+        });
+
+        btnPrevPage.setOnAction(e -> {
+            if (currentPage > 1 && !isViewingHidden) {
+                currentPage--;
+                reloadCurrentState();
+            }
+        });
+
+        btnNextPage.setOnAction(e -> {
+            if (!isViewingHidden) {
+                currentPage++;
+                reloadCurrentState();
+            }
+        });
+
+        btnHiddenList.setOnAction(e -> {
+            isViewingHidden = true;
+            txtSearch.clear();
+            currentKeyword = "";
+            loadHiddenBooksOnly();
         });
 
         loadDefaultBooks();
     }
 
+    private void reloadCurrentState() {
+        if (currentKeyword.isEmpty()) {
+            loadDefaultBooks();
+        } else {
+            searchAndDisplayBooks();
+        }
+    }
+
     private void loadDefaultBooks() {
+        updateStatusLabel(MessageConstant.LOADING_PAGE_COMIC + currentPage + ")...");
         bookListContainer.getChildren().clear();
-        bookListContainer.getChildren().add(new Label(MessageConstant.LOADING_LIST_COMIC));
 
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
             protected List<ApiBookItem> call() throws Exception {
-                return bookService.getNewBooks(1);
+                return bookService.getNewBooks(currentPage);
             }
         };
 
-        task.setOnSucceeded(e -> displayBooks(task.getValue()));
-        task.setOnFailed(e -> {
-            bookListContainer.getChildren().clear();
-            bookListContainer.getChildren().add(new Label(MessageConstant.API_ERROR));
-        });
+        task.setOnSucceeded(e -> displayBooks(task.getValue(), MessageConstant.LIST_COMIC + currentPage));
+        task.setOnFailed(e -> showErrorMessage(MessageConstant.API_ERROR_CALL));
 
         new Thread(task).start();
     }
 
-    private void searchAndDisplayBooks(String keyword) {
+    private void searchAndDisplayBooks() {
+        updateStatusLabel(MessageConstant.SEARCH_LOADING + currentKeyword + "' (Trang " + currentPage + ")...");
         bookListContainer.getChildren().clear();
-        bookListContainer.getChildren().add(new Label(MessageConstant.LOADING_SEARCH));
 
         Task<List<ApiBookItem>> task = new Task<>() {
             @Override
             protected List<ApiBookItem> call() throws Exception {
-                return bookService.searchBooks(keyword, 1);
+                return bookService.searchBooks(currentKeyword, currentPage);
             }
         };
 
-        task.setOnSucceeded(e -> displayBooks(task.getValue()));
-        task.setOnFailed(e -> {
-            bookListContainer.getChildren().clear();
-            bookListContainer.getChildren().add(new Label(MessageConstant.CONNECT_ERROR));
-        });
+        task.setOnSucceeded(e -> displayBooks(task.getValue(), MessageConstant.SEARCH_RESULT + currentKeyword));
+        task.setOnFailed(e -> showErrorMessage(MessageConstant.ERROR_SEARCH_OR_CONNECT_WIFI));
 
         new Thread(task).start();
     }
 
-    private void displayBooks(List<ApiBookItem> books) {
+    private void loadHiddenBooksOnly() {
+        updateStatusLabel(MessageConstant.UPDATE_STATUS);
+        bookListContainer.getChildren().clear();
+
+        Task<List<ApiBookItem>> task = new Task<>() {
+            @Override
+            protected List<ApiBookItem> call() throws Exception {
+                return hiddenBookDAO.getAllHiddenBooksForAdmin();
+            }
+        };
+
+        task.setOnSucceeded(e -> displayBooks(task.getValue(), MessageConstant.LIST_COMIC_HIDDEN));
+        task.setOnFailed(e -> showErrorMessage(MessageConstant.CALL_DATABASE_ERROR));
+
+        new Thread(task).start();
+    }
+
+    private void showErrorMessage(String msg) {
+        bookListContainer.getChildren().clear();
+        updateStatusLabel(msg);
+        lblStatus.setStyle(MessageConstant.COLOR_14);
+    }
+
+    private void updateStatusLabel(String text) {
+        Platform.runLater(() -> {
+            if (lblStatus != null) {
+                lblStatus.setText(text);
+                lblStatus.setStyle(MessageConstant.COLOR_15);
+            }
+        });
+    }
+
+    private void displayBooks(List<ApiBookItem> books, String successMessage) {
+        updateStatusLabel(successMessage);
         bookListContainer.getChildren().clear();
 
         if (books == null || books.isEmpty()) {
-            bookListContainer.getChildren().add(new Label(MessageConstant.SEARCH_COMIC_ERROR));
+            bookListContainer.getChildren().add(new Label("Không có truyện nào trùng khớp ở khu vực này."));
             return;
         }
 
@@ -114,7 +183,15 @@ public class ManageBooksController {
         Rectangle clip = new Rectangle(100, 140);
         clip.setArcWidth(10); clip.setArcHeight(10);
         imageView.setClip(clip);
-        ImageLoaderGlobal.setImage("https://img.otruyenapi.com/uploads/comics/" + book.getThumbUrl(), imageView);
+
+        if (book.getThumbUrl() != null && !book.getThumbUrl().isEmpty()) {
+            String imageUrl = book.getThumbUrl().startsWith("http")
+                    ? book.getThumbUrl()
+                    : "https://img.otruyenapi.com/uploads/comics/" + book.getThumbUrl();
+            ImageLoaderGlobal.setImage(imageUrl, imageView);
+        } else {
+            imageView.setStyle("-fx-background-color: #cccccc;");
+        }
 
         Label lblName = new Label(book.getName());
         lblName.setStyle(MessageConstant.COLOR_6);
@@ -133,7 +210,7 @@ public class ManageBooksController {
                     updateButtonStyle(btnToggle, false);
                 }
             } else {
-                if (hiddenBookDAO.hideBook(book.getSlug())) {
+                if (hiddenBookDAO.hideBook(book.getSlug(), book.getName(), book.getThumbUrl())) {
                     updateButtonStyle(btnToggle, true);
                 }
             }

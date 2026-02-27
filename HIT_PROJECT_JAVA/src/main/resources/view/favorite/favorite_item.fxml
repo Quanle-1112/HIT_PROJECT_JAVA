@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="itemContainer" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="420.0" spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-cursor: hand;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.favorite.FavoriteItemController">
+<HBox fx:id="itemContainer" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="420.0" spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 12; -fx-cursor: hand;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.favorite.FavoriteItemController">
     <children>
         <ImageView fx:id="bookThumb" fitHeight="80.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
             <HBox.margin><Insets left="10.0" /></HBox.margin>

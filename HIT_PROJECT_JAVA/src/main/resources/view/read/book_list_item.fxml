@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="itemContainer" alignment="CENTER_LEFT" prefHeight="160.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-cursor: hand;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.read.BookListItemController">
+<HBox fx:id="itemContainer" alignment="CENTER_LEFT" prefHeight="160.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-cursor: hand;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.read.BookListItemController">
     <children>
         <ImageView fx:id="bookImageView" fitHeight="140.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
             <effect>

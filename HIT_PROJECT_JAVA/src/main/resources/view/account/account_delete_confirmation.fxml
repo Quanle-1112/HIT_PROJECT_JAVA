@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefWidth="400.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-width: 2; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.account.AccountDeleteController">
+<VBox prefWidth="400.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-border-width: 2; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.account.AccountDeleteController">
     <children>
         <AnchorPane prefHeight="50.0" style="-fx-background-color: #19345D;">
             <children>

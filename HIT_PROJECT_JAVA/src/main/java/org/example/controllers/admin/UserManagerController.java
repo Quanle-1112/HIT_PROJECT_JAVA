@@ -19,7 +19,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import org.example.constant.MessageConstant;
 import org.example.dao.UserDAO;
-import org.example.exception.UIExceptionHandler;
 import org.example.model.user.Role;
 import org.example.model.user.User;
 import org.example.utils.SceneUtils;
@@ -31,6 +30,7 @@ public class UserManagerController {
     @FXML private Button btnBack;
     @FXML private TextField txtSearch;
     @FXML private Button btnSearch;
+    @FXML private Label lblStatus;
 
     @FXML private TableView<User> tableUsers;
     @FXML private TableColumn<User, Integer> colId;
@@ -52,6 +52,18 @@ public class UserManagerController {
         btnBack.setOnAction(e ->
                 SceneUtils.switchScene(btnBack, "/view/admin/admin_dashboard.fxml", MessageConstant.TITLE_ADMIN)
         );
+
+        if (btnSearch != null) {
+            btnSearch.setOnAction(e -> handleSearch());
+        }
+
+        if (txtSearch != null) {
+            txtSearch.setOnAction(e -> handleSearch());
+
+            txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+                handleSearch();
+            });
+        }
     }
 
     private void setupTableColumns() {
@@ -81,12 +93,12 @@ public class UserManagerController {
                         } else {
                             User user = getTableView().getItems().get(getIndex());
 
-                            if ("BAN".equalsIgnoreCase(user.getStatus())) {
+                            if ("BANNED".equalsIgnoreCase(user.getStatus())) {
                                 btnAction.setText(MessageConstant.NO_LOCK);
-                                btnAction.setStyle(MessageConstant.COLOR_7);
+                                btnAction.setStyle(MessageConstant.COLOR_8);
                             } else {
                                 btnAction.setText(MessageConstant.LOCK);
-                                btnAction.setStyle(MessageConstant.COLOR_8);
+                                btnAction.setStyle(MessageConstant.COLOR_7);
                             }
 
                             if (user.getRole() == Role.ADMIN) {
@@ -180,12 +192,12 @@ public class UserManagerController {
                     tableUsers.refresh();
 
                     String msg = MessageConstant.UPDATE_COMPLETE;
-                    if (isBanning && blacklistUpdated) msg += MessageConstant.ADD_EMAIL_IN_BLACK_LIST;
-                    if (!isBanning && blacklistUpdated) msg += MessageConstant.REMOVE_EMAIL_IN_BLACK_LIST;
+                    if (isBanning && blacklistUpdated) msg += " \n" + MessageConstant.ADD_EMAIL_IN_BLACK_LIST;
+                    if (!isBanning && blacklistUpdated) msg += " \n" + MessageConstant.REMOVE_EMAIL_IN_BLACK_LIST;
 
-                    UIExceptionHandler.showAlert(Alert.AlertType.INFORMATION, MessageConstant.SUCCESS, msg);
+                    showStatusMessage(msg, true);
                 } else {
-                    UIExceptionHandler.showAlert(Alert.AlertType.ERROR, MessageConstant.ERROR, MessageConstant.OPERATION_FAILED);
+                    showStatusMessage(MessageConstant.OPERATION_FAILED, false);
                 }
             });
 
@@ -197,5 +209,46 @@ public class UserManagerController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showStatusMessage(String message, boolean isSuccess) {
+        if (lblStatus != null) {
+            lblStatus.setText(message);
+            if (isSuccess) {
+                lblStatus.setStyle(MessageConstant.COLOR_12);
+            } else {
+                lblStatus.setStyle(MessageConstant.COLOR_13);
+            }
+            lblStatus.setVisible(true);
+
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(3.5));
+            delay.setOnFinished(event -> lblStatus.setVisible(false));
+            delay.play();
+        }
+    }
+
+    private void handleSearch() {
+        if (txtSearch == null || tableUsers == null) return;
+
+        String keyword = txtSearch.getText().trim().toLowerCase();
+
+        if (keyword.isEmpty()) {
+            tableUsers.setItems(userList);
+            return;
+        }
+
+        javafx.collections.ObservableList<org.example.model.user.User> filteredList = javafx.collections.FXCollections.observableArrayList();
+
+        for (org.example.model.user.User user : userList) {
+            boolean matchId = String.valueOf(user.getId()).contains(keyword);
+            boolean matchUsername = user.getUsername() != null && user.getUsername().toLowerCase().contains(keyword);
+            boolean matchEmail = user.getEmail() != null && user.getEmail().toLowerCase().contains(keyword);
+
+            if (matchId || matchUsername || matchEmail) {
+                filteredList.add(user);
+            }
+        }
+
+        tableUsers.setItems(filteredList);
     }
 }

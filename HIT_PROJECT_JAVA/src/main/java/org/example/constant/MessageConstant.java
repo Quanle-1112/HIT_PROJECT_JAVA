@@ -16,6 +16,12 @@ public class MessageConstant {
     public static final String REGISTER_SUCCESS = "SUCCESS";
     public static final String REGISTER_FAIL = "Lỗi hệ thống: Đăng ký thất bại.";
     public static final String REGISTER_SUCCESS_LOADING = "Đang đăng ký...";
+    public static final String SEARCH_LOADING = "Đang tìm kiếm '";
+    public static final String SEARCH_RESULT = "Kết quả tìm kiếm cho: ";
+    public static final String ERROR_SEARCH_OR_CONNECT_WIFI = "Không tìm thấy kết quả hoặc lỗi mạng.";
+    public static final String LOADING_PAGE_COMIC = "Đang tải danh sách truyện (Trang ";
+    public static final String LIST_COMIC_HIDDEN = "Danh sách các truyện đang bị ẩn";
+    public static final String CALL_DATABASE_ERROR = "Lỗi khi tải danh sách từ Database.";
 
     public static final String UPDATE_PASSWORD = "Cập nhật mật khẩu";
     public static final String CONFIRM_LOADING = "Đang kiểm tra...";
@@ -84,6 +90,10 @@ public class MessageConstant {
     public static final String COLOR_8 = "-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;";
     public static final String COLOR_10 = "-fx-background-color: white; -fx-border-color: #ddd; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;";
     public static final String COLOR_11 = "-fx-background-color: WHITE; -fx-border-color: #19345D; -fx-border-radius: 20; -fx-background-radius: 20; -fx-cursor: hand;";
+    public static final String COLOR_12 = "-fx-text-fill: #27ae60; -fx-font-weight: bold;";
+    public static final String COLOR_13 = "-fx-text-fill: #e74c3c; -fx-font-weight: bold;";
+    public static final String COLOR_14 = "-fx-text-fill: red; -fx-font-weight: bold;";
+    public static final String COLOR_15 = "-fx-text-fill: #7f8c8d; -fx-font-style: italic;";
     public static final String REMOVE_FROM_BLACKLIST = "Email sẽ được gỡ khỏi danh sách đen.";
     public static final String UN_LOCK = "Mở khóa";
     public static final String NEW_USER = "Người dùng mới đăng ký";
@@ -92,6 +102,7 @@ public class MessageConstant {
     public static final String ADD_EMAIL_IN_BLACK_LIST = "\nEmail đã được thêm vào Blacklist.";
     public static final String REMOVE_EMAIL_IN_BLACK_LIST = "\nEmail đã được gỡ khỏi Blacklist.";
     public static final String DELETE_HISTORY_LIST = "Đã xóa toàn bộ lịch sử đọc.";
+    public static final String UPDATE_STATUS = "Đang truy xuất danh sách truyện đã ẩn từ Database...";
     public static final String COLOR_DELETE_HISTORY_LIST = "-fx-text-fill:  #19345D; -fx-font-weight: bold;";
 
     public static final String ERR_NETWORK = "Lỗi kết nối mạng hoặc API!";
@@ -124,7 +135,7 @@ public class MessageConstant {
     public static final String HIDDEN = "Đang Ẩn";
     public static final String NO_HIDDEN = "Đang Hiện";
     public static final String LOCK = "Khóa";
-    public static final String NO_LOCK = "Mở khóa";
+    public static final String NO_LOCK = "Mở";
     public static final String COLOR_9 = "-fx-font-size: 14px; -fx-text-fill: #888; -fx-padding: 20; -fx-font-style: italic;";
     public static final String BUTTON_LIKE = "-fx-background-color: #FADBD8; -fx-text-fill: #E74C3C; -fx-border-color: #E74C3C; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand;";
     public static final String BUTTON_NO_LIKE = "-fx-background-color: #FFFFFF; -fx-text-fill: #E74C3C; -fx-border-color: #E0E0E0; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand;";
@@ -150,6 +161,8 @@ public class MessageConstant {
     public static final String CHAT_INPUT_EMPTY = "Vui lòng nhập nội dung tin nhắn!";
     public static final String CHAT_ERR_NO_RESPONSE = "Không nhận được phản hồi từ AI.";
     public static final String CHAT_ERR_API = "Lỗi khi gọi API AI: ";
+    public static final String API_ERROR_CALL = "Lỗi khi tải dữ liệu từ API.";
+    public static final String LIST_COMIC = "Danh sách truyện trang ";
 
     public static final String ERR_LOAD_BOOK = "Không thể tải danh sách truyện.";
     public static final String ERR_LOAD_CHAPTER = "Không thể tải nội dung chương.";
@@ -161,5 +174,5 @@ public class MessageConstant {
 
 
     public static final String GEMINI_API_KEY = "AIzaSyB0fhDXOdzSs7DzYo8MSFY3zRXTN6Pt9xg";
-    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=";
+    public static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 }
