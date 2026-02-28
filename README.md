@@ -157,6 +157,11 @@
 
 - **JavaFX Task / CompletableFuture** – Dùng để xử lý các tác vụ nặng chạy ngầm (như gọi API, tải hình ảnh, và truy vấn cơ sở dữ liệu) mà không làm đơ (freeze) giao diện ứng dụng.
 
+### Màn hình Tài khoản (Account Screen)
+<p>
+    <img src="demo/23345.png" width="250">
+</p>
+
 ## Cấu trúc thư mục
 
 📁WOWTruyen  
