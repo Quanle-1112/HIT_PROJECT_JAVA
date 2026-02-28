@@ -1,32 +1,32 @@
 # WOWTruyen
 
-This is an online comic reading application that allows you to read comics and search for your favorite ones. It helps you organize and track the comics you are currently reading, bookmark your favorites, and even interact with an AI assistant.
+Đây là một ứng dụng đọc truyện tranh trực tuyến cho phép bạn đọc và tìm kiếm những bộ truyện yêu thích. Ứng dụng giúp bạn sắp xếp, theo dõi các bộ truyện đang đọc, đánh dấu các bộ truyện yêu thích và thậm chí có thể tương tác với một trợ lý AI được tích hợp sẵn.
 
-## Installation
+## Cài đặt
 
-### Require
+### Yêu cầu
 
 - Java 17+
 - JavaFX 17+
 - Maven
 - MySQL Server
-- IDE: IntelliJ IDEA, Eclipse, or Netbeans.
+- IDE: IntelliJ IDEA, Eclipse, hoặc Netbeans.
 
-### How to run the project?
+### Cách chạy dự án
 
-- Clone the project.
-- Set up the database: Create a MySQL database named `WOWTruyen` and execute the provided SQL script to create the necessary tables.
-- Update the database credentials in `DBConnect.java` and email configuration (for OTP) in `EmailUtils.java`.
-- Install the necessary Maven libraries.
-- Run the project from the `Launcher.java` or `Main.java` class.
+- Clone (tải về) dự án.
+- Thiết lập cơ sở dữ liệu: Tạo một database MySQL có tên là `WOWTruyen` và chạy đoạn script SQL được cung cấp để tạo các bảng cần thiết.
+- Cập nhật thông tin đăng nhập database trong file `DBConnect.java` và cấu hình email (để gửi mã OTP) trong file `EmailUtils.java`.
+- Cài đặt các thư viện Maven cần thiết.
+- Chạy dự án từ class `Launcher.java` hoặc `Main.java`.
 
-## How to Use
+## Hướng dẫn sử dụng
 
-1. Ensure you are connected to the internet.
-2. Run the project in the main class.
-3. If you don't have an account, create one (supports email OTP verification).
-4. Log in using your account credentials.
-5. Retrieve your account password via email if needed.
+1. Đảm bảo thiết bị của bạn đã được kết nối Internet.
+2. Chạy dự án ở class main.
+3. Nếu chưa có tài khoản, hãy tạo một tài khoản mới (hỗ trợ xác minh mã OTP qua email).
+4. Đăng nhập bằng tài khoản của bạn.
+5. Khôi phục mật khẩu qua email nếu bạn lỡ quên.
 
 <p>
     <img src="demo/demo_user/1.png" width="250">
@@ -35,20 +35,20 @@ This is an online comic reading application that allows you to read comics and s
     <img src="demo/demo_user/3.5.png" width="250">
 </p>
 
-### Home Screen
+### Màn hình chính (Home Screen)
 
-- You can discover comics from the home screen.
-  - View lists of New Updates, Completed Comics, and Coming Soon.
-  - Browse comics by category.
-- You can search for comics using the search bar.
-- You can view more comics or categories by clicking on the respective "Xem thêm" (View More) buttons.
+- Bạn có thể khám phá các bộ truyện ngay từ màn hình chính.
+  - Xem danh sách Truyện Mới Cập Nhật, Truyện Đã Hoàn Thành, và Truyện Sắp Ra Mắt.
+  - Lọc và duyệt truyện theo từng thể loại.
+- Có thể tìm kiếm truyện nhanh chóng thông qua thanh tìm kiếm.
+- Bạn có thể xem thêm nhiều truyện hoặc thể loại hơn bằng cách nhấn vào các nút "Xem thêm".
 
 <p>
     <img src="demo/demo_user/4.png" width="250">
     <img src="demo/demo_user/5.png" width="250">
 </p>
 
-### View More
+### Xem thêm (View More)
 
 <p>
     <img src="demo/demo_user/13.png" width="250">
@@ -57,26 +57,26 @@ This is an online comic reading application that allows you to read comics and s
     <img src="demo/demo_user/16.png" width="250">
 </p>
 
-### Search Book
+### Tìm kiếm truyện (Search Book)
 
 <p>
     <img src="demo/demo_user/17.png" width="250">
 </p>
 
-### History & Favorite Screen
+### Lịch sử & Yêu thích (History & Favorite Screen)
 
-- **History:** You can see a list of recently read comics. The app automatically saves the latest chapter you were reading.
-- **Favorite:** You can save and manage a list of your bookmarked comics.
+- **Lịch sử:** Nơi hiển thị danh sách các truyện bạn đã đọc gần đây. Ứng dụng sẽ tự động lưu lại chương mới nhất mà bạn đang đọc dở.
+- **Yêu thích:** Bạn có thể lưu và quản lý danh sách các bộ truyện mà mình đã đánh dấu (bookmark).
 
 <p>
     <img src="demo/demo_user/6.png" width="250">
     <img src="demo/demo_user/7.png" width="250">
 </p>
 
-### Reading Screen
+### Màn hình đọc truyện (Reading Screen)
 
-- You can view detailed information about a comic (author, status, categories, chapter list).
-- Read chapters with an optimized interface, smooth scrolling, and quick chapter navigation (Next/Previous).
+- Xem thông tin chi tiết về bộ truyện (tác giả, tình trạng, thể loại, danh sách các chương).
+- Trải nghiệm đọc truyện với giao diện tối ưu, cuộn trang mượt mà và thao tác chuyển chương (Chương sau/Chương trước) cực kỳ nhanh chóng.
 
 <p>
     <img src="demo/demo_user/18.png" width="250">
@@ -86,20 +86,20 @@ This is an online comic reading application that allows you to read comics and s
 
 ### ChatBox AI
 
-- **ChatBox AI:** Interact with the integrated Gemini AI assistant for comic recommendations or general questions.
+- **ChatBox AI:** Trò chuyện và tương tác với trợ lý ảo Gemini AI để nhận các đề xuất truyện hay hoặc giải đáp các thắc mắc chung.
 <p>
     <img src="demo/demo_user/21.png" width="250">
 </p>
 
-### Account Screen
+### Màn hình Tài khoản (Account Screen)
 
-- You can view your personal information, including your avatar, full name, and email address.
-- You can manage and update your profile:
-  - **Change Avatar:** Upload a new image from your device to set as your profile picture.
-  - **Change Name:** Update your display name.
-  - **Change Password:** Securely update your account password.
-  - **Delete Account:** Delete account information.
-- You can safely log out of your current session.
+- Xem thông tin cá nhân của bạn, bao gồm ảnh đại diện (avatar), họ và tên, và địa chỉ email.
+- Quản lý và cập nhật hồ sơ cá nhân:
+  - **Đổi ảnh đại diện (Change Avatar):** Tải lên một bức ảnh mới từ thiết bị để làm ảnh đại diện.
+  - **Đổi tên (Change Name):** Cập nhật tên hiển thị của bạn.
+  - **Đổi mật khẩu (Change Password):** Cập nhật mật khẩu tài khoản một cách an toàn.
+  - **Xóa tài khoản (Delete Account):** Xóa dữ liệu và thông tin tài khoản của bạn.
+- Bạn có thể đăng xuất an toàn khỏi phiên làm việc hiện tại.
 
 <p>
     <img src="demo/demo_user/8.png" width="250">
@@ -109,12 +109,12 @@ This is an online comic reading application that allows you to read comics and s
     <img src="demo/demo_user/12.png" width="250">
 </p>
 
-### Admin Dashboard
+### Bảng điều khiển dành cho Quản trị viên (Admin Dashboard)
 
-- **Access Restriction:** This section is exclusive to accounts with the `ADMIN` role.
-- **User Management:** You can view the list of all registered users, search for specific users by ID, username, or email, and easily lock (ban) or unlock accounts to maintain community guidelines.
-- **Book Management:** You can browse and search for comics fetched from the API. Admins have the authority to hide specific inappropriate comics from the system, ensuring they are no longer visible to regular users.
-- **System Statistics:** You can monitor the platform's overall metrics through visual charts, including a bar chart showing user growth over time and a pie chart illustrating the distribution of comic categories.
+- **Giới hạn quyền truy cập:** Khu vực này chỉ dành riêng cho các tài khoản có vai trò `ADMIN`.
+- **Quản lý người dùng:** Bạn có thể xem danh sách tất cả người dùng đã đăng ký, tìm kiếm người dùng cụ thể bằng ID, tên đăng nhập hoặc email, cũng như dễ dàng khóa (ban) hoặc mở khóa tài khoản để duy trì nguyên tắc cộng đồng.
+- **Quản lý truyện:** Bạn có thể duyệt và tìm kiếm các bộ truyện được lấy về từ API. Admin có thẩm quyền ẩn các bộ truyện không phù hợp khỏi hệ thống, đảm bảo người dùng thường sẽ không còn nhìn thấy chúng.
+- **Thống kê hệ thống:** Theo dõi các chỉ số tổng quan của nền tảng qua các biểu đồ trực quan, bao gồm biểu đồ cột hiển thị tốc độ tăng trưởng người dùng theo thời gian và biểu đồ tròn thể hiện sự phân bổ của các thể loại truyện.
 
 <p>
     <img src="demo/demo_admin/1.png" width="250">
@@ -129,51 +129,51 @@ This is an online comic reading application that allows you to read comics and s
     <img src="demo/demo_admin/10.png" width="250">
 </p>
 
-## Technologies & Libraries
+## Công nghệ & Thư viện
 
-### UI & Architecture
+### Giao diện & Kiến trúc (UI & Architecture)
 
-- **JavaFX** – Used for building the desktop graphical user interface.
-- **MVC Pattern** – Separates the application into Model, View, and Controller components.
+- **JavaFX** – Sử dụng để xây dựng giao diện người dùng đồ họa (GUI) cho ứng dụng desktop.
+- **Mô hình MVC** – Chia tách ứng dụng thành ba thành phần riêng biệt: Model, View, và Controller.
 
-### API Integration
+### Tích hợp API (API Integration)
 
-- **OkHttp3** – A synchronous and asynchronous HTTP client used for calling OtruyenAPI and Gemini API.
-- **Gson** – A library used for converting JSON data from APIs into Java objects.
+- **OkHttp3** – Một HTTP client đồng bộ và bất đồng bộ dùng để gọi OtruyenAPI và Gemini API.
+- **Gson** – Thư viện dùng để chuyển đổi dữ liệu JSON trả về từ API thành các đối tượng Java.
 
-### Database
+### Cơ sở dữ liệu (Database)
 
-- **MySQL Connector/J** – A JDBC driver for MySQL database connectivity.
+- **MySQL Connector/J** – Driver JDBC để kết nối với cơ sở dữ liệu MySQL.
 
-### Email Handling
+### Xử lý Email
 
-- **Jakarta Mail / Angus Mail** – Libraries used for sending OTP verification and password recovery emails.
+- **Jakarta Mail / Angus Mail** – Các thư viện dùng để gửi email xác thực mã OTP và khôi phục mật khẩu.
 
-### Security & Authentication
+### Bảo mật & Xác thực
 
-- **JBCrypt** – A library used for password hashing and secure user authentication.
+- **JBCrypt** – Thư viện dùng để băm (hash) mật khẩu và xác thực người dùng một cách an toàn.
 
-### Concurrency & Multi-threading
+### Đồng thời & Đa luồng (Concurrency & Multi-threading)
 
-- **JavaFX Task / CompletableFuture** – Used for performing heavy background tasks (like fetching APIs, loading images, and database queries) without freezing the UI.
+- **JavaFX Task / CompletableFuture** – Dùng để xử lý các tác vụ nặng chạy ngầm (như gọi API, tải hình ảnh, và truy vấn cơ sở dữ liệu) mà không làm đơ (freeze) giao diện ứng dụng.
 
-## Folder Structure
+## Cấu trúc thư mục
 
 📁WOWTruyen  
 ┣📁.idea  
 ┣📁src/main/java/org/example  
-┃ ┣📁api (HTTP communication with external APIs)  
-┃ ┣📁app (Main entry points of the application)  
-┃ ┣📁constant (Global constants and system messages)  
-┃ ┣📁controllers (Controller classes managing UI logic by modules)  
-┃ ┣📁dao (Data Access Object classes for MySQL database interaction)  
-┃ ┣📁data (Services for fetching and processing comic API data)  
-┃ ┣📁exception (Custom exceptions and UI error handlers)  
-┃ ┣📁model (Model classes representing database entities and API DTOs)  
-┃ ┣📁services (Service interfaces and implementations for core business logic)  
-┃ ┗📁utils (Utility classes for encryption, email, image loading, and navigation)  
+┃ ┣📁api (Giao tiếp HTTP với các API bên ngoài)  
+┃ ┣📁app (Điểm khởi chạy chính của ứng dụng)  
+┃ ┣📁constant (Các hằng số toàn cục và tin nhắn của hệ thống)  
+┃ ┣📁controllers (Các lớp Controller quản lý logic giao diện theo từng chức năng)  
+┃ ┣📁dao (Các lớp Data Access Object để tương tác với cơ sở dữ liệu MySQL)  
+┃ ┣📁data (Các service dùng để fetch và xử lý dữ liệu API truyện)  
+┃ ┣📁exception (Các ngoại lệ tùy chỉnh và bộ xử lý lỗi cho UI)  
+┃ ┣📁model (Các lớp Model đại diện cho các bảng trong database và DTO của API)  
+┃ ┣📁services (Các interface service và phần triển khai cho các nghiệp vụ cốt lõi)  
+┃ ┗📁utils (Các lớp tiện ích hỗ trợ mã hóa, email, load ảnh và điều hướng)  
 ┣📁src/main/resources  
-┃ ┣📁image (Static image resources and icons)  
-┃ ┗📁view (FXML UI layouts organized by features)  
-┣📜pom.xml (Maven build configuration and dependencies)  
+┃ ┣📁image (Các tài nguyên hình ảnh tĩnh và icon)  
+┃ ┗📁view (Các file layout giao diện FXML được sắp xếp theo tính năng)  
+┣📜pom.xml (Cấu hình build Maven và các thư viện phụ thuộc)  
 ┗📜README.md
