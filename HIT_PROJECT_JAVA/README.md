@@ -29,10 +29,10 @@ This is an online comic reading application that allows you to read comics and s
 5. Retrieve your account password via email if needed.
 
 <p>
-    <img src="demo_user/1.png" width="250">
-    <img src="demo_user/3.png" width="250">
-    <img src="demo_user/2.png" width="250">
-    <img src="demo_user/3.5.png" width="250">
+    <img src="demo/demo_user/1.png" width="250">
+    <img src="demo/demo_user/3.png" width="250">
+    <img src="demo/demo_user/2.png" width="250">
+    <img src="demo/demo_user/3.5.png" width="250">
 </p>
 
 ### Home Screen
@@ -44,23 +44,23 @@ This is an online comic reading application that allows you to read comics and s
 - You can view more comics or categories by clicking on the respective "Xem thêm" (View More) buttons.
 
 <p>
-    <img src="demo_user/4.png" width="250">
-    <img src="demo_user/5.png" width="250">
+    <img src="demo/demo_user/4.png" width="250">
+    <img src="demo/demo_user/5.png" width="250">
 </p>
 
 ### View More
 
 <p>
-    <img src="demo_user/13.png" width="250">
-    <img src="demo_user/14.png" width="250">
-    <img src="demo_user/15.png" width="250">
-    <img src="demo_user/16.png" width="250">
+    <img src="demo/demo_user/13.png" width="250">
+    <img src="demo/demo_user/14.png" width="250">
+    <img src="demo/demo_user/15.png" width="250">
+    <img src="demo/demo_user/16.png" width="250">
 </p>
 
 ### Search Book
 
 <p>
-    <img src="demo_user/17.png" width="250">
+    <img src="demo/demo_user/17.png" width="250">
 </p>
 
 ### History & Favorite Screen
@@ -69,8 +69,8 @@ This is an online comic reading application that allows you to read comics and s
 - **Favorite:** You can save and manage a list of your bookmarked comics.
 
 <p>
-    <img src="demo_user/6.png" width="250">
-    <img src="demo_user/7.png" width="250">
+    <img src="demo/demo_user/6.png" width="250">
+    <img src="demo/demo_user/7.png" width="250">
 </p>
 
 ### Reading Screen
@@ -79,16 +79,16 @@ This is an online comic reading application that allows you to read comics and s
 - Read chapters with an optimized interface, smooth scrolling, and quick chapter navigation (Next/Previous).
 
 <p>
-    <img src="demo_user/18.png" width="250">
-    <img src="demo_user/19.png" width="250">
-    <img src="demo_user/20.png" width="250">
+    <img src="demo/demo_user/18.png" width="250">
+    <img src="demo/demo_user/19.png" width="250">
+    <img src="demo/demo_user/20.png" width="250">
 </p>
 
 ### ChatBox AI
 
 - **ChatBox AI:** Interact with the integrated Gemini AI assistant for comic recommendations or general questions.
 <p>
-    <img src="demo_user/21.png" width="250">
+    <img src="demo/demo_user/21.png" width="250">
 </p>
 
 ### Account Screen
@@ -102,11 +102,11 @@ This is an online comic reading application that allows you to read comics and s
 - You can safely log out of your current session.
 
 <p>
-    <img src="demo_user/8.png" width="250">
-    <img src="demo_user/9.png" width="250">
-    <img src="demo_user/10.png" width="250">
-    <img src="demo_user/11.png" width="250">
-    <img src="demo_user/12.png" width="250">
+    <img src="demo/demo_user/8.png" width="250">
+    <img src="demo/demo_user/9.png" width="250">
+    <img src="demo/demo_user/10.png" width="250">
+    <img src="demo/demo_user/11.png" width="250">
+    <img src="demo/demo_user/12.png" width="250">
 </p>
 
 ### Admin Dashboard
@@ -117,16 +117,16 @@ This is an online comic reading application that allows you to read comics and s
 - **System Statistics:** You can monitor the platform's overall metrics through visual charts, including a bar chart showing user growth over time and a pie chart illustrating the distribution of comic categories.
 
 <p>
-    <img src="demo_admin/1.png" width="250">
-    <img src="demo_admin/2.png" width="250">
-    <img src="demo_admin/3.png" width="250">
-    <img src="demo_admin/4.png" width="250">
-    <img src="demo_admin/5.png" width="250">
-    <img src="demo_admin/6.png" width="250">
-    <img src="demo_admin/7.png" width="250">
-    <img src="demo_admin/8.png" width="250">
-    <img src="demo_admin/9.png" width="250">
-    <img src="demo_admin/10.png" width="250">
+    <img src="demo/demo_admin/1.png" width="250">
+    <img src="demo/demo_admin/2.png" width="250">
+    <img src="demo/demo_admin/3.png" width="250">
+    <img src="demo/demo_admin/4.png" width="250">
+    <img src="demo/demo_admin/5.png" width="250">
+    <img src="demo/demo_admin/6.png" width="250">
+    <img src="demo/demo_admin/7.png" width="250">
+    <img src="demo/demo_admin/8.png" width="250">
+    <img src="demo/demo_admin/9.png" width="250">
+    <img src="demo/demo_admin/10.png" width="250">
 </p>
 
 ## Technologies & Libraries
