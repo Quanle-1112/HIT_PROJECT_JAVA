@@ -31,7 +31,7 @@ public class RegisterController {
 
         registerButton.setOnAction(event -> handleRegister());
         closeButton.setOnAction(event ->
-                SceneUtils.openNewWindow("/view/authentiaction/register.fxml", "Login", closeButton)
+                SceneUtils.switchScene(closeButton, "/view/read/start_screen.fxml",MessageConstant.TITLE_LOGIN)
         );
     }
 
