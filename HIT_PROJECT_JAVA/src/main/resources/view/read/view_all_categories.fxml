@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.read.ViewAllCategoriesController">
+    <children>
+        <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D;">
+            <children>
+                <Button fx:id="backButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-color: transparent; -fx-cursor: hand;" text="&lt;" textFill="WHITE">
+                    <font><Font name="System Bold" size="18.0" /></font>
+                </Button>
+                <Label layoutX="50.0" layoutY="15.0" text="Tất Cả Thể Loại" textFill="WHITE">
+                    <font><Font name="System Bold" size="20.0" /></font>
+                </Label>
+            </children>
+        </AnchorPane>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+            <content>
+                <VBox spacing="10.0">
+                    <padding>
+                        <Insets bottom="20.0" left="15.0" right="15.0" top="20.0" />
+                    </padding>
+                    <children>
+                        <Label text="Chọn thể loại bạn muốn xem:" textFill="#555555">
+                            <font><Font name="System Italic" size="14.0" /></font>
+                        </Label>
+
+                        <FlowPane fx:id="categoryContainer" hgap="10.0" vgap="10.0" prefWidth="400.0" />
+
+                        <Label fx:id="statusLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="Đang tải dữ liệu..." textFill="#19345d">
+                            <font><Font size="13.0" /></font>
+                            <VBox.margin><Insets top="20.0" /></VBox.margin>
+                        </Label>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

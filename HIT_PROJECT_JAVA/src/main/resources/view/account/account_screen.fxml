@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="800.0" prefWidth="450.0" style="-fx-background-color: #ECECE7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controllers.account.AccountScreenController">
+
+    <top>
+        <AnchorPane prefHeight="60.0" prefWidth="450.0" style="-fx-background-color: #19345D;" BorderPane.alignment="CENTER">
+            <children>
+                <Label layoutX="20.0" layoutY="15.0" text="Tài khoản cá nhân" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="22.0" />
+                    </font>
+                </Label>
+            </children>
+            <effect>
+                <DropShadow height="10.0" radius="4.5" width="10.0">
+                    <color>
+                        <Color opacity="0.3" />
+                    </color>
+                </DropShadow>
+            </effect>
+        </AnchorPane>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: #ECECE7; -fx-background-color: transparent;" BorderPane.alignment="CENTER">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="20.0">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
+                    </padding>
+                    <children>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="410.0" spacing="10.0" style="-fx-background-color: WHITE; -fx-background-radius: 15;">
+                            <children>
+                                <StackPane prefHeight="100.0" prefWidth="100.0">
+                                    <children>
+                                        <ImageView fx:id="avatarView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                                            <image>
+                                                <Image url="@../../image/7758685565866.png" />
+                                            </image>
+                                            <clip>
+                                                <Circle centerX="50" centerY="50" radius="50" />
+                                            </clip>
+                                        </ImageView>
+
+                                        <Button fx:id="btnEditAvatar" mnemonicParsing="false" style="-fx-background-color: rgba(255,255,255,0.9); -fx-border-radius: 50; -fx-border-color: #ddd; -fx-min-width: 35px; -fx-min-height: 35px; -fx-max-width: 35px; -fx-max-height: 35px; -fx-padding: 0;" text="📷" textFill="#333333" StackPane.alignment="BOTTOM_RIGHT">
+                                            <font>
+                                                <Font size="16.0" />
+                                            </font>
+                                            <effect>
+                                                <DropShadow color="#00000033" radius="2.0" width="5.0" />
+                                            </effect>
+                                            <StackPane.margin>
+                                                <Insets bottom="5.0" right="5.0" />
+                                            </StackPane.margin>
+                                        </Button>
+
+                                    </children>
+                                </StackPane>
+
+                                <Label fx:id="fullNameLabel" text="Nguyễn Văn A" textFill="#19345d">
+                                    <font>
+                                        <Font name="System Bold" size="20.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="emailLabel" text="nguyenvana@gmail.com" textFill="#888888">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <effect>
+                                <DropShadow offsetY="2.0" radius="5.0">
+                                    <color>
+                                        <Color opacity="0.1" />
+                                    </color>
+                                </DropShadow>
+                            </effect>
+                        </VBox>
+
+                        <VBox spacing="15.0">
+                            <children>
+                                <Button fx:id="btnChangeName" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-cursor: hand;" text="Đổi tên hiển thị" textFill="#333333">
+                                    <font><Font name="System Bold" size="15.0" /></font>
+                                    <padding><Insets left="20.0" /></padding>
+                                    <effect><DropShadow offsetY="2.0" radius="3.0"><color><Color opacity="0.1" /></color></DropShadow></effect>
+                                </Button>
+
+                                <Button fx:id="btnChangePass" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-cursor: hand;" text="Đổi mật khẩu" textFill="#333333">
+                                    <font><Font name="System Bold" size="15.0" /></font>
+                                    <padding><Insets left="20.0" /></padding>
+                                    <effect><DropShadow offsetY="2.0" radius="3.0"><color><Color opacity="0.1" /></color></DropShadow></effect>
+                                </Button>
+
+                                <Button fx:id="btnForgotPassword" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: WHITE; -fx-background-radius: 10; -fx-cursor: hand;" text="Quên mật khẩu" textFill="#333333">
+                                    <font><Font name="System Bold" size="15.0" /></font>
+                                    <padding><Insets left="20.0" /></padding>
+                                    <effect><DropShadow offsetY="2.0" radius="3.0"><color><Color opacity="0.1" /></color></DropShadow></effect>
+                                </Button>
+
+                                <Button fx:id="btnDeleteAccount" alignment="BASELINE_LEFT" graphicTextGap="15.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="50.0" style="-fx-background-color: #ffebee; -fx-background-radius: 10; -fx-cursor: hand;" text="Xóa tài khoản" textFill="#e74c3c">
+                                    <font><Font name="System Bold" size="15.0" /></font>
+                                    <padding><Insets left="20.0" /></padding>
+                                    <effect><DropShadow offsetY="2.0" radius="3.0"><color><Color opacity="0.1" /></color></DropShadow></effect>
+                                </Button>
+
+                                <Button fx:id="btnLogout" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="45.0" style="-fx-background-color: #19345D; -fx-background-radius: 25; -fx-cursor: hand;" text="Đăng xuất" textFill="WHITE">
+                                    <font><Font name="System Bold" size="16.0" /></font>
+                                    <VBox.margin>
+                                        <Insets top="20.0" />
+                                    </VBox.margin>
+                                </Button>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" prefHeight="60.0" spacing="15.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #DDDDDD; -fx-border-width: 1 0 0 0;" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="btnHome" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Home" textFill="#19345d">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Button>
+                <Button fx:id="btnHistory" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="History" textFill="#19345d">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Button>
+                <Button fx:id="btnFavorite" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Favorite" textFill="#19345d">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Button>
+                <Button fx:id="btnAI" mnemonicParsing="false" prefWidth="80.0" style="-fx-background-color: transparent;" text="ChatBox" textFill="#19345d">
+                    <font>
+                        <Font name="System Bold" size="13.0" />
+                    </font>
+                </Button>
+                <Button fx:id="btnAccount" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" style="-fx-background-color: transparent; -fx-cursor: hand;" text="Account" textFill="#19345d">
+                    <font><Font name="System Bold" size="13.0" /></font>
+                </Button>
+            </children>
+        </HBox>
+    </bottom>
+
+</BorderPane>
